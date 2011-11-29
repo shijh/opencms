@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="OpenCms Maven2 Deploy" default="maven2deploy" basedir=".">
+	<property name="ant.lib" location="${basedir}/lib" />
+	<property name="opencms.jar.output" location="${basedir}/jar" />
+	<property name="opencms.sources.output" location="${basedir}/sources" />
+	<property name="opencms.javadoc.output" location="${basedir}/javadoc" />
+	<property name="opencms.pom.output" location="${basedir}/pom" />
+
+	<target name="clean" description="Cleans the jar, sources, javadoc directories">
+		<delete dir="${opencms.jar.output}/jar" />
+	    <delete dir="${opencms.sources.output}/sources" />
+	    <delete dir="${opencms.javadoc.output}/javadoc" />
+	</target>
+
+	<!-- 
+		Set/Override this property to one of the following values: 
+		- interactive: interactive GUI based module selection.
+		- selection: module selection based on modules.common.selection property
+		- all: module selection based on modules.common.all property defined in the all-modules.properties file
+	-->
+	<property name="modules.selection.mode" value="interactive" />
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" loaderref="contrib">
+		<classpath>
+			<pathelement location="${ant.lib}/ant-contrib-1.0b1.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef resource="org/opencms/util/ant/taskdefs.properties" loaderref="opencms">
+		<classpath>
+			<pathelement location="${ant.lib}/ant-opencms-1.2.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="initmodulenames">
+		<property file="${basedir}/all-modules.properties" />
+		<var name="modules.common.collect" value="opencms-core,opencms-setup,opencms-upload,${modules.common.all}" />
+		<if>
+			<isset property="externaldirectories" />
+			<then>
+				<for list="${externaldirectories}" param="exdir">
+					<sequential>
+						<var name="modules.common.all" unset="true" />
+						<property file="@{exdir}/modules/all-modules.properties" />
+						<var name="modules.common.collect" value="${modules.common.collect},${modules.common.all}" />
+					</sequential>
+				</for>
+			</then>
+		</if>
+		<var name="modules.common.all" unset="true" />
+		<property name="modules.common.all" value="${modules.common.collect}" />
+	</target>
+
+	<!-- 
+	  -	initializes the selection mode
+	  -->
+	<target name="init" depends="initmodulenames">
+		<echo message="all: ${basedir}" />
+		<if>
+			<not>
+				<isset property="modules.common.all" />
+			</not>
+			<then>
+				<fail>
+    			property modules.common.all undefined.
+    		</fail>
+			</then>
+			<else>
+				<echo message="all: ${modules.common.all}" />
+			</else>
+		</if>
+		<sortlist property="modules.all.sort" value="${modules.common.all}" override="true" />
+		<if>
+			<equals arg1="${modules.selection.mode}" arg2="interactive" />
+			<then>
+				<!-- interactive mode -->
+				<if>
+					<isset property="modules.common.selection" />
+					<then>
+						<selectionprompt property="modules.common.interactive" defaultvalue="${modules.common.selection}" allvalues="${modules.all.sort}" prompt="Please select the modules to process:" title="Module Selection" columns="2" />
+					</then>
+					<else>
+						<selectionprompt property="modules.common.interactive" defaultvalue="" allvalues="${modules.all.sort}" prompt="Please select the modules to process:" title="Module Selection" columns="2" />
+					</else>
+				</if>
+				<if>
+					<equals arg1="${modules.common.interactive}" arg2="__ABORT__" />
+					<then>
+						<fail>aborted by User</fail>
+					</then>
+				</if>
+				<property name="modules.var" value="${modules.common.interactive}" />
+			</then>
+			<elseif>
+				<equals arg1="${modules.selection.mode}" arg2="selection" />
+				<then>
+					<!-- selection mode -->
+					<property name="modules.var" value="${modules.common.selection}" />
+				</then>
+			</elseif>
+			<else>
+				<!-- all mode -->
+				<property name="modules.var" value="${modules.common.all}" />
+			</else>
+		</if>
+		<sortlist property="modules.var" value="${modules.var}" override="true" />
+	</target>
+
+	<target name="maven2deploy" depends="init" description="Deploy the jar, sources.jar and javadoc.jar files to maven central">
+		<for list="${modules.var}" param="module" trim="yes">
+			<sequential>
+				<!--
+				
+				-->
+			</sequential>
+		</for>
+	</target>
+</project>
