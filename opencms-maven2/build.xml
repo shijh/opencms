@@ -133,7 +133,6 @@
 											<arg value="-Durl=${maven-repository-url}" />
 											<arg value="-Dpackaging=jar" />
 											<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
-											<arg value="-Dclassifier=jar" />
 											<arg value="-Pgpg" />
 										</exec>
 										<exec executable="${mvn}">
