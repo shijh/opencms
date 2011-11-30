@@ -2,15 +2,21 @@
 
 <project name="OpenCms Maven2 Deploy" default="maven2deploy" basedir=".">
 	<property name="ant.lib" location="${basedir}/lib" />
+	<property name="version.number" value="8.0.3" />
 	<property name="opencms.jar.output" location="${basedir}/jar" />
 	<property name="opencms.sources.output" location="${basedir}/sources" />
 	<property name="opencms.javadoc.output" location="${basedir}/javadoc" />
 	<property name="opencms.pom.output" location="${basedir}/pom" />
 
+	<property name="mvn" location="/usr/bin/mvn" />
+	<property name="maven-repository-url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2/" />
+	<property name="maven-repository-id" value="sonatype-nexus-staging" />
+	<property name="opencms-maven-groupid" value="opencms" />
+
 	<target name="clean" description="Cleans the jar, sources, javadoc directories">
 		<delete dir="${opencms.jar.output}/jar" />
-	    <delete dir="${opencms.sources.output}/sources" />
-	    <delete dir="${opencms.javadoc.output}/javadoc" />
+		<delete dir="${opencms.sources.output}/sources" />
+		<delete dir="${opencms.javadoc.output}/javadoc" />
 	</target>
 
 	<!-- 
@@ -110,9 +116,53 @@
 	<target name="maven2deploy" depends="init" description="Deploy the jar, sources.jar and javadoc.jar files to maven central">
 		<for list="${modules.var}" param="module" trim="yes">
 			<sequential>
-				<!--
-				
-				-->
+				<echo message="ArtifactId: @{module}" />
+				<if>
+					<available file="${opencms.jar.output}/@{module}.jar" />
+					<then>
+						<if>
+							<available file="${opencms.sources.output}/@{module}-sources.jar" />
+							<then>
+								<if>
+									<available file="${opencms.pom.output}/@{module}-pom.xml" />
+									<then>
+										<exec executable="${mvn}">
+											<arg value="gpg:sign-and-deploy-file" />
+											<arg value="-Dfile=${opencms.jar.output}/@{module}.jar" />
+											<arg value="-DrepositoryId=${maven-repository-id}" />
+											<arg value="-Durl=${maven-repository-url}" />
+											<arg value="-Dpackaging=jar" />
+											<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
+											<arg value="-Dclassifier=jar" />
+											<arg value="-Pgpg" />
+										</exec>
+										<exec executable="${mvn}">
+											<arg value="gpg:sign-and-deploy-file" />
+											<arg value="-Dfile=${opencms.sources.output}/@{module}-sources.jar" />
+											<arg value="-DrepositoryId=${maven-repository-id}" />
+											<arg value="-Durl=${maven-repository-url}" />
+											<arg value="-Dpackaging=jar" />
+											<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
+											<arg value="-Dclassifier=sources" />
+											<arg value="-Pgpg" />
+										</exec>
+									</then>
+									<else>
+										<echo message="Pom: ${opencms.pom.output}/@{module}-pom.xml does not exist ... skip deploy" />
+									</else>
+								</if>
+							</then>
+							<else>
+								<echo message="Sources: ${opencms.sources.output}/@{module}-sources.jar does not exist ... skip deploy" />
+							</else>
+						</if>
+					</then>
+					<else>
+						<echo message="Jar: ${opencms.jar.output}/@{module}.jar does not exist ... skip deploy" />
+					</else>
+				</if>
+				<echo>
+				</echo>
 			</sequential>
 		</for>
 	</target>

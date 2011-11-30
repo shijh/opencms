@@ -1,0 +1,99 @@
+	<property name="opencms.maven2.path" location="/Users/ShiJinghai/git/shijh/opencms/opencms-maven2" />
+	<property name="opencms.maven2.sources.path" location="${opencms.maven2.path}/sources" />
+	<property name="opencms.maven2.jar.path" location="${opencms.maven2.path}/jar" />
+
+	<target name="maven.sources.jar" depends="init, builddeps" description="Build sources.jar">
+
+		<if>
+			<not>
+				<equals arg1="${src.mode}" arg2="none" />
+			</not>
+			<then>
+				<mkdir dir="${module.output.classes}" />
+
+				<var name="module.dependencies.path" value="." />
+				<for list="${module.dependencies}" param="dependency" trim="true">
+					<sequential>
+						<if>
+							<available file="${@{dependency}.output.jar}" />
+							<then>
+								<for param="archive">
+									<fileset dir="${@{dependency}.output.jar}">
+										<include name="**/*.jar" />
+									</fileset>
+									<sequential>
+										<var name="module.dependencies.path" value="${module.dependencies.path}:@{archive}" />
+									</sequential>
+								</for>
+							</then>
+						</if>
+					</sequential>
+				</for>
+				<!--echo message="${module.dependencies.path}" /-->
+
+				<var name="module.libs.path" value="." />
+				<if>
+					<available file="${module.input.lib}" />
+					<then>
+						<for param="archive">
+							<path>
+								<fileset dir="${module.input.lib}" includes="*.jar" />
+							</path>
+							<sequential>
+								<var name="module.libs.path" value="${module.libs.path}:@{archive}" />
+							</sequential>
+						</for>
+					</then>
+				</if>
+				<!--echo message="${module.libs.path}" /-->
+
+				<if>
+					<equals arg1="${src.mode}" arg2="shared" />
+					<then>
+						<jar jarfile="${opencms.maven2.sources.path}/${module.name}-sources.jar">
+							<fileset dir="${module.input.src.shared}" includes="${module.package}/*.java" />
+							<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+						</jar>
+					</then>
+					<else>
+						<if>
+							<equals arg1="${src.mode}" arg2="multishared" />
+							<then>
+								<for list="${module.packages}" param="mpackage" trim="true">
+									<sequential>
+										<var name="package.dir" value="" />
+										<for list="@{mpackage}" param="package" delimiter="." trim="true">
+											<sequential>
+												<var name="module.input.src.test" value="${module.input.src.test}/@{package}" />
+												<var name="package.dir" value="${package.dir}@{package}/" />
+											</sequential>
+										</for>
+										<jar jarfile="${opencms.maven2.sources.path}/${module.name}-sources.jar">
+											<fileset dir="${module.input.src.shared}" includes="${package.dir}/*.java" />
+											<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+										</jar>
+									</sequential>
+								</for>
+							</then>
+							<else>
+								<jar jarfile="${opencms.maven2.sources.path}/${module.name}-sources.jar">
+									<fileset dir="${module.input.src.single}" includes="**/*.java" />
+									<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+								</jar>
+							</else>
+						</if>
+					</else>
+				</if>
+			</then>
+		</if>
+	</target>
+
+	<target name="maven2copy" depends="jar, maven.sources.jar" description="Copy jar to opencms-maven2 jar directory">
+		<if>
+			<available file="${module.output.jar}" />
+			<then>
+				<!-- copy jar to opencms-maven2 jar directory  -->
+				<copy file="${module.output.jar}/${module.name}.jar" todir="${opencms.maven2.jar.path}"/>
+			</then>
+		</if>
+	</target>

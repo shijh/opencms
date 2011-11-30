@@ -1,0 +1,9 @@
+	<target name="maven2copy" depends="init" description="Generates the given .jar and sources.jar files">
+		<for list="${modules.var}" param="module" trim="yes">
+			<sequential>
+				<ant antfile="${basedir}/build-single.xml" target="maven2copy" inheritAll="false">
+					<property name="module.name" value="@{module}" />
+				</ant>
+			</sequential>
+		</for>
+	</target>

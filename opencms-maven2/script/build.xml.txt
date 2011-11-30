@@ -1,0 +1,71 @@
+	<target name="maven2copy" depends="setup-jar, uploadjar" description="Creates jar and sources jar files and copy them to opencms-maven2">
+
+		<property name="opencms.maven2.path" location="/Users/ShiJinghai/git/shijh/opencms/opencms-maven2" />
+		<property name="opencms.maven2.sources.path" location="${opencms.maven2.path}/sources" />
+		<property name="opencms.maven2.jar.path" location="${opencms.maven2.path}/jar" />
+
+		<!-- make directory for jars and sources-jars -->
+		<delete dir="${opencms.maven2.jar.path}" />
+		<delete dir="${opencms.maven2.sources.path}" />
+		<mkdir dir="${opencms.maven2.jar.path}" />
+		<mkdir dir="${opencms.maven2.sources.path}" />
+
+		<!-- read list of all available modules -->
+		<property file="${opencms.input}/modules/all-modules.properties" />
+		<copy file="${opencms.input}/modules/all-modules.properties" todir="${opencms.maven2.path}" overwrite="true" />
+
+		<!-- remove org.opencms.workplace.demos modules -->
+		<var name="modules.common.selection" unset="true" />
+		<for list="${modules.common.all}" param="module" trim="yes">
+			<sequential>
+				<propertyregex property="pack.name" input="@{module}" regexp="org\.opencms\.workplace\.demos([^\.]*)" select="\1" casesensitive="false" />
+				<if>
+					<not>
+						<isset property="pack.name" />
+					</not>
+					<then>
+						<if>
+							<isset property="modules.common.selection" />
+							<then>
+								<var name="modules.common.selection" value="${modules.common.selection},@{module}" />
+							</then>
+							<else>
+								<var name="modules.common.selection" value="@{module}" />
+							</else>
+						</if>
+					</then>
+				</if>
+				<var name="pack.name" unset="true" />
+			</sequential>
+		</for>
+		<echo>${modules.common.selection}</echo>
+
+		<ant antfile="${basedir}/modules/build.xml" target="maven2copy" inheritAll="false">
+			<property name="modules.selection.mode" value="selection" />
+			<property name="modules.common.selection" value="${modules.var}" />
+		</ant>
+
+		<copy file="${opencms.output.jars}/opencms.jar" tofile="${opencms.maven2.jar.path}/opencms-core.jar" />
+		<copy file="${opencms.output.jars}/opencms-setup.jar" todir="${opencms.maven2.jar.path}" />
+		<copy file="${opencms.output}/upload/upload.jar" tofile="${opencms.maven2.jar.path}/opencms-upload.jar" />
+
+		<!-- build opencms-sources.jar -->
+		<jar jarfile="${opencms.maven2.sources.path}/opencms-core-sources.jar">
+			<fileset dir="${opencms.input}/src" />
+			<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+		</jar>
+
+		<!-- build opencms-setup-sources.jar -->
+		<jar jarfile="${opencms.maven2.sources.path}/opencms-setup-sources.jar">
+			<fileset dir="${opencms.input}/src-setup" />
+			<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+		</jar>
+
+		<!-- build upload-sources.jar -->
+		<jar jarfile="${opencms.maven2.sources.path}/opencms-upload-sources.jar">
+			<fileset dir="${opencms.input}/src-components">
+				<include name="**/applet/*.java" />
+			</fileset>
+			<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+		</jar>
+	</target>
