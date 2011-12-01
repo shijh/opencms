@@ -11,7 +11,7 @@
 	<property name="mvn" location="/usr/bin/mvn" />
 	<property name="maven-repository-url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2/" />
 	<property name="maven-repository-id" value="sonatype-nexus-staging" />
-	<property name="opencms-maven-groupid" value="opencms" />
+	<property name="opencms-maven-groupid" value="org.opencms" />
 
 	<target name="clean" description="Cleans the jar, sources, javadoc directories">
 		<delete dir="${opencms.jar.output}/jar" />
