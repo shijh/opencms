@@ -3,9 +3,14 @@
 <project name="OpenCms Maven2 Deploy" default="maven2deploy" basedir=".">
 	<property name="ant.lib" location="${basedir}/lib" />
 	<property name="version.number" value="8.0.3" />
+	
+	<property name="jredir" value="/Library/Java/Home" />
+	<property name="opencms-basedir" value="/Users/ShiJinghai/git/opencms-core" />
+	
 	<property name="opencms.jar.output" location="${basedir}/jar" />
 	<property name="opencms.sources.output" location="${basedir}/sources" />
 	<property name="opencms.javadoc.output" location="${basedir}/javadoc" />
+	<property name="opencms.javadoc.apidoc" location="${basedir}/apidoc" />
 	<property name="opencms.pom.output" location="${basedir}/pom" />
 
 	<property name="mvn" location="/usr/bin/mvn" />
@@ -114,6 +119,8 @@
 	</target>
 
 	<target name="maven2deploy" depends="init" description="Deploy the jar, sources.jar and javadoc.jar files to maven central">
+		<mkdir dir="${opencms.javadoc.apidoc}" />
+		<mkdir dir="${opencms.javadoc.output}" />
 		<for list="${modules.var}" param="module" trim="yes">
 			<sequential>
 				<echo message="ArtifactId: @{module}" />
@@ -126,6 +133,215 @@
 								<if>
 									<available file="${opencms.pom.output}/@{module}-pom.xml" />
 									<then>
+										<!-- build javadoc -->
+										<if>
+											<equals arg1="@{module}" arg2="opencms-core" />
+											<then>
+												<!-- build opencms-core-javadoc.jar -->
+										        <javadoc destdir="${opencms.javadoc.apidoc}/opencms-core" 
+										          maxmemory="512m"
+										          nohelp="true"
+										          classpath="${opencms-basedir}/bin"
+										          access="protected" 
+										          use="false" 
+										          notree="false" 
+										          nonavbar="false" 
+										          noindex="false" 
+										          author="true" 
+										          version="true" 
+										          source="1.5"
+										          useexternalfile="true"
+										          nodeprecatedlist="false" 
+										          nodeprecated="false" 
+										        >
+										            <package name="org.opencms.*"/>
+										        	
+										       	    <classpath>
+										       	      <fileset dir="${opencms-basedir}/lib/compile">
+										       	        <include name="**/*.jar"/>
+										       	      </fileset>
+										     	      <fileset dir="${opencms-basedir}/lib/runtime">
+										     	        <include name="**/*.jar"/>
+										     	      </fileset>
+										       	      <fileset dir="${opencms-basedir}/webapp/setup/database">
+										       	        <include name="**/*.jar"/>
+										       	      </fileset>
+										       	    </classpath>
+
+										            <fileset dir="${opencms-basedir}/src" >
+										              <include name="**/*.java" />
+										              <exclude name="**/Messages.java" />
+										            </fileset>
+										        	
+										        	<!-- links -->
+										        	<link href="http://docs.oracle.com/javase/1.5.0/docs/api/"/>
+										        	<link href="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/"/>
+										        </javadoc>
+
+												<jar jarfile="${opencms.javadoc.output}/opencms-core-javadoc.jar">
+													<fileset dir="${opencms.javadoc.apidoc}/opencms-core" />
+												</jar>
+											</then>
+											<elseif>
+												<equals arg1="@{module}" arg2="opencms-setup" />
+												<then>
+													<!-- build opencms-setup-javadoc.jar -->
+											        <javadoc destdir="${opencms.javadoc.apidoc}/opencms-setup" 
+											          maxmemory="128m"
+											          nohelp="true"
+											          classpath="${opencms-basedir}/bin"
+											          access="protected" 
+											          use="false" 
+											          notree="false" 
+											          nonavbar="false" 
+											          noindex="false" 
+											          author="true" 
+											          version="true" 
+											          source="1.5"
+											          useexternalfile="true"
+											          nodeprecatedlist="false" 
+											          nodeprecated="false" 
+											        >
+											            <package name="org.opencms.setup.*"/>
+											        	
+											       	    <classpath>
+											       	      <fileset dir="${opencms-basedir}/lib/compile">
+											       	        <include name="**/*.jar"/>
+											       	      </fileset>
+											     	      <fileset dir="${opencms-basedir}/lib/runtime">
+											     	        <include name="**/*.jar"/>
+											     	      </fileset>
+											       	      <fileset dir="${opencms-basedir}/webapp/setup/database">
+											       	        <include name="**/*.jar"/>
+											       	      </fileset>
+											       	    </classpath>
+
+											            <fileset dir="${opencms-basedir}/src-setup" >
+											              <include name="**/*.java" />
+											              <exclude name="**/Messages.java" />
+											            </fileset>
+											        	
+											        	<!-- links -->
+											        	<link href="http://docs.oracle.com/javase/1.5.0/docs/api/"/>
+											        	<link href="http://files.opencms.org/javadoc/core/"/>
+											        	<link href="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/"/>
+											        </javadoc>
+													
+													<jar jarfile="${opencms.javadoc.output}/opencms-setup-javadoc.jar">
+														<fileset dir="${opencms.javadoc.apidoc}/opencms-setup" />
+													</jar>
+												</then>
+											</elseif>
+											<elseif>
+												<equals arg1="@{module}" arg2="opencms-upload" />
+												<then>
+													<!-- build opencms-upload-javadoc.jar -->
+											        <javadoc destdir="${opencms.javadoc.apidoc}/opencms-upload" 
+											          maxmemory="128m"
+											          nohelp="true"
+											          classpath="${opencms-basedir}/bin"
+											          access="protected" 
+											          use="false" 
+											          notree="false" 
+											          nonavbar="false" 
+											          noindex="false" 
+											          author="true" 
+											          version="true" 
+											          source="1.5"
+											          useexternalfile="true"
+											          nodeprecatedlist="false" 
+											          nodeprecated="false" 
+											        >
+											            <package name="org.opencms.*"/>
+											        	
+											       	    <classpath>
+											       	      <fileset dir="${opencms-basedir}/lib/compile">
+											       	        <include name="**/*.jar"/>
+											       	      </fileset>
+											     	      <fileset dir="${opencms-basedir}/lib/runtime">
+											     	        <include name="**/*.jar"/>
+											     	      </fileset>
+											       	      <fileset dir="${opencms-basedir}/webapp/setup/database">
+											       	        <include name="**/*.jar"/>
+											       	      </fileset>
+											       	    </classpath>
+
+											            <fileset dir="${opencms-basedir}/src-components" >
+											              <include name="org/opencms/applet/**/*.java" />
+												          <include name="org/opencms/gwt/**/*.java" />
+											              <exclude name="**/Messages.java" />
+											            </fileset>
+											        	
+											        	<!-- links -->
+											        	<link href="http://docs.oracle.com/javase/1.5.0/docs/api/"/>
+											        	<link href="http://files.opencms.org/javadoc/core/"/>
+											        	<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/"/>
+											        	<link href="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/"/>
+											        </javadoc>
+
+													<jar jarfile="${opencms.javadoc.output}/opencms-upload-javadoc.jar">
+														<fileset dir="${opencms.javadoc.apidoc}/opencms-upload" />
+													</jar>
+												</then>
+											</elseif>
+											<else>
+												<!-- build this module's javadoc.jar -->
+												<var name="package.path" value="" />
+												<for list="@{module}" param="package" delimiter="." trim="true">
+													<sequential>
+														<var name="package.path" value="${package.path}@{package}/" />
+													</sequential>
+												</for>
+												<echo message="Source path: ${package.path}" />
+												
+										        <javadoc destdir="${opencms.javadoc.apidoc}/@{module}" 
+										          maxmemory="128m"
+										          nohelp="true"
+										          classpath="${opencms-basedir}/bin"
+										          access="protected" 
+										          use="false" 
+										          notree="false" 
+										          nonavbar="false" 
+										          noindex="false" 
+										          author="true" 
+										          version="true" 
+										          source="1.5"
+										          useexternalfile="true"
+										          nodeprecatedlist="false" 
+										          nodeprecated="false" 
+										        >
+										            <package name="@{module}.*"/>
+										        	
+										       	    <classpath>
+										       	      <fileset dir="${opencms-basedir}/lib/compile">
+										       	        <include name="**/*.jar"/>
+										       	      </fileset>
+										     	      <fileset dir="${opencms-basedir}/lib/runtime">
+										     	        <include name="**/*.jar"/>
+										     	      </fileset>
+										       	      <fileset dir="${opencms-basedir}/webapp/setup/database">
+										       	        <include name="**/*.jar"/>
+										       	      </fileset>
+										       	    </classpath>
+
+										            <fileset dir="${opencms-basedir}/src-modules" >
+										              <include name="${package.path}/**/*.java" />
+											          <exclude name="**/Messages.java" />
+										            </fileset>
+
+										        	<!-- links -->
+										        	<link href="http://docs.oracle.com/javase/1.5.0/docs/api/"/>
+										        	<link href="http://files.opencms.org/javadoc/core/"/>
+										        	<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/"/>
+										        	<link href="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/"/>
+										        </javadoc>
+
+												<jar jarfile="${opencms.javadoc.output}/@{module}-javadoc.jar">
+													<fileset dir="${opencms.javadoc.apidoc}/@{module}" />
+												</jar>
+											</else>
+										</if>
+
 										<exec executable="${mvn}">
 											<arg value="gpg:sign-and-deploy-file" />
 											<arg value="-Dfile=${opencms.jar.output}/@{module}.jar" />
@@ -145,6 +361,17 @@
 											<arg value="-Dclassifier=sources" />
 											<arg value="-Pgpg" />
 										</exec>
+										<exec executable="${mvn}">
+											<arg value="gpg:sign-and-deploy-file" />
+											<arg value="-Dfile=${opencms.javadoc.output}/@{module}-javadoc.jar" />
+											<arg value="-DrepositoryId=${maven-repository-id}" />
+											<arg value="-Durl=${maven-repository-url}" />
+											<arg value="-Dpackaging=jar" />
+											<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
+											<arg value="-Dclassifier=javadoc" />
+											<arg value="-Pgpg" />
+										</exec>
+
 									</then>
 									<else>
 										<echo message="Pom: ${opencms.pom.output}/@{module}-pom.xml does not exist ... skip deploy" />
