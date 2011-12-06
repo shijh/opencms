@@ -173,6 +173,11 @@
 										              <exclude name="**/Messages.java" />
 										            </fileset>
 										        	
+										            <fileset dir="${opencms-basedir}/test" >
+										              <include name="**/*.java" />
+										              <exclude name="**/AllTests.java" />
+										            </fileset>
+										        	
 										        	<!-- links -->
 										        	<link href="http://docs.oracle.com/javase/1.5.0/docs/api/"/>
 										        	<link href="http://dom4j.sourceforge.net/dom4j-1.6.1/apidocs/"/>
@@ -371,7 +376,36 @@
 											<arg value="-Dclassifier=javadoc" />
 											<arg value="-Pgpg" />
 										</exec>
-
+										<if>
+											<available file="${opencms.jar.output}/@{module}-tests.jar" />
+											<then>
+												<exec executable="${mvn}">
+													<arg value="gpg:sign-and-deploy-file" />
+													<arg value="-Dfile=${opencms.jar.output}/@{module}-tests.jar" />
+													<arg value="-DrepositoryId=${maven-repository-id}" />
+													<arg value="-Durl=${maven-repository-url}" />
+													<arg value="-Dpackaging=jar" />
+													<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
+													<arg value="-Dclassifier=tests" />
+													<arg value="-Pgpg" />
+												</exec>
+											</then>
+										</if>
+										<if>
+											<available file="${opencms.sources.output}/@{module}-test-sources.jar" />
+											<then>
+												<exec executable="${mvn}">
+													<arg value="gpg:sign-and-deploy-file" />
+													<arg value="-Dfile=${opencms.sources.output}/@{module}-test-sources.jar" />
+													<arg value="-DrepositoryId=${maven-repository-id}" />
+													<arg value="-Durl=${maven-repository-url}" />
+													<arg value="-Dpackaging=jar" />
+													<arg value="-DpomFile=${opencms.pom.output}/@{module}-pom.xml" />
+													<arg value="-Dclassifier=test-sources" />
+													<arg value="-Pgpg" />
+												</exec>
+											</then>
+										</if>
 									</then>
 									<else>
 										<echo message="Pom: ${opencms.pom.output}/@{module}-pom.xml does not exist ... skip deploy" />

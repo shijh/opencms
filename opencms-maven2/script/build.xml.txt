@@ -68,4 +68,19 @@
 			</fileset>
 			<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
 		</jar>
+
+		<antcall target="compile-tests" />
+
+		<!-- build opencms-core-tests.jar -->
+		<jar jarfile="${opencms.maven2.jar.path}/opencms-core-tests.jar">
+			<fileset dir="${opencms.output.tests}/">
+				<include name="org/opencms/**/*.class" />
+			</fileset>
+		</jar>
+
+		<!-- build opencms-core-test-sources.jar -->
+		<jar jarfile="${opencms.maven2.sources.path}/opencms-core-test-sources.jar">
+			<fileset dir="${opencms.input}/test" /><!-- include all test source code to convenient unjar if needed -->
+			<zipfileset dir="${opencms.input}" prefix="META-INF" includes="license.txt" />
+		</jar>
 	</target>

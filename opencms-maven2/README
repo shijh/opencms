@@ -1,0 +1,47 @@
+Usage Guide for OpenCms-Maven2 Project
+
+
+Purpose
+This project is on building opencms-core's jar, sources.jar, tests.jar, test-sources.jar and javadoc.jar files and submitting them to maven repository to help you developing OpenCms modules in maven style.
+
+
+Repository Management Tools Supported
+1. Sonatype Nexus
+   The jars can be deployed to Sonatype OSS maven repository and passed the rules check. The opencms 8.0.3 jars in maven central were deployed by this project.
+
+2. Apache Archiva
+   The jars can be deployed to my local Archiva managed repositories.
+
+
+Usage
+1. Download source code of this project from github.com.
+
+2. Copy and paste the content of script/build.xml.txt into opencms-core's build.xml.
+
+3. Copy and paste the content of script/modules.build.xml.txt into opencms-core's modules/build.xml.
+
+4. Copy and paste the content of script/modules.build-single.xml.txt into opencms-core's modules/build-single.xml.
+
+5. Change the location of opencms.maven2.path property in opencms-core's build.xml and modules/build-single.xml to your own opencms-maven2 path.
+
+6. In opencms-core project, run maven2copy target.
+   This will build and copy jar, tests.jar, sources.jar and test-sources.jar files to opencms-maven2's jar and sources folders accordingly.
+
+7. Change the version.number, opencms-basedir, mvn, maven-repository-url and maven-repository-id in opencms-maven2's build.xml if necessary.
+
+8. In opencms-maven2 project, run maven2deploy target.
+   This will build javadoc.jar files under javadoc folder, sign and delopy jar, sources.jar, tests.jar, test-sources.jar and javadoc.jar files to maven repository you configured.
+
+
+Trouble Shooting
+1. How to sign with gpg?
+   See https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+
+2. How to deploy to maven central?
+   See https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+
+3. Cannot find gpg
+   Link your gpg to /usr/bin/gpg.
+
+4. My gpg signature cannot pass check in Sonatype's Nexus UI
+   You have to create a "sign only" key and try again with the new key.
