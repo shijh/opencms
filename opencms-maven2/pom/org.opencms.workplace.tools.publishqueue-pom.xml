@@ -2,14 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
 	<groupId>org.opencms</groupId>
 	<artifactId>org.opencms.workplace.tools.publishqueue</artifactId>
-	<version>8.0.3</version>
+	<version>8.0.3-rev</version>
 	<packaging>jar</packaging>
 	<name>OpenCms workplace publish queue management tool</name>
 	<description>The OpenCms is a professional, easy to use website content management system.</description>
@@ -39,14 +34,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>opencms</groupId>
-			<artifactId>opencms-core</artifactId>
-			<version>8.0.3</version>
-		</dependency>
-		<dependency>
-			<groupId>opencms</groupId>
+			<groupId>org.opencms</groupId>
 			<artifactId>org.opencms.workplace.administration</artifactId>
-			<version>8.0.3</version>
+			<version>8.0.3-rev</version>
 		</dependency>
 	</dependencies>
 </project>

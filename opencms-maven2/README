@@ -33,6 +33,14 @@ Usage
    This will build javadoc.jar files under javadoc folder, sign and delopy jar, sources.jar, tests.jar, test-sources.jar and javadoc.jar files to maven repository you configured.
 
 
+Testing
+1. When you deployed to Sonatype staging server, you must test them before releasing.
+   a. Close the repository in Sonatype Nexus UI. You'll get a temp repository url, such as https://oss.sonatype.org/content/repositories/orgopencms-093/.
+   b. Use an existing maven project or create a new one.
+   c. Change url of repository in pom.xml to the temp repository url.
+   d. Make sure there's no error and warn.
+
+
 Trouble Shooting
 1. How to sign with gpg?
    See https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
