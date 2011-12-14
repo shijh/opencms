@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/explorer/CmsExplorerTypeSettings.java,v $
- * Date   : $Date: 2010-01-18 10:03:14 $
- * Version: $Revision: 1.23 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,10 +34,14 @@ import org.opencms.main.CmsLog;
 import org.opencms.main.OpenCms;
 import org.opencms.security.CmsPermissionSet;
 import org.opencms.util.CmsStringUtil;
+import org.opencms.workplace.CmsWorkplace;
 import org.opencms.workplace.CmsWorkplaceManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 
@@ -52,13 +52,15 @@ import org.apache.commons.logging.Log;
  * Objects of this type are sorted by their order value which specifies the order
  * in the new resource dialog.<p>
  * 
- * @author Andreas Zahner 
- * 
- * @version $Revision: 1.23 $ 
- * 
  * @since 6.0.0 
  */
-public class CmsExplorerTypeSettings implements Comparable {
+public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettings> {
+
+    /** File name for the big default icon. */
+    public static final String DEFAULT_BIG_ICON = "document_big.png";
+
+    /** File name for the normal default icon. */
+    public static final String DEFAULT_NORMAL_ICON = "document.png";
 
     /** The default order start value for context menu entries. */
     public static final int ORDER_VALUE_DEFAULT_START = 100000;
@@ -68,30 +70,38 @@ public class CmsExplorerTypeSettings implements Comparable {
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsExplorerTypeSettings.class);
-
     private CmsExplorerTypeAccess m_access;
-
     /** Flag for showing that this is an additional resource type which defined in a module. */
     private boolean m_addititionalModuleExplorerType;
     private boolean m_autoSetNavigation;
     private boolean m_autoSetTitle;
+    /** The name of the big icon for this explorer type. */
+    private String m_bigIcon;
     private CmsExplorerContextMenu m_contextMenu;
-    private List m_contextMenuEntries;
+
+    private List<CmsExplorerContextMenuItem> m_contextMenuEntries;
+
     private String m_descriptionImage;
+
     private boolean m_hasEditOptions;
     private String m_icon;
+    /** The icon rules for this explorer type. */
+    private Map<String, CmsIconRule> m_iconRules;
+
     private String m_info;
     private String m_key;
     private String m_name;
-
     /** Optional class name for a new resource handler. */
     private String m_newResourceHandlerClassName;
     private Integer m_newResourceOrder;
     private String m_newResourcePage;
     private String m_newResourceUri;
-    private List m_properties;
+    private List<String> m_properties;
+
     private boolean m_propertiesEnabled;
+
     private String m_reference;
+
     private boolean m_showNavigation;
 
     private String m_titleKey;
@@ -102,14 +112,15 @@ public class CmsExplorerTypeSettings implements Comparable {
     public CmsExplorerTypeSettings() {
 
         m_access = new CmsExplorerTypeAccess();
-        m_properties = new ArrayList();
-        m_contextMenuEntries = new ArrayList();
+        m_properties = new ArrayList<String>();
+        m_contextMenuEntries = new ArrayList<CmsExplorerContextMenuItem>();
         m_contextMenu = new CmsExplorerContextMenu();
         m_hasEditOptions = false;
         m_propertiesEnabled = false;
         m_showNavigation = false;
         m_addititionalModuleExplorerType = false;
         m_newResourceOrder = new Integer(0);
+        m_iconRules = new HashMap<String, CmsIconRule>();
     }
 
     /**
@@ -141,6 +152,19 @@ public class CmsExplorerTypeSettings implements Comparable {
     }
 
     /**
+     * Adds a new icon rule to this explorer type.<p>
+     * 
+     * @param extension the extension for the icon rule 
+     * @param icon the small icon
+     * @param bigIcon the big icon 
+     */
+    public void addIconRule(String extension, String icon, String bigIcon) {
+
+        CmsIconRule rule = new CmsIconRule(extension, icon, bigIcon);
+        m_iconRules.put(extension, rule);
+    }
+
+    /**
      * Adds a property definition name to the list of editable properties.<p>
      * 
      * @param propertyName the name of the property definition to add
@@ -161,13 +185,12 @@ public class CmsExplorerTypeSettings implements Comparable {
     /**
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object obj) {
+    public int compareTo(CmsExplorerTypeSettings other) {
 
-        if (obj == this) {
+        if (other == this) {
             return 0;
         }
-        if (obj instanceof CmsExplorerTypeSettings) {
-            CmsExplorerTypeSettings other = (CmsExplorerTypeSettings)obj;
+        if (other != null) {
             String myPage = getNewResourcePage();
             String otherPage = other.getNewResourcePage();
             if (CmsStringUtil.isEmptyOrWhitespaceOnly(myPage)) {
@@ -229,6 +252,26 @@ public class CmsExplorerTypeSettings implements Comparable {
     }
 
     /**
+     * Returns the big icon.<p>
+     * 
+     * @return an icon name 
+     */
+    public String getBigIcon() {
+
+        return m_bigIcon;
+    }
+
+    /**
+     * Returns the biggest icon available.<p>
+     * 
+     * @return the biggest icon available
+     */
+    public String getBigIconIfAvailable() {
+
+        return m_bigIcon != null ? m_bigIcon : (m_icon != null ? m_icon : DEFAULT_BIG_ICON);
+    }
+
+    /**
      * Returns the context menu.<p>
      * @return the context menu
      */
@@ -245,7 +288,7 @@ public class CmsExplorerTypeSettings implements Comparable {
      * 
      * @return the list of context menu entries of the explorer type setting
      */
-    public List getContextMenuEntries() {
+    public List<CmsExplorerContextMenuItem> getContextMenuEntries() {
 
         return m_contextMenuEntries;
     }
@@ -267,7 +310,21 @@ public class CmsExplorerTypeSettings implements Comparable {
      */
     public String getIcon() {
 
-        return m_icon;
+        if (m_icon != null) {
+
+            return m_icon;
+        }
+        return DEFAULT_NORMAL_ICON;
+    }
+
+    /**
+     * Returns a map from file extensions to icon rules for this explorer type.<p>
+     * 
+     * @return a map from file extensions to icon rules 
+     */
+    public Map<String, CmsIconRule> getIconRules() {
+
+        return Collections.unmodifiableMap(m_iconRules);
     }
 
     /**
@@ -298,7 +355,7 @@ public class CmsExplorerTypeSettings implements Comparable {
         result.append("\nvi.resource[").append(resTypeId).append("]=new res(\"").append(settings.getName()).append(
             "\", ");
         result.append("\"");
-        // modified by Shi Yusen, shiys@langhua.cn 2010-10-13
+        // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
         String key = messages.key(settings.getKey());
         if (CmsMessages.isUnknownKey(key)) {
             result.append(settings.getName());
@@ -376,10 +433,20 @@ public class CmsExplorerTypeSettings implements Comparable {
     }
 
     /**
+     * Gets the original icon name from the configuration.<p>
+     * 
+     * @return an icon name 
+     */
+    public String getOriginalIcon() {
+
+        return m_icon;
+    }
+
+    /**
      * Returns the list of properties of the explorer type setting.<p>
      * @return the list of properties of the explorer type setting
      */
-    public List getProperties() {
+    public List<String> getProperties() {
 
         return m_properties;
     }
@@ -535,11 +602,21 @@ public class CmsExplorerTypeSettings implements Comparable {
     }
 
     /**
+     * Sets the file name of the big icon for this explorer type.<p>
+     * 
+     * @param bigIcon the file name of the big icon 
+     */
+    public void setBigIcon(String bigIcon) {
+
+        m_bigIcon = bigIcon;
+    }
+
+    /**
      * Sets the list of context menu entries of the explorer type setting.<p>
      * 
      * @param entries the list of context menu entries of the explorer type setting
      */
-    public void setContextMenuEntries(List entries) {
+    public void setContextMenuEntries(List<CmsExplorerContextMenuItem> entries) {
 
         m_contextMenuEntries = entries;
     }
@@ -680,7 +757,7 @@ public class CmsExplorerTypeSettings implements Comparable {
      * 
      * @param properties the list of properties of the explorer type setting
      */
-    public void setProperties(List properties) {
+    public void setProperties(List<String> properties) {
 
         m_properties = properties;
     }
@@ -766,13 +843,15 @@ public class CmsExplorerTypeSettings implements Comparable {
      * @param name the name of the type setting
      * @param key the key name of the explorer type setting 
      * @param icon the icon path and file name of the explorer type setting
+     * @param bigIcon the file name of the big icon
      * @param reference the reference of the explorer type setting
      */
-    public void setTypeAttributes(String name, String key, String icon, String reference) {
+    public void setTypeAttributes(String name, String key, String icon, String bigIcon, String reference) {
 
         setName(name);
         setKey(key);
         setIcon(icon);
+        setBigIcon(bigIcon);
         setReference(reference);
     }
 

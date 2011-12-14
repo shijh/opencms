@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/configuration/CmsDefaultUserSettings.java,v $
- * Date   : $Date: 2010-01-18 10:02:33 $
- * Version: $Revision: 1.26 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,11 +43,6 @@ import java.util.List;
 /**
  * Default user workplace settings, used as default values for worklace settings in the
  * user preferences.<p>
- *  
- * @author Michael Emmerich 
- * @author Andreas Zahner 
- * 
- * @version $Revision: 1.26 $
  * 
  * @since 6.0.0 
  */
@@ -142,7 +133,7 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
     private static final String[] BUTTON_STYLES = {"image", "textimage", "text"};
 
     /** Array list for fast lookup of "button styles". */
-    public static final List BUTTON_STYLES_LIST = Collections.unmodifiableList(Arrays.asList(BUTTON_STYLES));
+    public static final List<String> BUTTON_STYLES_LIST = Collections.unmodifiableList(Arrays.asList(BUTTON_STYLES));
 
     /** Parameter for buttonstyle text & image. */
     private static final int BUTTONSTYLE_TEXTIMAGE = 1;
@@ -174,7 +165,7 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
     /** The publish related resources mode. */
     private CmsPublishRelatedResourcesMode m_publishRelatedResourcesMode;
 
-    //  Added by Shi Yusen, shiys@langhua.cn 2010-10-12
+    //  Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-13
     /**  Array of the possible "tree label style".*/
     public static final String[] TREE_LABELS = {"name", "title"};
     /**  Array of the possible "tree sort style".*/
@@ -231,7 +222,7 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
             // ignore this exception
         }
     }
-    //   End of adding by Shi Yusen
+    //   End of adding by Shi Jinghai
     
     /**
      * Gets the default copy mode when copying a file of the user.<p>
@@ -562,18 +553,6 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
     }
 
     /**
-     * Returns a string representation of the upload Applet flag.<p>
-     * 
-     * @return string representation of the uploadApplet flag
-     * 
-     * @see #useUploadApplet()
-     */
-    public String getUploadAppletString() {
-
-        return String.valueOf(useUploadApplet());
-    }
-
-    /**
      * Returns a string representation of the workplace button style.<p>
      * 
      * @return string representation of the workplace button style
@@ -605,7 +584,8 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
         m_allowBrokenRelations = Boolean.valueOf(allowBrokenRelations).booleanValue();
         if (CmsLog.INIT.isInfoEnabled()) {
             CmsLog.INIT.info(Messages.get().getBundle().key(
-                m_allowBrokenRelations ? Messages.INIT_RELATION_DELETION_ENABLED_0
+                m_allowBrokenRelations
+                ? Messages.INIT_RELATION_DELETION_ENABLED_0
                 : Messages.INIT_RELATION_DELETION_DISABLED_0));
         }
     }
@@ -1026,17 +1006,6 @@ public class CmsDefaultUserSettings extends CmsUserSettings {
     public void setShowUploadTypeDialog(String booleanValue) {
 
         setShowUploadTypeDialog(Boolean.valueOf(booleanValue));
-    }
-
-    /**
-     * Sets the usage of the upload applet for the user user.<p>
-     * 
-     * @param applet <code>"true"</code> or <code>"false"</code> to flag the use of the applet
-     */
-    public void setUploadApplet(String applet) {
-
-        // set the usage of the upload applet
-        setUseUploadApplet(Boolean.valueOf(applet).booleanValue());
     }
 
     /**

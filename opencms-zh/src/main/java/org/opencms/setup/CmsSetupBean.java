@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src-setup/org/opencms/setup/CmsSetupBean.java,v $
- * Date   : $Date: 2010-01-18 10:02:59 $
- * Version: $Revision: 1.13 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,12 +31,15 @@ import org.opencms.configuration.CmsConfigurationException;
 import org.opencms.configuration.CmsConfigurationManager;
 import org.opencms.configuration.CmsImportExportConfiguration;
 import org.opencms.configuration.CmsModuleConfiguration;
+import org.opencms.configuration.CmsParameterConfiguration;
+import org.opencms.configuration.CmsPersistenceUnitConfiguration;
 import org.opencms.configuration.CmsSearchConfiguration;
 import org.opencms.configuration.CmsSystemConfiguration;
 import org.opencms.configuration.CmsVfsConfiguration;
 import org.opencms.configuration.CmsWorkplaceConfiguration;
 import org.opencms.configuration.I_CmsXmlConfiguration;
 import org.opencms.db.CmsDbPool;
+import org.opencms.db.jpa.CmsSqlManager;
 import org.opencms.file.CmsObject;
 import org.opencms.file.CmsResource;
 import org.opencms.i18n.CmsEncoder;
@@ -61,8 +60,8 @@ import org.opencms.setup.comptest.CmsSetupTestResult;
 import org.opencms.setup.comptest.CmsSetupTestSimapi;
 import org.opencms.setup.comptest.I_CmsSetupTest;
 import org.opencms.setup.xml.CmsSetupXmlHelper;
+import org.opencms.util.CmsCollectionsGenericWrapper;
 import org.opencms.util.CmsFileUtil;
-import org.opencms.util.CmsPropertyUtils;
 import org.opencms.util.CmsStringUtil;
 import org.opencms.util.CmsUUID;
 import org.opencms.workplace.tools.CmsIdentifiableObjectContainer;
@@ -76,7 +75,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,9 +84,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -97,7 +95,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
 
 /**
@@ -111,13 +108,6 @@ import org.apache.commons.logging.Log;
  * setDbProperty("oracle.defaultTablespace", value);
  * </pre>
  * <p>
- *
- * @author Thomas Weckert  
- * @author Carsten Weinholz 
- * @author Alexander Kandzior
- * @author Michael Moossen 
- * 
- * @version $Revision: 1.13 $ 
  * 
  * @since 6.0.0 
  */
@@ -131,6 +121,12 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
     /** DB provider constant for db2. */
     public static final String DB2_PROVIDER = "db2";
+
+    /** jpa type constant. */
+    public static final byte DRIVER_TYPE_JPA = 1;
+
+    /** jpa type constant. */
+    public static final byte DRIVER_TYPE_SQL = 0;
 
     /** Folder constant name.<p> */
     public static final String FOLDER_BACKUP = "backup" + File.separatorChar;
@@ -152,6 +148,12 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
     /** Name of the property file containing HTML fragments for setup wizard and error dialog. */
     public static final String HTML_MESSAGE_FILE = "org/opencms/setup/htmlmsg.properties";
+
+    /** The jpa CmsDbContextFactory for the opencms-system.xml node: runtimeclasses -> runtimeinfo. */
+    public static final String JPA_FACTOTY = "org.opencms.db.jpa.CmsDbContextFactory";
+
+    /** DB provider constant for jpa. */
+    public static final String JPA_PROVIDER = "jpa";
 
     /** DB provider constant for maxdb. */
     public static final String MAXDB_PROVIDER = "maxdb";
@@ -186,6 +188,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
     /** Properties file key constant post fix. */
     protected static final String PROPKEY_DESCRIPTION = ".description";
 
+    /** True if OpenCms supports a generic JPA driver implementation. */
+    protected static final String PROPKEY_JPA_SUPPORTED = "jpaSupported";
+
     /** Properties file key constant post fix. */
     protected static final String PROPKEY_MODULES = ".modules";
 
@@ -195,14 +200,8 @@ public class CmsSetupBean implements I_CmsShellCommands {
     /** Properties file key constant post fix. */
     protected static final String PROPKEY_POSITION = ".position";
 
-    /** Required files per database server setup. */
-    static final String[] REQUIRED_DB_SETUP_FILES = {
-        "step_4_database_setup.jsp",
-        "database.properties",
-        "create_db.sql",
-        "create_tables.sql",
-        "drop_db.sql",
-        "drop_tables.sql"};
+    /** True if OpenCms supports a native SQL driver implementation. */
+    protected static final String PROPKEY_SQL_SUPPORTED = "sqlSupported";
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsSetupBean.class);
@@ -210,14 +209,36 @@ public class CmsSetupBean implements I_CmsShellCommands {
     /** Contains HTML fragments for the output in the JSP pages of the setup wizard. */
     private static Properties m_htmlProps;
 
+    /** Required files per database setup (for AS400 and DB2). */
+    private static final String[] REQUIRED_DB2_DB_SETUP_FILES = {
+        "step_4_database_setup.jsp",
+        "database.properties",
+        "create_tables.sql",
+        "drop_tables.sql"};
+
+    /** Required files per database setup (for jpa only supported dbs). */
+    private static final String[] REQUIRED_JPA_DB_SETUP_FILES = {
+        "step_4_database_setup.jsp",
+        "database.properties",
+        "drop_tables.sql"};
+
+    /** Required files per database setup (for sql supported dbs). */
+    private static final String[] REQUIRED_SQL_DB_SETUP_FILES = {
+        "step_4_database_setup.jsp",
+        "database.properties",
+        "create_db.sql",
+        "create_tables.sql",
+        "drop_db.sql",
+        "drop_tables.sql"};
+
     /** A map with all available modules. */
-    protected Map m_availableModules;
+    protected Map<String, CmsModule> m_availableModules;
 
     /** A CmsObject to execute shell commands. */
     protected CmsObject m_cms;
 
     /** A list with the package names of the modules to be installed .*/
-    protected List m_installModules;
+    protected List<String> m_installModules;
 
     /** Location for log file.  */
     protected String m_logFile = CmsSystemInfo.FOLDER_WEBINF + CmsLog.FOLDER_LOGS + "setup.log";
@@ -226,10 +247,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
     protected String m_logsFolder = CmsSystemInfo.FOLDER_WEBINF + CmsLog.FOLDER_LOGS;
 
     /** A map with lists of dependent module package names keyed by module package names. */
-    protected Map m_moduleDependencies;
+    protected Map<String, List<String>> m_moduleDependencies;
 
     /** A map with all available modules filenames. */
-    protected Map m_moduleFilenames;
+    protected Map<String, String> m_moduleFilenames;
 
     /** Location for module archives relative to the webapp folder.  */
     protected String m_modulesFolder = CmsSystemInfo.FOLDER_WEBINF
@@ -246,7 +267,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
     protected String m_webAppRfsPath;
 
     /** Contains all defined components. */
-    private CmsIdentifiableObjectContainer m_components;
+    private CmsIdentifiableObjectContainer<CmsSetupComponent> m_components;
 
     /** The absolute path to the config sub directory of the OpenCms web application. */
     private String m_configRfsPath;
@@ -255,10 +276,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
     private String m_databaseKey;
 
     /** List of keys of all available database server setups (e.g. "mysql", "generic" or "oracle") */
-    private List m_databaseKeys;
+    private List<String> m_databaseKeys;
 
     /** Map of database setup properties of all available database server setups keyed by their database keys. */
-    private Map m_databaseProperties;
+    private Map<String, Properties> m_databaseProperties;
 
     /** Password used for the JDBC connection when the OpenCms database is created. */
     private String m_dbCreatePwd;
@@ -266,17 +287,26 @@ public class CmsSetupBean implements I_CmsShellCommands {
     /** The name of the default web application (in web.xml). */
     private String m_defaultWebApplication;
 
+    /** Driver implementation should be used (SQL or JPA). */
+    private byte m_driverType;
+
     /** Contains the error messages to be displayed in the setup wizard. */
-    private List m_errors;
+    private List<String> m_errors;
 
     /** Contains the properties of "opencms.properties". */
-    private ExtendedProperties m_extProperties;
+    private CmsParameterConfiguration m_configuration;
+
+    /** The full key of the selected database including the "_jpa" or "_sql" information. */
+    private String m_fullDatabaseKey;
+
+    /** A reference to the persistence configuration. */
+    private CmsPersistenceUnitConfiguration m_peristenceConfigurator;
 
     /** The Database Provider used in setup. */
     private String m_provider;
 
     /** A map with tokens ${...} to be replaced in SQL scripts. */
-    private Map m_replacer;
+    private Map<String, String> m_replacer;
 
     /** The initial servlet configuration. */
     private ServletConfig m_servletConfig;
@@ -285,7 +315,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
     private String m_servletMapping;
 
     /** List of sorted keys by ranking of all available database server setups (e.g. "mysql", "generic" or "oracle") */
-    private List m_sortedDatabaseKeys;
+    private List<String> m_sortedDatabaseKeys;
 
     /** The workplace import thread. */
     private CmsSetupWorkplaceImportThread m_workplaceImportThread;
@@ -334,37 +364,38 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a Map of component ids as keys and a list of dependency names as values
      */
-    public Map buildDepsForAllComponents() {
+    public Map<String, List<String>> buildDepsForAllComponents() {
 
-        Map ret = new HashMap();
+        Map<String, List<String>> ret = new HashMap<String, List<String>>();
 
-        Iterator itComponents = m_components.elementList().iterator();
+        Iterator<CmsSetupComponent> itComponents = CmsCollectionsGenericWrapper.<CmsSetupComponent> list(
+            m_components.elementList()).iterator();
         while (itComponents.hasNext()) {
-            CmsSetupComponent component = (CmsSetupComponent)itComponents.next();
+            CmsSetupComponent component = itComponents.next();
 
             // if component a depends on component b, and component c depends also on component b:
             // build a map with a list containing "a" and "c" keyed by "b" to get a 
             // list of components depending on component "b"...
-            Iterator itDeps = component.getDependencies().iterator();
+            Iterator<String> itDeps = component.getDependencies().iterator();
             while (itDeps.hasNext()) {
-                String dependency = (String)itDeps.next();
+                String dependency = itDeps.next();
 
                 // get the list of dependent modules
-                List componentDependencies = (List)ret.get(dependency);
+                List<String> componentDependencies = ret.get(dependency);
                 if (componentDependencies == null) {
                     // build a new list if "b" has no dependent modules yet
-                    componentDependencies = new ArrayList();
+                    componentDependencies = new ArrayList<String>();
                     ret.put(dependency, componentDependencies);
                 }
                 // add "a" as a module depending on "b"
                 componentDependencies.add(component.getId());
             }
         }
-        itComponents = m_components.elementList().iterator();
+        itComponents = CmsCollectionsGenericWrapper.<CmsSetupComponent> list(m_components.elementList()).iterator();
         while (itComponents.hasNext()) {
-            CmsSetupComponent component = (CmsSetupComponent)itComponents.next();
+            CmsSetupComponent component = itComponents.next();
             if (ret.get(component.getId()) == null) {
-                ret.put(component.getId(), new ArrayList());
+                ret.put(component.getId(), new ArrayList<String>());
             }
         }
         return ret;
@@ -455,9 +486,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
         html.append("\t\t\t\t\t<td>&nbsp;&nbsp;</td>");
         html.append("\t\t\t\t\t<td style='width: 100%;'>");
 
-        Iterator iter = getErrors().iterator();
+        Iterator<String> iter = getErrors().iterator();
         while (iter.hasNext()) {
-            String msg = (String)iter.next();
+            String msg = iter.next();
             html.append("\t\t\t\t\t\t");
             html.append(msg);
             html.append("<br/>");
@@ -483,21 +514,21 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a map with all available modules
      */
-    public Map getAvailableModules() {
+    public Map<String, CmsModule> getAvailableModules() {
 
         if ((m_availableModules == null) || m_availableModules.isEmpty()) {
-            m_availableModules = new HashMap();
-            m_moduleDependencies = new HashMap();
-            m_moduleFilenames = new HashMap();
-            m_components = new CmsIdentifiableObjectContainer(true, true);
+            m_availableModules = new HashMap<String, CmsModule>();
+            m_moduleDependencies = new HashMap<String, List<String>>();
+            m_moduleFilenames = new HashMap<String, String>();
+            m_components = new CmsIdentifiableObjectContainer<CmsSetupComponent>(true, true);
 
             try {
                 addComponentsFromPath(m_webAppRfsPath + FOLDER_SETUP);
-                Map modules = CmsModuleManager.getAllModulesFromPath(getModuleFolder());
-                Iterator itMods = modules.entrySet().iterator();
+                Map<CmsModule, String> modules = CmsModuleManager.getAllModulesFromPath(getModuleFolder());
+                Iterator<Map.Entry<CmsModule, String>> itMods = modules.entrySet().iterator();
                 while (itMods.hasNext()) {
-                    Map.Entry entry = (Map.Entry)itMods.next();
-                    CmsModule module = (CmsModule)entry.getKey();
+                    Map.Entry<CmsModule, String> entry = itMods.next();
+                    CmsModule module = entry.getKey();
                     // put the module information into a map keyed by the module packages names
                     m_availableModules.put(module.getName(), module);
                     m_moduleFilenames.put(module.getName(), entry.getValue());
@@ -506,7 +537,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
             } catch (CmsConfigurationException e) {
                 throw new CmsRuntimeException(e.getMessageContainer());
             }
-            initializeComponents(new HashSet(m_availableModules.keySet()));
+            initializeComponents(new HashSet<String>(m_availableModules.keySet()));
         }
         return m_availableModules;
     }
@@ -531,11 +562,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
         if (m_databaseKey == null) {
             m_databaseKey = getExtProperty("db.name");
         }
-
         if (CmsStringUtil.isEmpty(m_databaseKey)) {
-            m_databaseKey = (String)getSortedDatabases().get(0);
+            m_databaseKey = getSortedDatabases().get(0);
         }
-
         return m_databaseKey;
     }
 
@@ -559,10 +588,18 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a list of needed jar filenames
      */
-    public List getDatabaseLibs(String databaseKey) {
+    public List<String> getDatabaseLibs(String databaseKey) {
 
-        return CmsStringUtil.splitAsList((String)((Map)getDatabaseProperties().get(databaseKey)).get(databaseKey
-            + ".libs"), ',', true);
+        List<String> lst;
+        if (JPA_PROVIDER.equalsIgnoreCase(m_provider)) {
+            lst = new ArrayList<String>();
+        } else {
+            lst = CmsStringUtil.splitAsList(
+                getDatabaseProperties().get(databaseKey).getProperty(databaseKey + ".libs"),
+                ',',
+                true);
+        }
+        return lst;
     }
 
     /**
@@ -573,7 +610,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public String getDatabaseName(String databaseKey) {
 
-        return (String)((Map)getDatabaseProperties().get(databaseKey)).get(databaseKey + PROPKEY_NAME);
+        return getDatabaseProperties().get(databaseKey).getProperty(databaseKey + PROPKEY_NAME);
     }
 
     /** 
@@ -582,13 +619,11 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a map with the database properties of *all* available database configurations
      */
-    public Map getDatabaseProperties() {
+    public Map<String, Properties> getDatabaseProperties() {
 
-        if (m_databaseProperties != null) {
-            return m_databaseProperties;
+        if (m_databaseProperties == null) {
+            readDatabaseConfig();
         }
-
-        readDatabaseConfig();
         return m_databaseProperties;
     }
 
@@ -598,58 +633,11 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a list with they keys (e.g. "mysql", "generic" or "oracle") of all available database server setups
      */
-    public List getDatabases() {
+    public List<String> getDatabases() {
 
-        File databaseSetupFolder = null;
-        File[] childResources = null;
-        File childResource = null;
-        File setupFile = null;
-        boolean hasMissingSetupFiles = false;
-
-        if (m_databaseKeys != null) {
-            return m_databaseKeys;
+        if (m_databaseKeys == null) {
+            readDatabaseConfig();
         }
-
-        try {
-            m_databaseKeys = new ArrayList();
-            databaseSetupFolder = new File(m_webAppRfsPath + FOLDER_SETUP + FOLDER_DATABASE);
-
-            if (databaseSetupFolder.exists()) {
-                childResources = databaseSetupFolder.listFiles();
-
-                if (childResources != null) {
-                    for (int i = 0; i < childResources.length; i++) {
-                        childResource = childResources[i];
-                        hasMissingSetupFiles = false;
-
-                        if (childResource.exists() && childResource.isDirectory() && childResource.canRead()) {
-                            for (int j = 0; j < REQUIRED_DB_SETUP_FILES.length; j++) {
-                                setupFile = new File(childResource.getPath()
-                                    + File.separatorChar
-                                    + REQUIRED_DB_SETUP_FILES[j]);
-
-                                if (!setupFile.exists() || !setupFile.isFile() || !setupFile.canRead()) {
-                                    hasMissingSetupFiles = true;
-                                    System.err.println("["
-                                        + getClass().getName()
-                                        + "] missing or unreadable database setup file: "
-                                        + setupFile.getPath());
-                                    break;
-                                }
-                            }
-
-                            if (!hasMissingSetupFiles) {
-                                m_databaseKeys.add(childResource.getName().trim());
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println(e.toString());
-            e.printStackTrace(System.err);
-        }
-
         return m_databaseKeys;
     }
 
@@ -718,16 +706,16 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * Returns the value for a given key from the database properties.
      * 
      * @param key the property key
+     * 
      * @return the string value for a given key
      */
     public String getDbProperty(String key) {
 
         // extract the database key out of the entire key
         String databaseKey = key.substring(0, key.indexOf('.'));
-        Map databaseProperties = (Map)getDatabaseProperties().get(databaseKey);
+        Properties databaseProperties = getDatabaseProperties().get(databaseKey);
 
-        Object value = databaseProperties.get(key);
-        return (value != null) ? (String)value : "";
+        return databaseProperties.getProperty(key, "");
     }
 
     /** 
@@ -827,7 +815,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a vector of error messages 
      */
-    public List getErrors() {
+    public List<String> getErrors() {
 
         return m_errors;
     }
@@ -840,6 +828,86 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public String getEthernetAddress() {
 
         return getExtProperty("server.ethernet.address");
+    }
+
+    /**
+     * Returns the fullDatabaseKey.<p>
+     *
+     * @return the fullDatabaseKey
+     */
+    public String getFullDatabaseKey() {
+
+        if (m_fullDatabaseKey == null) {
+            m_fullDatabaseKey = getExtProperty("db.name") + "_sql";
+        }
+        if (CmsStringUtil.isEmpty(m_fullDatabaseKey) || m_fullDatabaseKey.equals("_sql")) {
+            m_fullDatabaseKey = getSortedDatabases().get(0) + "_sql";
+        }
+        return m_fullDatabaseKey;
+    }
+
+    /**
+     * Generates the HTML code for the drop down for db selection.<p>
+     * 
+     * @return the generated HTML 
+     */
+    public String getHtmlForDbSelection() {
+
+        StringBuffer buf = new StringBuffer(2048);
+
+        buf.append("<select name=\"fullDatabaseKey\" style=\"width: 250px;\" size=\"1\" onchange=\"location.href='../../step_3_database_selection.jsp?fullDatabaseKey='+this.options[this.selectedIndex].value;\">");
+        buf.append("<!-- --------------------- JSP CODE --------------------------- -->");
+
+        // get all available databases
+        List<String> databases = getSortedDatabases();
+
+        //  List all databases found in the dbsetup.properties
+        if ((databases != null) && (databases.size() > 0)) {
+
+            List<String> sqlDbs = new ArrayList<String>();
+            List<String> jpaDbs = new ArrayList<String>();
+
+            // devide sql dbs from jpa dbs
+            for (String dbKey : databases) {
+                boolean isJpaSupported = isJpaSupported(dbKey);
+                boolean isSqlSupported = isSqlSupported(dbKey);
+                if (isJpaSupported && isSqlSupported) {
+                    sqlDbs.add(dbKey);
+                    jpaDbs.add(dbKey);
+                } else if (isJpaSupported && !isSqlSupported) {
+                    jpaDbs.add(dbKey);
+                } else if (!isJpaSupported && isSqlSupported) {
+                    sqlDbs.add(dbKey);
+                }
+            }
+
+            // show the sql dbs first
+            for (String dbKey : sqlDbs) {
+                String dn = getDatabaseName(dbKey);
+                String selected = "";
+                if (getFullDatabaseKey().equals(dbKey + "_sql")) {
+                    selected = "selected";
+                }
+                buf.append("<option value='" + dbKey + "_sql' " + selected + ">" + dn);
+            }
+
+            // then show the jpa dbs
+            for (String dbKey : jpaDbs) {
+                String dn = getDatabaseName(dbKey);
+                String selected = "";
+                if (getFullDatabaseKey().equals(dbKey + "_jpa")) {
+                    selected = "selected";
+                }
+                buf.append("<option value='" + dbKey + "_jpa' " + selected + ">" + dn + " [JPA]");
+            }
+        } else {
+            buf.append("<option value='null'>no database found");
+        }
+
+        buf.append("<!-- --------------------------------------------------------- -->");
+        buf.append("</select>");
+
+        return buf.toString();
     }
 
     /** 
@@ -913,7 +981,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a map with lists of dependent module package names keyed by module package names
      */
-    public Map getModuleDependencies() {
+    public Map<String, List<String>> getModuleDependencies() {
 
         if ((m_moduleDependencies == null) || m_moduleDependencies.isEmpty()) {
             try {
@@ -941,10 +1009,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
      *
      * @return A list with the package names of the modules to be installed
      */
-    public List getModulesToInstall() {
+    public List<String> getModulesToInstall() {
 
         if ((m_installModules == null) || m_installModules.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return Collections.unmodifiableList(m_installModules);
     }
@@ -960,13 +1028,13 @@ public class CmsSetupBean implements I_CmsShellCommands {
     }
 
     /**
-     * Returns the extended properties.<p>
+     * Returns the parameter configuration.<p>
      * 
-     * @return the extended properties  
+     * @return the parameter configuration
      */
-    public ExtendedProperties getProperties() {
+    public CmsParameterConfiguration getProperties() {
 
-        return m_extProperties;
+        return m_configuration;
     }
 
     /**
@@ -974,7 +1042,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return the replacer
      */
-    public Map getReplacer() {
+    public Map<String, String> getReplacer() {
 
         return m_replacer;
     }
@@ -1017,14 +1085,14 @@ public class CmsSetupBean implements I_CmsShellCommands {
      *
      * @return a sorted list with they keys (e.g. "mysql", "generic" or "oracle") of all available database server setups
      */
-    public List getSortedDatabases() {
+    public List<String> getSortedDatabases() {
 
         if (m_sortedDatabaseKeys == null) {
-            List databases = m_databaseKeys;
-            List sortedDatabases = new ArrayList(databases.size());
-            SortedMap mappedDatabases = new TreeMap();
+            List<String> databases = m_databaseKeys;
+            List<String> sortedDatabases = new ArrayList<String>(databases.size());
+            SortedMap<Integer, String> mappedDatabases = new TreeMap<Integer, String>();
             for (int i = 0; i < databases.size(); i++) {
-                String key = (String)databases.get(i);
+                String key = databases.get(i);
                 Integer ranking = new Integer(0);
                 try {
                     ranking = Integer.valueOf(getDbProperty(key + ".ranking"));
@@ -1036,8 +1104,8 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
             while (mappedDatabases.size() > 0) {
                 // get database with highest ranking 
-                Integer key = (Integer)mappedDatabases.lastKey();
-                String database = (String)mappedDatabases.get(key);
+                Integer key = mappedDatabases.lastKey();
+                String database = mappedDatabases.get(key);
                 sortedDatabases.add(database);
                 mappedDatabases.remove(key);
             }
@@ -1108,9 +1176,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public String htmlComponents() {
 
         StringBuffer html = new StringBuffer(1024);
-        Iterator itComponents = m_components.elementList().iterator();
+        Iterator<CmsSetupComponent> itComponents = CmsCollectionsGenericWrapper.<CmsSetupComponent> list(
+            m_components.elementList()).iterator();
         while (itComponents.hasNext()) {
-            CmsSetupComponent component = (CmsSetupComponent)itComponents.next();
+            CmsSetupComponent component = itComponents.next();
             html.append(htmlComponent(component));
         }
         return html.toString();
@@ -1124,10 +1193,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public String htmlModuleHelpDescriptions() {
 
         StringBuffer html = new StringBuffer(1024);
-        Iterator itModules = sortModules(getAvailableModules().values()).iterator();
+        Iterator<String> itModules = sortModules(getAvailableModules().values()).iterator();
         for (int i = 0; itModules.hasNext(); i++) {
-            String moduleName = (String)itModules.next();
-            CmsModule module = (CmsModule)getAvailableModules().get(moduleName);
+            String moduleName = itModules.next();
+            CmsModule module = getAvailableModules().get(moduleName);
             if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(module.getDescription())) {
                 html.append(getHtmlPart("C_HELP_START", "" + i));
                 html.append(module.getDescription());
@@ -1147,10 +1216,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public String htmlModules() {
 
         StringBuffer html = new StringBuffer(1024);
-        Iterator itModules = sortModules(getAvailableModules().values()).iterator();
+        Iterator<String> itModules = sortModules(getAvailableModules().values()).iterator();
         for (int i = 0; itModules.hasNext(); i++) {
-            String moduleName = (String)itModules.next();
-            CmsModule module = (CmsModule)getAvailableModules().get(moduleName);
+            String moduleName = itModules.next();
+            CmsModule module = getAvailableModules().get(moduleName);
             html.append(htmlModule(module, i));
         }
         return html.toString();
@@ -1176,7 +1245,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
         if ((m_cms != null) && (m_installModules != null)) {
             for (int i = 0; i < m_installModules.size(); i++) {
-                String filename = (String)m_moduleFilenames.get(m_installModules.get(i));
+                String filename = m_moduleFilenames.get(m_installModules.get(i));
                 try {
                     importModuleFromDefault(filename);
                 } catch (Exception e) {
@@ -1223,10 +1292,11 @@ public class CmsSetupBean implements I_CmsShellCommands {
         try {
             // explicit set to null to overwrite exiting values from session
             m_availableModules = null;
+            m_fullDatabaseKey = null;
             m_databaseKey = null;
             m_databaseKeys = null;
             m_databaseProperties = null;
-            m_extProperties = null;
+            m_configuration = null;
             m_installModules = null;
             m_moduleDependencies = null;
             m_sortedDatabaseKeys = null;
@@ -1242,11 +1312,17 @@ public class CmsSetupBean implements I_CmsShellCommands {
             m_defaultWebApplication = defaultWebApplication;
 
             setWebAppRfsPath(webAppRfsPath);
-            m_errors = new ArrayList();
+            m_errors = new ArrayList<String>();
+
+            // init persistence configurator
+            String inFileName = m_webAppRfsPath + CmsSystemInfo.FOLDER_WEBINF + CmsSystemInfo.FILE_PERSISTENCE;
+            m_peristenceConfigurator = new CmsPersistenceUnitConfiguration(
+                CmsSqlManager.JPA_PERSISTENCE_UNIT,
+                inFileName);
 
             if (CmsStringUtil.isNotEmpty(webAppRfsPath)) {
                 // workaround for JUnit test cases, this must not be executed in a test case
-                m_extProperties = loadProperties(m_configRfsPath + CmsSystemInfo.FILE_PROPERTIES);
+                m_configuration = new CmsParameterConfiguration(m_configRfsPath + CmsSystemInfo.FILE_PROPERTIES);
                 readDatabaseConfig();
             }
 
@@ -1318,7 +1394,33 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public boolean isInitialized() {
 
-        return m_extProperties != null;
+        return m_configuration != null;
+    }
+
+    /**
+     * Returns true if jpa is supported for the given dbKey.<p>
+     * 
+     * @param dbKey the database key to check the jpa support for
+     * 
+     * @return true if jpa is supported for the given dbKey
+     */
+    public boolean isJpaSupported(String dbKey) {
+
+        String key = dbKey + "." + PROPKEY_JPA_SUPPORTED;
+        return Boolean.valueOf(getDbProperty(key)).booleanValue();
+    }
+
+    /**
+     * Returns true if sql is supported for the given dbKey.<p>
+     * 
+     * @param dbKey the database key to check the sql support for
+     * 
+     * @return true if sql is supported for the given dbKey
+     */
+    public boolean isSqlSupported(String dbKey) {
+
+        String key = dbKey + "." + PROPKEY_SQL_SUPPORTED;
+        return Boolean.valueOf(getDbProperty(key)).booleanValue();
     }
 
     /**
@@ -1328,8 +1430,8 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public String jsComponentDependencies() {
 
-        List components = m_components.elementList();
-        Map componentDependencies = buildDepsForAllComponents();
+        List<CmsSetupComponent> components = CmsCollectionsGenericWrapper.list(m_components.elementList());
+        Map<String, List<String>> componentDependencies = buildDepsForAllComponents();
 
         StringBuffer jsCode = new StringBuffer(1024);
         jsCode.append("\t// an array holding the dependent components for the n-th component\n");
@@ -1337,13 +1439,13 @@ public class CmsSetupBean implements I_CmsShellCommands {
         jsCode.append(components.size());
         jsCode.append(");\n");
         for (int i = 0; i < components.size(); i++) {
-            CmsSetupComponent component = (CmsSetupComponent)components.get(i);
-            List dependencies = (List)componentDependencies.get(component.getId());
+            CmsSetupComponent component = components.get(i);
+            List<String> dependencies = componentDependencies.get(component.getId());
             jsCode.append("\tcomponentDependencies[" + i + "] = new Array(");
             if (dependencies != null) {
                 for (int j = 0; j < dependencies.size(); j++) {
                     jsCode.append("\"" + dependencies.get(j) + "\"");
-                    if (j < dependencies.size() - 1) {
+                    if (j < (dependencies.size() - 1)) {
                         jsCode.append(", ");
                     }
                 }
@@ -1361,7 +1463,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public String jsComponentModules() {
 
-        List components = m_components.elementList();
+        List<CmsSetupComponent> components = CmsCollectionsGenericWrapper.list(m_components.elementList());
 
         StringBuffer jsCode = new StringBuffer(1024);
         jsCode.append("\t// an array holding the components modules\n");
@@ -1369,12 +1471,12 @@ public class CmsSetupBean implements I_CmsShellCommands {
         jsCode.append(components.size());
         jsCode.append(");\n");
         for (int i = 0; i < components.size(); i++) {
-            CmsSetupComponent component = (CmsSetupComponent)components.get(i);
+            CmsSetupComponent component = components.get(i);
             jsCode.append("\tcomponentModules[" + i + "] = \"");
-            List modules = getComponentModules(component);
+            List<String> modules = getComponentModules(component);
             for (int j = 0; j < modules.size(); j++) {
                 jsCode.append(modules.get(j));
-                if (j < modules.size() - 1) {
+                if (j < (modules.size() - 1)) {
                     jsCode.append("|");
                 }
             }
@@ -1397,7 +1499,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
         jsCode.append(m_components.elementList().size());
         jsCode.append(");\n");
         for (int i = 0; i < m_components.elementList().size(); i++) {
-            CmsSetupComponent component = (CmsSetupComponent)m_components.elementList().get(i);
+            CmsSetupComponent component = m_components.elementList().get(i);
             jsCode.append("\tcomponentNames[" + i + "] = \"" + component.getId() + "\";\n");
         }
         jsCode.append("\n\n");
@@ -1411,7 +1513,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public String jsModuleDependencies() {
 
-        List moduleNames = sortModules(getAvailableModules().values());
+        List<String> moduleNames = sortModules(getAvailableModules().values());
 
         StringBuffer jsCode = new StringBuffer(1024);
         jsCode.append("\t// an array holding the dependent modules for the n-th module\n");
@@ -1419,13 +1521,13 @@ public class CmsSetupBean implements I_CmsShellCommands {
         jsCode.append(moduleNames.size());
         jsCode.append(");\n");
         for (int i = 0; i < moduleNames.size(); i++) {
-            String moduleName = (String)moduleNames.get(i);
-            List dependencies = (List)getModuleDependencies().get(moduleName);
+            String moduleName = moduleNames.get(i);
+            List<String> dependencies = getModuleDependencies().get(moduleName);
             jsCode.append("\tmoduleDependencies[" + i + "] = new Array(");
             if (dependencies != null) {
                 for (int j = 0; j < dependencies.size(); j++) {
                     jsCode.append("\"" + dependencies.get(j) + "\"");
-                    if (j < dependencies.size() - 1) {
+                    if (j < (dependencies.size() - 1)) {
                         jsCode.append(", ");
                     }
                 }
@@ -1443,30 +1545,18 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public String jsModuleNames() {
 
-        List moduleNames = sortModules(getAvailableModules().values());
+        List<String> moduleNames = sortModules(getAvailableModules().values());
         StringBuffer jsCode = new StringBuffer(1024);
         jsCode.append("\t// an array from 1...n holding the module package names\n");
         jsCode.append("\tvar modulePackageNames = new Array(");
         jsCode.append(moduleNames.size());
         jsCode.append(");\n");
         for (int i = 0; i < moduleNames.size(); i++) {
-            String moduleName = (String)moduleNames.get(i);
+            String moduleName = moduleNames.get(i);
             jsCode.append("\tmodulePackageNames[" + i + "] = \"" + moduleName + "\";\n");
         }
         jsCode.append("\n\n");
         return jsCode.toString();
-    }
-
-    /**
-     * Loads the default OpenCms properties.<p>
-     * 
-     * @param file the file tp read the properties from
-     * @return the initialized OpenCms properties
-     * @throws IOException in case of IO errors 
-     */
-    public ExtendedProperties loadProperties(String file) throws IOException {
-
-        return CmsPropertyUtils.loadProperties(file);
     }
 
     /**
@@ -1488,6 +1578,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
             lockWizard();
             // save Properties to file "opencms.properties" 
             saveProperties(getProperties(), CmsSystemInfo.FILE_PROPERTIES, false);
+
+            setSchemaGeneration(false);
+            m_peristenceConfigurator.save();
         }
     }
 
@@ -1523,8 +1616,17 @@ public class CmsSetupBean implements I_CmsShellCommands {
                 backupConfiguration(
                     CmsConfigurationManager.DEFAULT_XML_FILE_NAME,
                     CmsConfigurationManager.DEFAULT_XML_FILE_NAME + CmsConfigurationManager.POSTFIX_ORI);
+
                 // save Properties to file "opencms.properties" 
+                setDatabase(m_databaseKey);
+                if (m_driverType == DRIVER_TYPE_JPA) {
+                    setEntityManagerPoolSize(getDbProperty(m_databaseKey + "." + CmsDbPool.KEY_ENTITY_MANAGER_POOL_SIZE));
+                }
                 saveProperties(getProperties(), CmsSystemInfo.FILE_PROPERTIES, true);
+
+                // if has sql driver the sql scripts will be eventualy executed
+                setSchemaGeneration(!isSqlSupported(m_databaseKey));
+                m_peristenceConfigurator.save();
 
                 CmsSetupTestResult testResult = new CmsSetupTestSimapi().execute(this);
                 if (testResult.getResult().equals(I_CmsSetupTest.RESULT_FAILED)) {
@@ -1567,6 +1669,19 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
                 getXmlHelper().setValue(CmsSystemConfiguration.DEFAULT_XML_FILE_NAME, xp.toString(), getWorkplaceSite());
 
+                if (m_driverType == DRIVER_TYPE_JPA) {
+                    // /opencms/system/runtimeclasses/runtimeinfo
+                    xp = new StringBuffer(256);
+                    xp.append("/").append(CmsConfigurationManager.N_ROOT);
+                    xp.append("/").append(CmsSystemConfiguration.N_SYSTEM);
+                    xp.append("/").append(CmsSystemConfiguration.N_RUNTIMECLASSES);
+                    xp.append("/").append(CmsSystemConfiguration.N_RUNTIMEINFO);
+                    getXmlHelper().setAttribute(
+                        CmsSystemConfiguration.DEFAULT_XML_FILE_NAME,
+                        xp.toString(),
+                        "class",
+                        JPA_FACTOTY);
+                }
                 getXmlHelper().writeAll();
             } catch (Exception e) {
                 if (LOG.isErrorEnabled()) {
@@ -1632,7 +1747,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
             if (threadFinished && allWritten) {
                 out.println("setTimeout('top.display.finish()', 1000);");
             } else {
-                // modified by Shi Yusen, shiys@langhua.cn   2010-10-12
+                // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
             	int timeout = 8000;
                 // int timeout = 5000;
                 if (getWorkplaceImportThread().getLoggingThread().getMessages().size() < 20) {
@@ -1651,7 +1766,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      *  @param file the file to save the properties to
      *  @param backup if true, create a backupfile
      */
-    public void saveProperties(ExtendedProperties properties, String file, boolean backup) {
+    public void saveProperties(CmsParameterConfiguration properties, String file, boolean backup) {
 
         if (new File(m_configRfsPath + file).isFile()) {
             String backupFile = file + CmsConfigurationManager.POSTFIX_ORI;
@@ -1668,7 +1783,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
             copyFile(file, tempFile);
 
             // save properties
-            save(properties, tempFile, file);
+            save(properties, tempFile, file, null);
 
             // delete temp file
             File temp = new File(m_configRfsPath + tempFile);
@@ -1687,13 +1802,30 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public void setDatabase(String databaseKey) {
 
         m_databaseKey = databaseKey;
+        String vfsDriver;
+        String userDriver;
+        String projectDriver;
+        String historyDriver;
+        String subscriptionDriver;
+        String sqlManager;
 
-        String vfsDriver = getDbProperty(m_databaseKey + ".vfs.driver");
-        String userDriver = getDbProperty(m_databaseKey + ".user.driver");
-        String projectDriver = getDbProperty(m_databaseKey + ".project.driver");
-        String historyDriver = getDbProperty(m_databaseKey + ".history.driver");
-        String sqlManager = getDbProperty(m_databaseKey + ".sqlmanager");
+        if (m_driverType == DRIVER_TYPE_JPA) {
+            vfsDriver = "org.opencms.db.jpa.CmsVfsDriver";
+            userDriver = "org.opencms.db.jpa.CmsUserDriver";
+            projectDriver = "org.opencms.db.jpa.CmsProjectDriver";
+            historyDriver = "org.opencms.db.jpa.CmsHistoryDriver";
+            sqlManager = "org.opencms.db.jpa.CmsSqlManager";
+            subscriptionDriver = "org.opencms.db.jpa.CmsSubscriptionDriver";
+        } else {
+            vfsDriver = getDbProperty(m_databaseKey + ".vfs.driver");
+            userDriver = getDbProperty(m_databaseKey + ".user.driver");
+            projectDriver = getDbProperty(m_databaseKey + ".project.driver");
+            historyDriver = getDbProperty(m_databaseKey + ".history.driver");
+            subscriptionDriver = getDbProperty(m_databaseKey + ".subscription.driver");
+            sqlManager = getDbProperty(m_databaseKey + ".sqlmanager");
+        }
 
+        // set the db properties
         setExtProperty("db.name", m_databaseKey);
         setExtProperty("db.vfs.driver", vfsDriver);
         setExtProperty("db.vfs.sqlmanager", sqlManager);
@@ -1703,6 +1835,8 @@ public class CmsSetupBean implements I_CmsShellCommands {
         setExtProperty("db.project.sqlmanager", sqlManager);
         setExtProperty("db.history.driver", historyDriver);
         setExtProperty("db.history.sqlmanager", sqlManager);
+        setExtProperty("db.subscription.driver", subscriptionDriver);
+        setExtProperty("db.subscription.sqlmanager", sqlManager);
     }
 
     /**
@@ -1782,6 +1916,13 @@ public class CmsSetupBean implements I_CmsShellCommands {
         // store the DB provider
         m_provider = provider;
 
+        // ensure that the driver type and the provider is set accordingly to the full database key
+        if (getFullDatabaseKey().toLowerCase().endsWith(JPA_PROVIDER) || JPA_PROVIDER.equalsIgnoreCase(m_provider)) {
+            m_driverType = DRIVER_TYPE_JPA;
+        } else {
+            m_driverType = DRIVER_TYPE_SQL;
+        }
+
         boolean isFormSubmitted = ((request.getParameter("submit") != null) && (conStr != null));
         if (conStr == null) {
             conStr = "";
@@ -1815,6 +1956,14 @@ public class CmsSetupBean implements I_CmsShellCommands {
             }
 
             if (isFormSubmitted) {
+                if (m_driverType == DRIVER_TYPE_JPA) {
+                    if (isJpaSupported(m_databaseKey) && !isSqlSupported(m_databaseKey)) {
+                        // driver name should be specified for only JPA supported databases
+                        String driverName = request.getParameter("jdbcDriver");
+                        setDbDriver(driverName);
+                    }
+                }
+
                 if (provider.equals(POSTGRESQL_PROVIDER)) {
                     setDb(database);
 
@@ -1844,6 +1993,14 @@ public class CmsSetupBean implements I_CmsShellCommands {
                         conStr += ";";
                     }
                     conStr += "libraries='" + database + "'";
+                } else if (isJpaSupported(m_databaseKey) && !isSqlSupported(m_databaseKey)) {
+                    conStr = request.getParameter("dbCreateConStr")
+                        + getDbProperty(m_databaseKey + "." + "separator")
+                        + request.getParameter("db");
+                    setDbProperty(getDatabase() + ".constr", conStr + getDbProperty(getDatabase() + ".newDb"));
+                    setDbWorkConStr(conStr);
+                    boolean createTbls = "true".equalsIgnoreCase(request.getParameter("createTables")) ? true : false;
+                    request.getSession().setAttribute("createTables", Boolean.valueOf(createTbls));
                 }
                 setDbWorkConStr(conStr);
                 if (provider.equals(POSTGRESQL_PROVIDER)) {
@@ -1881,7 +2038,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
                     setDbProperty(getDatabase() + ".temporaryTablespace", dbTemporaryTablespace);
                     setDbProperty(getDatabase() + ".indexTablespace", dbIndexTablespace);
                 }
-                Map replacer = new HashMap();
+                Map<String, String> replacer = new HashMap<String, String>();
                 if (!provider.equals(MYSQL_PROVIDER) || provider.equals(MSSQL_PROVIDER)) {
                     replacer.put("${user}", dbWorkUser);
                     replacer.put("${password}", dbWorkPwd);
@@ -1916,7 +2073,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
                     || provider.equals(POSTGRESQL_PROVIDER)
                     || provider.equals(MAXDB_PROVIDER)) {
                     setDbWorkUser(dbName);
-                } else {
+                } else if (dbName != null) {
                     setDb(dbName);
                 }
             }
@@ -1934,7 +2091,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
         // extract the database key out of the entire key
         String databaseKey = key.substring(0, key.indexOf('.'));
-        Map databaseProperties = (Map)getDatabaseProperties().get(databaseKey);
+        Properties databaseProperties = getDatabaseProperties().get(databaseKey);
         databaseProperties.put(key, value);
     }
 
@@ -1945,9 +2102,14 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     public void setDbWorkConStr(String dbWorkConStr) {
 
-        String driver = getDbProperty(m_databaseKey + ".driver");
+        String driver;
         String pool = '.' + getPool() + '.';
 
+        if (m_driverType == DRIVER_TYPE_JPA) {
+            driver = getDbDriver();
+        } else {
+            driver = getDbProperty(m_databaseKey + ".driver");
+        }
         setExtProperty(CmsDbPool.KEY_DATABASE_POOL + pool + CmsDbPool.KEY_JDBC_DRIVER, driver);
         setExtProperty(CmsDbPool.KEY_DATABASE_POOL + pool + CmsDbPool.KEY_JDBC_URL, dbWorkConStr);
         setExtProperty(CmsDbPool.KEY_DATABASE_POOL + pool + CmsDbPool.KEY_TEST_QUERY, getDbTestQuery());
@@ -1974,6 +2136,16 @@ public class CmsSetupBean implements I_CmsShellCommands {
         setExtProperty(CmsDbPool.KEY_DATABASE_POOL + '.' + getPool() + '.' + CmsDbPool.KEY_POOL_USER, dbWorkUser);
     }
 
+    /**
+     * Sets the driver type.<p>
+     * 
+     * @param type the type to set
+     */
+    public void setDriverType(String type) {
+
+        m_driverType = JPA_PROVIDER.equalsIgnoreCase(type) ? DRIVER_TYPE_JPA : DRIVER_TYPE_SQL;
+    }
+
     /** 
      * Set the mac ethernet address, required for UUID generation.<p>
      * 
@@ -1982,6 +2154,23 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public void setEthernetAddress(String ethernetAddress) {
 
         setExtProperty("server.ethernet.address", ethernetAddress);
+    }
+
+    /**
+     * Sets the fullDatabaseKey.<p>
+     *
+     * @param fullDatabaseKey the fullDatabaseKey to set
+     */
+    public void setFullDatabaseKey(String fullDatabaseKey) {
+
+        m_fullDatabaseKey = fullDatabaseKey;
+
+        String driverPart = fullDatabaseKey.substring(fullDatabaseKey.lastIndexOf("_"), fullDatabaseKey.length());
+        if (driverPart.toLowerCase().contains(JPA_PROVIDER)) {
+            setDriverType(JPA_PROVIDER);
+        }
+        String keyPart = fullDatabaseKey.substring(0, fullDatabaseKey.lastIndexOf("_"));
+        setDatabase(keyPart);
     }
 
     /**
@@ -2004,7 +2193,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @param map the replacer to set
      */
-    public void setReplacer(Map map) {
+    public void setReplacer(Map<String, String> map) {
 
         m_replacer = map;
     }
@@ -2069,22 +2258,20 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a sorted list of module names
      */
-    public List sortModules(Collection modules) {
+    public List<String> sortModules(Collection<CmsModule> modules) {
 
-        List aux = new ArrayList(modules);
-        Collections.sort(aux, new Comparator() {
+        List<CmsModule> aux = new ArrayList<CmsModule>(modules);
+        Collections.sort(aux, new Comparator<CmsModule>() {
 
-            public int compare(Object o1, Object o2) {
+            public int compare(CmsModule module1, CmsModule module2) {
 
-                CmsModule module1 = (CmsModule)o1;
-                CmsModule module2 = (CmsModule)o2;
                 return getDisplayForModule(module1).compareTo(getDisplayForModule(module2));
             }
         });
 
-        List ret = new ArrayList(aux.size());
-        for (Iterator it = aux.iterator(); it.hasNext();) {
-            CmsModule module = (CmsModule)it.next();
+        List<String> ret = new ArrayList<String>(aux.size());
+        for (Iterator<CmsModule> it = aux.iterator(); it.hasNext();) {
+            CmsModule module = it.next();
             ret.add(module.getName());
         }
         return ret;
@@ -2098,10 +2285,14 @@ public class CmsSetupBean implements I_CmsShellCommands {
     public boolean validateJdbc() {
 
         boolean result = false;
+        // There is not defined libraries for supported databases from OpenJPA
+        if (m_driverType == DRIVER_TYPE_JPA) {
+            return true;
+        }
         String libFolder = getLibFolder();
-        Iterator it = getDatabaseLibs(getDatabase()).iterator();
+        Iterator<String> it = getDatabaseLibs(getDatabase()).iterator();
         while (it.hasNext()) {
-            String libName = (String)it.next();
+            String libName = it.next();
             File libFile = new File(libFolder, libName);
             if (libFile.exists()) {
                 result = true;
@@ -2119,7 +2310,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     protected void addComponentsFromPath(String fileName) throws CmsConfigurationException {
 
-        ExtendedProperties configuration;
+        CmsParameterConfiguration configuration;
         try {
             configuration = getComponentsProperties(fileName);
         } catch (FileNotFoundException e) {
@@ -2129,17 +2320,13 @@ public class CmsSetupBean implements I_CmsShellCommands {
             return;
         }
 
-        Iterator it = Arrays.asList(configuration.getStringArray(PROPKEY_COMPONENTS)).iterator();
-        while (it.hasNext()) {
-            String componentId = (String)it.next();
+        for (String componentId : configuration.getList(PROPKEY_COMPONENTS)) {
             CmsSetupComponent componentBean = new CmsSetupComponent();
             componentBean.setId(componentId);
-            componentBean.setName(configuration.getString(PROPKEY_COMPONENT + componentId + PROPKEY_NAME));
-            componentBean.setDescription(configuration.getString(PROPKEY_COMPONENT + componentId + PROPKEY_DESCRIPTION));
-            componentBean.setModulesRegex(configuration.getString(PROPKEY_COMPONENT + componentId + PROPKEY_MODULES));
-            componentBean.setDependencies(Arrays.asList(configuration.getStringArray(PROPKEY_COMPONENT
-                + componentId
-                + PROPKEY_DEPENDENCIES)));
+            componentBean.setName(configuration.get(PROPKEY_COMPONENT + componentId + PROPKEY_NAME));
+            componentBean.setDescription(configuration.get(PROPKEY_COMPONENT + componentId + PROPKEY_DESCRIPTION));
+            componentBean.setModulesRegex(configuration.get(PROPKEY_COMPONENT + componentId + PROPKEY_MODULES));
+            componentBean.setDependencies(configuration.getList(PROPKEY_COMPONENT + componentId + PROPKEY_DEPENDENCIES));
             componentBean.setPosition(configuration.getInteger(
                 PROPKEY_COMPONENT + componentId + PROPKEY_POSITION,
                 DEFAULT_POSITION));
@@ -2158,7 +2345,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * @throws FileNotFoundException if the properties file could not be found 
      * @throws CmsConfigurationException if the something else goes wrong
      */
-    protected ExtendedProperties getComponentsProperties(String location)
+    protected CmsParameterConfiguration getComponentsProperties(String location)
     throws FileNotFoundException, CmsConfigurationException {
 
         InputStream stream = null;
@@ -2187,7 +2374,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
                 File file = new File(folder, COMPONENTS_PROPERTIES);
                 stream = new FileInputStream(file);
             }
-            return CmsPropertyUtils.loadProperties(stream);
+            return new CmsParameterConfiguration(stream);
         } catch (Throwable ioe) {
             if (stream != null) {
                 try {
@@ -2229,8 +2416,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     protected String getExtProperty(String key) {
 
-        Object value = m_extProperties.get(key);
-        return (value != null) ? value.toString() : "";
+        return m_configuration.getString(key, "");
     }
 
     /**
@@ -2325,11 +2511,12 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @param modules a modifiable list of the modules to be imported
      */
-    protected void initializeComponents(Collection modules) {
+    protected void initializeComponents(Collection<String> modules) {
 
-        Iterator itGroups = new ArrayList(m_components.elementList()).iterator();
+        Iterator<CmsSetupComponent> itGroups = new ArrayList<CmsSetupComponent>(
+            CmsCollectionsGenericWrapper.<CmsSetupComponent> list(m_components.elementList())).iterator();
         while (itGroups.hasNext()) {
-            CmsSetupComponent component = (CmsSetupComponent)itGroups.next();
+            CmsSetupComponent component = itGroups.next();
             String errMsg = "";
             String warnMsg = "";
             // check name
@@ -2348,9 +2535,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
                 warnMsg += "\n";
             }
             // check dependencies
-            Iterator itDeps = component.getDependencies().iterator();
+            Iterator<String> itDeps = component.getDependencies().iterator();
             while (itDeps.hasNext()) {
-                String dependency = (String)itDeps.next();
+                String dependency = itDeps.next();
                 if (m_components.getObject(dependency) == null) {
                     errMsg += Messages.get().container(
                         Messages.LOG_WARN_COMPONENT_DEPENDENCY_BROKEN_2,
@@ -2361,9 +2548,9 @@ public class CmsSetupBean implements I_CmsShellCommands {
             }
             // check modules match
             boolean match = false;
-            Iterator itModules = modules.iterator();
+            Iterator<String> itModules = modules.iterator();
             while (itModules.hasNext()) {
-                String module = (String)itModules.next();
+                String module = itModules.next();
                 if (component.match(module)) {
                     match = true;
                     itModules.remove();
@@ -2399,73 +2586,84 @@ public class CmsSetupBean implements I_CmsShellCommands {
      */
     protected void readDatabaseConfig() {
 
-        String databaseKey = null;
-        FileInputStream input = null;
-        String configPath = null;
-        Properties databaseProperties = null;
-        File databaseSetupFolder = null;
-        File[] childResources = null;
-        File childResource = null;
-        File setupFile = null;
-        boolean hasMissingSetupFiles = false;
+        m_databaseKeys = new ArrayList<String>();
+        m_databaseProperties = new HashMap<String, Properties>();
 
-        m_databaseKeys = new ArrayList();
-        m_databaseProperties = new HashMap();
+        FileInputStream input = null;
+        File childResource = null;
+
+        List<String> databaseKeys = new ArrayList<String>();
+        Map<String, Properties> databaseProperties = new HashMap<String, Properties>();
 
         try {
-            databaseSetupFolder = new File(m_webAppRfsPath + FOLDER_SETUP + FOLDER_DATABASE);
+            File databaseSetupFolder = new File(m_webAppRfsPath + FOLDER_SETUP + FOLDER_DATABASE);
 
-            if (databaseSetupFolder.exists()) {
-                childResources = databaseSetupFolder.listFiles();
+            File[] childResources = databaseSetupFolder.listFiles();
 
-                if (childResources != null) {
-                    for (int i = 0; i < childResources.length; i++) {
-                        childResource = childResources[i];
-                        hasMissingSetupFiles = false;
-
-                        if (childResource.exists() && childResource.isDirectory() && childResource.canRead()) {
-                            for (int j = 0; j < REQUIRED_DB_SETUP_FILES.length; j++) {
-                                setupFile = new File(childResource.getPath()
-                                    + File.separatorChar
-                                    + REQUIRED_DB_SETUP_FILES[j]);
-
-                                if (!setupFile.exists() || !setupFile.isFile() || !setupFile.canRead()) {
-                                    hasMissingSetupFiles = true;
-                                    System.err.println("["
-                                        + getClass().getName()
-                                        + "] missing or unreadable database setup file: "
-                                        + setupFile.getPath());
-                                    break;
-                                }
-
-                                if (!hasMissingSetupFiles) {
-                                    m_databaseKeys.add(childResource.getName().trim());
-                                }
-                            }
-                        }
+            // collect all possible db configurations
+            if (childResources != null) {
+                for (int i = 0; i < childResources.length; i++) {
+                    childResource = childResources[i];
+                    if (childResource.exists() && childResource.isDirectory() && childResource.canRead()) {
+                        databaseKeys.add(childResource.getName().trim());
                     }
                 }
+            }
 
-                for (int i = 0; i < m_databaseKeys.size(); i++) {
-                    databaseKey = (String)m_databaseKeys.get(i);
-                    configPath = m_webAppRfsPath
+            // create the properties with all possible configurations
+            if (databaseSetupFolder.exists()) {
+                for (String key : databaseKeys) {
+                    String configPath = m_webAppRfsPath
                         + "setup"
                         + File.separatorChar
                         + "database"
                         + File.separatorChar
-                        + databaseKey
+                        + key
                         + File.separatorChar
                         + "database.properties";
-
                     try {
                         input = new FileInputStream(new File(configPath));
-                        databaseProperties = new Properties();
-                        databaseProperties.load(input);
-                        m_databaseProperties.put(databaseKey, databaseProperties);
+                        Properties databaseProps = new Properties();
+                        databaseProps.load(input);
+                        databaseProperties.put(key, databaseProps);
                     } catch (Exception e) {
                         System.err.println(e.toString());
                         e.printStackTrace(System.err);
                         continue;
+                    }
+                }
+            }
+
+            // add the properties and the keys to the memeber variables if all needed files exist
+            if (childResources != null) {
+                for (int i = 0; i < childResources.length; i++) {
+                    childResource = childResources[i];
+                    if (childResource.exists() && childResource.isDirectory() && childResource.canRead()) {
+                        String dataBasekey = childResource.getName().trim();
+                        Properties props = databaseProperties.get(dataBasekey);
+                        boolean supportsJPA = Boolean.valueOf(
+                            props.getProperty(dataBasekey + "." + PROPKEY_JPA_SUPPORTED)).booleanValue();
+                        boolean supportsSQL = Boolean.valueOf(
+                            props.getProperty(dataBasekey + "." + PROPKEY_SQL_SUPPORTED)).booleanValue();
+                        boolean isAS400orDB2 = dataBasekey.equalsIgnoreCase(AS400_PROVIDER)
+                            || dataBasekey.equalsIgnoreCase(DB2_PROVIDER);
+
+                        if (isAS400orDB2) {
+                            if (checkFilesExists(REQUIRED_DB2_DB_SETUP_FILES, childResource)) {
+                                m_databaseKeys.add(childResource.getName().trim());
+                                m_databaseProperties.put(dataBasekey, props);
+                            }
+                        } else if (supportsSQL) {
+                            if (checkFilesExists(REQUIRED_SQL_DB_SETUP_FILES, childResource)) {
+                                m_databaseKeys.add(childResource.getName().trim());
+                                m_databaseProperties.put(dataBasekey, props);
+                            }
+                        } else if (supportsJPA && !supportsSQL) {
+                            if (checkFilesExists(REQUIRED_JPA_DB_SETUP_FILES, childResource)) {
+                                m_databaseKeys.add(childResource.getName().trim());
+                                m_databaseProperties.put(dataBasekey, props);
+                            }
+                        }
                     }
                 }
             }
@@ -2485,12 +2683,45 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
     /** 
      * This method sets the value for a given key in the extended properties.
+     * 
      * @param key The key of the property
      * @param value The value of the property
      */
     protected void setExtProperty(String key, String value) {
 
-        m_extProperties.put(key, value);
+        m_configuration.put(key, value);
+    }
+
+    /**
+     * Checks if the necessary files for the configuration are existent or not.<p>
+     * 
+     * @param requiredFiles the required files
+     * @param childResource the folder to check
+     * 
+     * @return true if the files are existent
+     */
+    private boolean checkFilesExists(String[] requiredFiles, File childResource) {
+
+        File setupFile = null;
+        boolean hasMissingSetupFiles = false;
+
+        for (int j = 0; j < requiredFiles.length; j++) {
+            setupFile = new File(childResource.getPath() + File.separatorChar + requiredFiles[j]);
+
+            if (!setupFile.exists() || !setupFile.isFile() || !setupFile.canRead()) {
+                hasMissingSetupFiles = true;
+                System.err.println("["
+                    + getClass().getName()
+                    + "] missing or unreadable database setup file: "
+                    + setupFile.getPath());
+                break;
+            }
+
+            if (!hasMissingSetupFiles) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -2510,7 +2741,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
             values[i] = CmsStringUtil.substitute(values[i], ",", "\\,");
             values[i] = CmsStringUtil.substitute(values[i], "=", "\\=");
 
-            buf.append("\t" + values[i] + ((i < values.length - 1) ? ",\\\n" : ""));
+            buf.append("\t" + values[i] + ((i < (values.length - 1)) ? ",\\\n" : ""));
         }
         return buf.toString();
     }
@@ -2522,12 +2753,12 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return a list of matching module names
      */
-    private List getComponentModules(CmsSetupComponent component) {
+    private List<String> getComponentModules(CmsSetupComponent component) {
 
-        List modules = new ArrayList();
-        Iterator itModules = m_availableModules.keySet().iterator();
+        List<String> modules = new ArrayList<String>();
+        Iterator<String> itModules = m_availableModules.keySet().iterator();
         while (itModules.hasNext()) {
-            String moduleName = (String)itModules.next();
+            String moduleName = itModules.next();
             if (component.match(moduleName)) {
                 modules.add(moduleName);
             }
@@ -2536,16 +2767,44 @@ public class CmsSetupBean implements I_CmsShellCommands {
     }
 
     /**
+     * Returns the text which should be written to the configuration file for a given property value.<p>
+     * 
+     * @param obj the property value 
+     * 
+     * @return the text to write for that property value 
+     */
+    private String getPropertyValueToWrite(Object obj) {
+
+        String value;
+        String valueToWrite = null;
+        if (obj instanceof List<?>) {
+            String[] values = {};
+            values = CmsCollectionsGenericWrapper.list(obj).toArray(values);
+            // write it
+            valueToWrite = "\\\n" + createValueString(values);
+        } else {
+            value = String.valueOf(obj).trim();
+            // escape commas and equals in value
+            value = CmsStringUtil.substitute(value, ",", "\\,");
+            // value = CmsStringUtil.substitute(value, "=", "\\=");
+            // write it
+            valueToWrite = value;
+        }
+        return valueToWrite;
+    }
+
+    /**
      * Saves the properties to a file.<p>
      * 
      * @param properties the properties to be saved
      * @param source the source file to get the keys from
      * @param target the target file to save the properties to
+     * @param forceWrite the keys of the properties which should always be written, even if they don't exist in the configuration file 
      */
-    private void save(ExtendedProperties properties, String source, String target) {
+    private void save(CmsParameterConfiguration properties, String source, String target, Set<String> forceWrite) {
 
         try {
-            HashSet alreadyWritten = new HashSet();
+            Set<String> alreadyWritten = new HashSet<String>();
 
             LineNumberReader lnr = new LineNumberReader(new FileReader(new File(m_configRfsPath + source)));
 
@@ -2569,7 +2828,7 @@ public class CmsSetupBean implements I_CmsShellCommands {
 
                     int index = line.indexOf('=');
                     int index1 = line.indexOf("\\=");
-                    if ((line.indexOf('=') > -1) && (index1 != index - 1)) {
+                    if ((line.indexOf('=') > -1) && (index1 != (index - 1))) {
 
                         String key = line.substring(0, line.indexOf('=')).trim();
                         if (alreadyWritten.contains(key)) {
@@ -2578,36 +2837,10 @@ public class CmsSetupBean implements I_CmsShellCommands {
                         // write key
                         fw.write((key + "="));
                         try {
-                            Object obj = properties.get(key);
-                            String value = "";
-
+                            Object obj = properties.getObject(key);
                             if (obj != null) {
-                                if (obj instanceof Vector) {
-                                    String[] values = {};
-                                    values = (String[])((Vector)obj).toArray(values);
-
-                                    // write it
-                                    fw.write("\\\n" + createValueString(values));
-
-                                } else if (obj instanceof List) {
-
-                                    String[] values = {};
-                                    values = (String[])((List)obj).toArray(values);
-
-                                    // write it
-                                    fw.write("\\\n" + createValueString(values));
-
-                                } else {
-
-                                    value = ((String)obj).trim();
-
-                                    // escape commas and equals in value
-                                    value = CmsStringUtil.substitute(value, ",", "\\,");
-                                    value = CmsStringUtil.substitute(value, "=", "\\=");
-
-                                    // write it
-                                    fw.write(value);
-                                }
+                                String valueToWrite = getPropertyValueToWrite(obj);
+                                fw.write(valueToWrite);
                             }
 
                         } catch (NullPointerException e) {
@@ -2621,6 +2854,26 @@ public class CmsSetupBean implements I_CmsShellCommands {
                     }
                 }
             }
+            if (forceWrite != null) {
+                for (String forced : forceWrite) {
+                    if (!alreadyWritten.contains(forced) && properties.containsKey(forced)) {
+                        fw.write("\n\n");
+                        fw.write(forced + "=");
+                        try {
+                            Object obj = properties.getObject(forced);
+
+                            if (obj != null) {
+                                String valueToWrite = getPropertyValueToWrite(obj);
+                                fw.write(valueToWrite);
+                            }
+                        } catch (NullPointerException e) {
+                            // no value found - do nothing
+                        }
+                        fw.write("\n");
+
+                    }
+                }
+            }
 
             lnr.close();
             fw.close();
@@ -2631,10 +2884,36 @@ public class CmsSetupBean implements I_CmsShellCommands {
     }
 
     /**
-     * Sets the path to the OpenCms home directory.<p>
-     * 
-     * @param webInfRfsPath path to OpenCms home directory
+     * @param dbProperty
      */
+    private void setEntityManagerPoolSize(String poolSize) {
+
+        setExtProperty(
+            CmsDbPool.KEY_DATABASE_POOL + '.' + getPool() + '.' + CmsDbPool.KEY_ENTITY_MANAGER_POOL_SIZE,
+            poolSize);
+    }
+
+    /**
+     * Lock/unlock schema generation in persistence xml file.<p>
+     * 
+     * @param generate - true schema generation is on.
+     */
+    private void setSchemaGeneration(boolean generate) {
+
+        if (generate) {
+            m_peristenceConfigurator.setPropertyValue(
+                CmsPersistenceUnitConfiguration.ATTR_GENERATE_SCHEMA,
+                CmsPersistenceUnitConfiguration.ATTR_GENERATE_SCHEMA_VALUE);
+        } else {
+            m_peristenceConfigurator.removeProperty(CmsPersistenceUnitConfiguration.ATTR_GENERATE_SCHEMA);
+        }
+    }
+
+    /**
+      * Sets the path to the OpenCms home directory.<p>
+      * 
+      * @param webInfRfsPath path to OpenCms home directory
+      */
     private void setWebAppRfsPath(String webInfRfsPath) {
 
         m_webAppRfsPath = webInfRfsPath;
@@ -2649,6 +2928,11 @@ public class CmsSetupBean implements I_CmsShellCommands {
             // all servlet runtimes
             m_webAppRfsPath += File.separator;
         }
-        m_configRfsPath = m_webAppRfsPath + CmsSystemInfo.FOLDER_WEBINF + CmsSystemInfo.FOLDER_CONFIG;
+
+        if (CmsStringUtil.isNotEmpty(System.getProperty(CmsSystemInfo.CONFIG_FOLDER_PROPERTY))) {
+            m_configRfsPath = System.getProperty(CmsSystemInfo.CONFIG_FOLDER_PROPERTY);
+        } else {
+            m_configRfsPath = m_webAppRfsPath + CmsSystemInfo.FOLDER_WEBINF + CmsSystemInfo.FOLDER_CONFIG_DEFAULT;
+        }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * This library is for OpenCms 
  *
- * Copyright (C) 2010  Beijing Langhua Ltd. (http://langhua.biz)
+ * Copyright (C) Langhua OpenSource
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -12,9 +12,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
- * For further information about Langhua, please see the
- * company website: http://langhua.biz
  *
  * For further information about OpenCms, please see the
  * project website: http://www.opencms.org
@@ -39,8 +36,6 @@ import java.util.Map;
  * 
  * Serves as {@link java.util.Comparator} for resources and as comparator key for the resource
  * at the same time. Uses lazy initializing of comparator keys in a resource.<p>
- * 
- * @author Shi Yusen, shiys@langhua.cn
  * 
  * @since 6.0.0 
  */

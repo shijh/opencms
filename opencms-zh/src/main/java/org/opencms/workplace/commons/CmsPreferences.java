@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/commons/CmsPreferences.java,v $
- * Date   : $Date: 2010-01-18 10:01:37 $
- * Version: $Revision: 1.48 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,14 +29,15 @@ package org.opencms.workplace.commons;
 
 import org.opencms.db.CmsUserSettings;
 import org.opencms.db.CmsUserSettings.CmsSearchResultStyle;
+import org.opencms.db.CmsUserSettings.UploadVariant;
 import org.opencms.file.CmsObject;
 import org.opencms.file.CmsProject;
 import org.opencms.file.CmsPropertyDefinition;
 import org.opencms.file.CmsResource;
-import org.opencms.file.CmsResourceFilter;
-import org.opencms.file.CmsUser;
 import org.opencms.file.CmsResource.CmsResourceCopyMode;
 import org.opencms.file.CmsResource.CmsResourceDeleteMode;
+import org.opencms.file.CmsResourceFilter;
+import org.opencms.file.CmsUser;
 import org.opencms.i18n.CmsEncoder;
 import org.opencms.i18n.CmsLocaleManager;
 import org.opencms.jsp.CmsJspActionElement;
@@ -94,10 +91,6 @@ import org.apache.commons.logging.Log;
  * <li>/commons/preferences.jsp
  * </ul>
  * <p> 
- * 
- * @author Andreas Zahner
- * 
- * @version $Revision: 1.48 $
  * 
  * @since 6.0.0
  */
@@ -250,16 +243,16 @@ public class CmsPreferences extends CmsTabDialog {
     /** Request parameter name for the user language. */
     public static final String PARAM_WORKPLACE_TIMEWARP = "tabwptimewarp";
 
-    /** Request parameter name for the workplace use upload applet. */
-    public static final String PARAM_WORKPLACE_USEUPLOADAPPLET = "tabwpuseuploadapplet";
+    /** Request parameter name for the workplace to choose the upload variant. */
+    public static final String PARAM_WORKPLACE_UPLOADVARIANT = "tabwpuploadvariant";
 
     /** Request parameter name for the workplace view. */
     public static final String PARAM_WORKPLACE_VIEW = "tabwpview";
 
-    /** Request parameter name for the explorer tree label. Added by Shi Yusen, shiys@langhua.cn 2010-10-12 */
+    /** Request parameter name for the explorer tree label. Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
     public static final String PARAM_EXPLORER_TREELABEL = "tabextreelabel";
     
-    /** Request parameter name for the explorer tree label. Added by Shi Yusen, Shiys@langhua.cn 2010-10-12 */
+    /** Request parameter name for the explorer tree label. Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
     public static final String PARAM_EXPLORER_TREESORT  = "tabextreesort";
     
     /** The log object for this class. */
@@ -352,7 +345,7 @@ public class CmsPreferences extends CmsTabDialog {
                     // set selected editor for this resource type
                     m_userSettings.setPreferredEditor(
                         paramName.substring(PARAM_PREFERREDEDITOR_PREFIX.length()),
-                        CmsEncoder.escapeSql(CmsEncoder.escapeXml(CmsEncoder.decode(paramValue))));
+                        CmsEncoder.decode(paramValue));
                 } else {
                     // reset preferred editor for this resource type
                     m_userSettings.setPreferredEditor(paramName.substring(PARAM_PREFERREDEDITOR_PREFIX.length()), null);
@@ -363,7 +356,7 @@ public class CmsPreferences extends CmsTabDialog {
                     // set the selected start gallery for the gallery type
                     m_userSettings.setStartGallery(
                         paramName.substring(PARAM_STARTGALLERY_PREFIX.length()),
-                        CmsEncoder.escapeSql(CmsEncoder.escapeXml(CmsEncoder.decode(paramValue))));
+                        CmsEncoder.decode(paramValue));
                 }
             }
         }
@@ -375,10 +368,6 @@ public class CmsPreferences extends CmsTabDialog {
             m_userSettings.save(getCms());
         } catch (CmsException e) {
             // should usually never happen
-            if (LOG.isInfoEnabled()) {
-                LOG.info(e.getLocalizedMessage());
-            }
-        } catch (NullPointerException e) {
             if (LOG.isInfoEnabled()) {
                 LOG.info(e.getLocalizedMessage());
             }
@@ -642,7 +631,7 @@ public class CmsPreferences extends CmsTabDialog {
                     result.append("<tr>\n\t<td style=\"white-space: nowrap;\">");
                     String localizedName = keyDefault("label.editor.preferred." + currentResourceType, "");
                     if (CmsStringUtil.isEmpty(localizedName)) {
-                        localizedName = CmsWorkplaceMessages.getResourceName(this, currentResourceType);
+                        localizedName = CmsWorkplaceMessages.getResourceTypeName(this, currentResourceType);
                     }
                     result.append(localizedName);
                     result.append("</td>\n\t<td>");
@@ -672,7 +661,7 @@ public class CmsPreferences extends CmsTabDialog {
             String ouFqn = "";
             CmsUserSettings settings = new CmsUserSettings(getCms());
             if (!settings.getListAllProjects()) {
-                ouFqn = getCms().getRequestContext().currentUser().getOuFqn();
+                ouFqn = getCms().getRequestContext().getCurrentUser().getOuFqn();
             }
             allProjects = OpenCms.getOrgUnitManager().getAllAccessibleProjects(
                 getCms(),
@@ -712,6 +701,7 @@ public class CmsPreferences extends CmsTabDialog {
         String startProject = "";
 
         startProject = getParamTabWpProject();
+
         for (int i = 0, n = allProjects.size(); i < n; i++) {
             CmsProject project = (CmsProject)allProjects.get(i);
             String projectName = project.getSimpleName();
@@ -725,7 +715,7 @@ public class CmsPreferences extends CmsTabDialog {
                     projectName = projectName + " - " + project.getOuFqn();
                 }
             }
-            // modified by Shi Yusen, shiys@langhua.cn 2010-10-12
+            // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
             if (projectName.equalsIgnoreCase("online")) {
                 projectName = key(org.opencms.workplace.commons.Messages.GUI_PROJECT_ONLINE_0);
             } else if (projectName.equalsIgnoreCase("offline")) {
@@ -791,7 +781,11 @@ public class CmsPreferences extends CmsTabDialog {
         List values = new ArrayList();
         int selectedIndex = 0;
 
-        List sites = OpenCms.getSiteManager().getAvailableSites(getCms(), true);
+        List sites = OpenCms.getSiteManager().getAvailableSites(
+            getCms(),
+            true,
+            false,
+            getCms().getRequestContext().getOuFqn());
         String wpSite = getParamTabWpSite();
         if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(wpSite) && !wpSite.endsWith("/")) {
             wpSite += "/";
@@ -806,7 +800,7 @@ public class CmsPreferences extends CmsTabDialog {
                 siteRoot += "/";
             }
             values.add(siteRoot);
-            options.add(site.getTitle());
+            options.add(substituteSiteTitle(site.getTitle()));
             if (siteRoot.equals(wpSite)) {
                 // this is the user's currently chosen site
                 selectedIndex = pos;
@@ -853,7 +847,7 @@ public class CmsPreferences extends CmsTabDialog {
             Map localizedGalleries = new TreeMap();
             for (Iterator i = galleriesTypes.keySet().iterator(); i.hasNext();) {
                 String currentGalleryType = (String)i.next();
-                String localizedName = CmsWorkplaceMessages.getResourceName(this, currentGalleryType);
+                String localizedName = CmsWorkplaceMessages.getResourceTypeName(this, currentGalleryType);
                 localizedGalleries.put(localizedName, currentGalleryType);
             }
 
@@ -932,6 +926,33 @@ public class CmsPreferences extends CmsTabDialog {
     }
 
     /**
+     * Builds the html for the workplace start site select box.<p>
+     * 
+     * @param htmlAttributes optional html attributes for the &lgt;select&gt; tag
+     * @return the html for the workplace start site select box
+     */
+    public String buildSelectUpload(String htmlAttributes) {
+
+        List<String> options = new ArrayList<String>();
+        List<String> values = new ArrayList<String>();
+        int selectedIndex = 0;
+        int pos = 0;
+
+        UploadVariant currentVariant = getParamTabWpUploadVariant();
+        for (UploadVariant variant : UploadVariant.values()) {
+
+            values.add(variant.toString());
+            options.add(getUploadVariantMessage(variant));
+
+            if (variant.equals(currentVariant)) {
+                selectedIndex = pos;
+            }
+            pos++;
+        }
+        return buildSelect(htmlAttributes, options, values, selectedIndex);
+    }
+
+    /**
      * Returns a html select box filled with the views accessible by the current user.<p>
      * 
      * @param htmlAttributes attributes that will be inserted into the generated html
@@ -944,7 +965,12 @@ public class CmsPreferences extends CmsTabDialog {
         int selectedIndex = 0;
 
         // loop through the vectors and fill the result vectors
-        Iterator i = OpenCms.getWorkplaceManager().getViews().iterator();
+        List<CmsWorkplaceView> list = new ArrayList<CmsWorkplaceView>(OpenCms.getWorkplaceManager().getViews());
+        CmsWorkplaceView directEditView = new CmsWorkplaceView(Messages.get().getBundle().key(
+            Messages.GUI_LABEL_DIRECT_EDIT_VIEW_0), CmsWorkplace.VIEW_DIRECT_EDIT, Float.valueOf(100));
+        list.add(directEditView);
+
+        Iterator i = list.iterator();
         int count = -1;
         while (i.hasNext()) {
             count++;
@@ -964,13 +990,11 @@ public class CmsPreferences extends CmsTabDialog {
                 String localizedKey = resolveMacros(view.getKey());
                 options.add(localizedKey);
                 values.add(view.getUri());
-
                 if (view.getUri().equals(getParamTabWpView())) {
                     selectedIndex = count;
                 }
             }
         }
-
         return buildSelect(htmlAttributes, options, values, selectedIndex);
     }
 
@@ -1528,13 +1552,13 @@ public class CmsPreferences extends CmsTabDialog {
     }
 
     /**
-     * Returns the "use upload applet" setting.<p>
+     * Returns the upload variant setting.<p>
      * 
-     * @return <code>"true"</code> if the "use upload applet" input is checked, otherwise ""
+     * @return <code>"applet"</code>, <code>"gwt"</code> or <code>"basic"</code>
      */
-    public String getParamTabWpUseUploadApplet() {
+    public UploadVariant getParamTabWpUploadVariant() {
 
-        return isParamEnabled(m_userSettings.useUploadApplet());
+        return m_userSettings.getUploadVariant();
     }
 
     /**
@@ -1550,7 +1574,6 @@ public class CmsPreferences extends CmsTabDialog {
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabParameterOrder()
      */
-    @Override
     public List getTabParameterOrder() {
 
         ArrayList orderList = new ArrayList(5);
@@ -1566,7 +1589,6 @@ public class CmsPreferences extends CmsTabDialog {
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabs()
      */
-    @Override
     public List getTabs() {
 
         ArrayList tabList = new ArrayList(6);
@@ -2030,14 +2052,14 @@ public class CmsPreferences extends CmsTabDialog {
     }
 
     /**
-     * Sets the "use upload applet" setting.<p>
+     * Sets the upload variant setting.<p>
      * 
-     * @param value <code>"true"</code> to enable the "use upload applet" setting, all others to
-     *        disable
+     * @param <code>"applet"</code>, <code>"basic"</code>, 
+     * <code>"gwt"</code>, <code>"true"</code> or <code>"false"</code>
      */
-    public void setParamTabWpUseUploadApplet(String value) {
+    public void setParamTabWpUploadVariant(String value) {
 
-        m_userSettings.setUseUploadApplet(Boolean.valueOf(value).booleanValue());
+        m_userSettings.setUploadVariant(value);
     }
 
     /**
@@ -2053,7 +2075,6 @@ public class CmsPreferences extends CmsTabDialog {
     /**
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
-    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         // create an empty user settings object
@@ -2097,7 +2118,6 @@ public class CmsPreferences extends CmsTabDialog {
      * 
      * @return the values of all parameter methods of this workplace class instance
      */
-    @Override
     protected Map paramValues() {
 
         Map map = super.paramValues();
@@ -2108,7 +2128,7 @@ public class CmsPreferences extends CmsTabDialog {
             if (paramName.startsWith(PARAM_PREFERREDEDITOR_PREFIX) || paramName.startsWith(PARAM_STARTGALLERY_PREFIX)) {
                 String paramValue = request.getParameter(paramName);
                 if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(paramValue)) {
-                    map.put(paramName, CmsEncoder.escapeSql(CmsEncoder.escapeXml(CmsEncoder.decode(paramValue))));
+                    map.put(paramName, CmsEncoder.decode(paramValue));
                 }
             }
         }
@@ -2167,7 +2187,7 @@ public class CmsPreferences extends CmsTabDialog {
         // first check presence of the setting in request parameter
         String preSelection = request.getParameter(PARAM_PREFERREDEDITOR_PREFIX + resourceType);
         if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(preSelection)) {
-            return CmsEncoder.escapeSql(CmsEncoder.escapeXml(CmsEncoder.decode(preSelection)));
+            return CmsEncoder.decode(preSelection);
         } else {
             // no value found in request, check current user settings (not the member!)
             CmsUserSettings userSettings = new CmsUserSettings(getSettings().getUser());
@@ -2188,7 +2208,7 @@ public class CmsPreferences extends CmsTabDialog {
         // first check presence of the setting in request parameter
         String preSelection = request.getParameter(PARAM_STARTGALLERY_PREFIX + galleryType);
         if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(preSelection)) {
-            return CmsEncoder.escapeSql(CmsEncoder.escapeXml(CmsEncoder.decode(preSelection)));
+            return CmsEncoder.decode(preSelection);
         } else {
             // no value found in request, check current user settings (not the member!)
             CmsUserSettings userSettings = new CmsUserSettings(getSettings().getUser());
@@ -2205,6 +2225,33 @@ public class CmsPreferences extends CmsTabDialog {
     private void fillUserSettings() {
 
         m_userSettings = new CmsUserSettings(getSettings().getUser());
+    }
+
+    /**
+     * Returns the message for a given upload variant.<p>
+     * 
+     * @param variant the variant to get the message for
+     * 
+     * @return the message
+     */
+    private String getUploadVariantMessage(UploadVariant variant) {
+
+        String message = null;
+        switch (variant) {
+            case applet:
+                message = key(Messages.GUI_PREF_USE_UPLOAD_APPLET_0);
+                break;
+            case basic:
+                message = key(Messages.GUI_PREF_USE_UPLOAD_BASIC_0);
+                break;
+            case gwt:
+                message = key(Messages.GUI_PREF_USE_UPLOAD_GWT_0);
+                break;
+            default:
+                message = key(Messages.ERR_PREF_UPLOAD_VARIANT_NOT_FOUND_0);
+                break;
+        }
+        return message;
     }
 
     /**

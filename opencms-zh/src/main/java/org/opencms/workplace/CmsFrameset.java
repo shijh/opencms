@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/CmsFrameset.java,v $
- * Date   : $Date: 2010-01-18 10:03:34 $
- * Version: $Revision: 1.97 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,7 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,13 +66,15 @@ import org.apache.commons.logging.Log;
  * </ul>
  * <p> 
  * 
- * @author  Alexander Kandzior 
- * 
- * @version $Revision: 1.97 $ 
- * 
  * @since 6.0.0 
  */
 public class CmsFrameset extends CmsWorkplace {
+
+    /** The names of the supported frames. */
+    private static final String[] FRAMES = {"top", "head", "body", "foot"};
+
+    /** The names of the supported frames in a list. */
+    public static final List<String> FRAMES_LIST = Collections.unmodifiableList(Arrays.asList(FRAMES));
 
     /** Path to the JSP workplace frame loader file. */
     public static final String JSP_WORKPLACE_URI = CmsWorkplace.VFS_PATH_VIEWS + "workplace.jsp";
@@ -89,12 +87,6 @@ public class CmsFrameset extends CmsWorkplace {
 
     /** The request parameter for the workplace view selection. */
     public static final String PARAM_WP_VIEW = "wpView";
-
-    /** The names of the supported frames. */
-    private static final String[] FRAMES = {"top", "head", "body", "foot"};
-
-    /** The names of the supported frames in a list. */
-    public static final List FRAMES_LIST = Collections.unmodifiableList(Arrays.asList(FRAMES));
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsFrameset.class);
@@ -166,7 +158,7 @@ public class CmsFrameset extends CmsWorkplace {
     public String getPreferencesButton() {
 
         int buttonStyle = getSettings().getUserSettings().getWorkplaceButtonStyle();
-        if (!getCms().getRequestContext().currentUser().isManaged()) {
+        if (!getCms().getRequestContext().getCurrentUser().isManaged()) {
             return button(
                 "../commons/preferences.jsp",
                 "body",
@@ -188,12 +180,12 @@ public class CmsFrameset extends CmsWorkplace {
     public String getProjectSelect(String htmlAttributes, String htmlWidth) {
 
         // get all project information
-        List allProjects;
+        List<CmsProject> allProjects;
         try {
             String ouFqn = "";
             CmsUserSettings settings = new CmsUserSettings(getCms());
             if (!settings.getListAllProjects()) {
-                ouFqn = getCms().getRequestContext().currentUser().getOuFqn();
+                ouFqn = getCms().getRequestContext().getCurrentUser().getOuFqn();
             }
             allProjects = OpenCms.getOrgUnitManager().getAllAccessibleProjects(
                 getCms(),
@@ -204,14 +196,14 @@ public class CmsFrameset extends CmsWorkplace {
             if (LOG.isErrorEnabled()) {
                 LOG.error(e.getLocalizedMessage(), e);
             }
-            allProjects = Collections.EMPTY_LIST;
+            allProjects = Collections.emptyList();
         }
 
         boolean singleOu = true;
         String ouFqn = null;
-        Iterator itProjects = allProjects.iterator();
+        Iterator<CmsProject> itProjects = allProjects.iterator();
         while (itProjects.hasNext()) {
-            CmsProject prj = (CmsProject)itProjects.next();
+            CmsProject prj = itProjects.next();
             if (prj.isOnlineProject()) {
                 // skip the online project
                 continue;
@@ -227,8 +219,8 @@ public class CmsFrameset extends CmsWorkplace {
             }
         }
 
-        List options = new ArrayList();
-        List values = new ArrayList();
+        List<String> options = new ArrayList<String>();
+        List<String> values = new ArrayList<String>();
         int selectedIndex = -1;
         int ouDefaultProjIndex = -1;
 
@@ -240,10 +232,10 @@ public class CmsFrameset extends CmsWorkplace {
         }
 
         // now loop through all projects and fill the result vectors
-        // modified by Shi Yusen, shiys@langhua.cn     2010-10-13
+        // modified by Shi Jinghai, huaruhai@hotmail.com   2011-12-14
         String locale = getCms().getRequestContext().getLocale().getLanguage();
         for (int i = 0, n = allProjects.size(); i < n; i++) {
-            CmsProject project = (CmsProject)allProjects.get(i);
+            CmsProject project = allProjects.get(i);
             String projectId = project.getUuid().toString();
             String projectName = project.getSimpleName();
             if (!singleOu && !project.isOnlineProject()) {
@@ -361,18 +353,18 @@ public class CmsFrameset extends CmsWorkplace {
      */
     public String getSiteSelect(String htmlAttributes) {
 
-        List options = new ArrayList();
-        List values = new ArrayList();
+        List<String> options = new ArrayList<String>();
+        List<String> values = new ArrayList<String>();
         int selectedIndex = 0;
 
-        List sites = OpenCms.getSiteManager().getAvailableSites(getCms(), true);
+        List<CmsSite> sites = OpenCms.getSiteManager().getAvailableSites(getCms(), true);
 
-        Iterator i = sites.iterator();
+        Iterator<CmsSite> i = sites.iterator();
         int pos = 0;
         while (i.hasNext()) {
-            CmsSite site = (CmsSite)i.next();
+            CmsSite site = i.next();
             values.add(site.getSiteRoot());
-            options.add(site.getTitle());
+            options.add(substituteSiteTitle(site.getTitle()));
             if (site.getSiteRoot().equals(getSettings().getSite())) {
                 // this is the user's current site
                 selectedIndex = pos;
@@ -401,15 +393,16 @@ public class CmsFrameset extends CmsWorkplace {
         }
         // add eventual request parameters to startup uri
         if (getJsp().getRequest().getParameterMap().size() > 0) {
-            Set params = getJsp().getRequest().getParameterMap().entrySet();
-            Iterator i = params.iterator();
+            @SuppressWarnings("unchecked")
+            Set<Entry<?, ?>> params = getJsp().getRequest().getParameterMap().entrySet();
+            Iterator<Entry<?, ?>> i = params.iterator();
             while (i.hasNext()) {
-                Map.Entry entry = (Map.Entry)i.next();
+                Entry<?, ?> entry = i.next();
                 result = CmsRequestUtil.appendParameter(result, (String)entry.getKey(), ((String[])entry.getValue())[0]);
             }
         }
         // append the frame name to the startup uri
-        return CmsEncoder.escapeXml(CmsRequestUtil.appendParameter(result, CmsFrameset.PARAM_WP_FRAME, FRAMES[2]));
+        return CmsRequestUtil.appendParameter(result, CmsFrameset.PARAM_WP_FRAME, FRAMES[2]);
     }
 
     /**
@@ -420,12 +413,12 @@ public class CmsFrameset extends CmsWorkplace {
      */
     public String getViewSelect(String htmlAttributes) {
 
-        List options = new ArrayList();
-        List values = new ArrayList();
+        List<String> options = new ArrayList<String>();
+        List<String> values = new ArrayList<String>();
         int selectedIndex = 0;
 
         // loop through the vectors and fill the result vectors
-        Iterator i = OpenCms.getWorkplaceManager().getViews().iterator();
+        Iterator<CmsWorkplaceView> i = OpenCms.getWorkplaceManager().getViews().iterator();
         int count = -1;
         String currentView = getSettings().getViewUri();
         if (CmsStringUtil.isNotEmpty(currentView)) {
@@ -436,7 +429,7 @@ public class CmsFrameset extends CmsWorkplace {
             }
         }
         while (i.hasNext()) {
-            CmsWorkplaceView view = (CmsWorkplaceView)i.next();
+            CmsWorkplaceView view = i.next();
             if (getCms().existsResource(view.getUri(), CmsResourceFilter.ONLY_VISIBLE_NO_DELETED)) {
                 count++;
                 // ensure the current user has +v+r permissions on the view

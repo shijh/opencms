@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/commons/CmsPropertyAdvanced.java,v $
- * Date   : $Date: 2010-01-18 10:01:39 $
- * Version: $Revision: 1.39 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,6 +27,7 @@
 
 package org.opencms.workplace.commons;
 
+import org.opencms.configuration.CmsParameterConfiguration;
 import org.opencms.file.CmsProperty;
 import org.opencms.file.CmsPropertyDefinition;
 import org.opencms.file.CmsResource;
@@ -71,7 +68,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.logging.Log;
 
 /**
@@ -82,10 +78,6 @@ import org.apache.commons.logging.Log;
  * <li>/commons/property_advanced.jsp
  * </ul>
  * <p>
- *
- * @author  Andreas Zahner 
- * 
- * @version $Revision: 1.39 $ 
  * 
  * @since 6.0.0 
  */
@@ -174,7 +166,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     private Map m_activeProperties;
 
     /** Parameters of this class. */
-    private Map m_handlerParams;
+    private CmsParameterConfiguration m_handlerParams;
 
     /** Helper object storing the current editable state of the resource. */
     private Boolean m_isEditable;
@@ -236,9 +228,9 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
      * @param list a list of CmsProperty objects
      * @return a map with CmsPropery object values keyed by property keys
      */
-    public static Map getPropertyMap(List list) {
+    public static Map<String, CmsProperty> getPropertyMap(List<CmsProperty> list) {
 
-        Map result = null;
+        Map<String, CmsProperty> result = null;
         String key = null;
         CmsProperty property = null;
 
@@ -251,7 +243,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
         // choose the fastest method to iterate the list
         if (list instanceof RandomAccess) {
             for (int i = 0, n = list.size(); i < n; i++) {
-                property = (CmsProperty)list.get(i);
+                property = list.get(i);
                 key = property.getName();
                 result.put(key, property);
             }
@@ -279,7 +271,6 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
      * 
      * @throws JspException if including an element fails
      */
-    @Override
     public void actionCloseDialog() throws JspException {
 
         if ((getAction() == ACTION_SAVE_EDIT) && MODE_WIZARD_CREATEINDEX.equals(getParamDialogmode())) {
@@ -403,14 +394,13 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     public void addConfigurationParameter(String paramName, String paramValue) {
 
         if (m_handlerParams == null) {
-            m_handlerParams = new MultiValueMap();
+            m_handlerParams = new CmsParameterConfiguration();
         }
         if (PARAM_HIDEADVANCED.equalsIgnoreCase(paramName)) {
-            m_handlerParams.put(PARAM_HIDEADVANCED, paramValue.trim());
+            m_handlerParams.add(PARAM_HIDEADVANCED, paramValue.trim());
         }
-
         if (PARAM_SHOWGROUP.equalsIgnoreCase(paramName)) {
-            m_handlerParams.put(PARAM_SHOWGROUP, paramValue.trim());
+            m_handlerParams.add(PARAM_SHOWGROUP, paramValue.trim());
         }
     }
 
@@ -476,7 +466,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
             // there are properties defined for this resource, build the form list
             result.append("<table border=\"0\">\n");
             result.append("<tr>\n");
-            // modified by Shi Yusen, shiys@langhua.cn 2010-10-12
+            // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
             result.append("\t<td class=\"textbold\" nowrap >");
             result.append(key(Messages.GUI_PROPERTY_0));
             result.append("</td>\n");
@@ -573,10 +563,10 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.configuration.I_CmsConfigurationParameterHandler#getConfiguration()
      */
-    public Map getConfiguration() {
+    public CmsParameterConfiguration getConfiguration() {
 
         if (m_handlerParams == null) {
-            m_handlerParams = new MultiValueMap();
+            m_handlerParams = new CmsParameterConfiguration();
         }
         return m_handlerParams;
     }
@@ -671,7 +661,6 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabParameterOrder()
      */
-    @Override
     public List getTabParameterOrder() {
 
         ArrayList orderList = new ArrayList(2);
@@ -683,7 +672,6 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabs()
      */
-    @Override
     public List getTabs() {
 
         ArrayList tabList = new ArrayList(2);
@@ -759,7 +747,6 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsDialog#dialogButtonsHtml(java.lang.StringBuffer, int, java.lang.String)
      */
-    @Override
     protected void dialogButtonsHtml(StringBuffer result, int button, String attribute) {
 
         attribute = appendDelimiter(attribute);
@@ -828,7 +815,6 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
-    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         // fill the parameter values in the get/set methods
@@ -901,7 +887,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
 
         if (m_isEditable == null) {
 
-            if (getCms().getRequestContext().currentProject().isOnlineProject()
+            if (getCms().getRequestContext().getCurrentProject().isOnlineProject()
                 || !getCms().isInsideCurrentProject(getParamResource())) {
                 // we are in the online project or resource does not belong to project, no editing allowed
                 m_isEditable = Boolean.FALSE;
@@ -946,10 +932,9 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
 
                 if (!lock.isNullLock()) {
                     // determine if resource is editable...
-                    if (lock.isExclusiveOwnedBy(getCms().getRequestContext().currentUser())
-                        || (lock.isDirectlyInherited() && lock.isOwnedBy(getCms().getRequestContext().currentUser()))) {
+                    if (lock.isDirectlyOwnedBy(getCms().getRequestContext().getCurrentUser())) {
                         // lock is exclusive and belongs to the current user
-                        if (lock.isInProject(getCms().getRequestContext().currentProject())
+                        if (lock.isInProject(getCms().getRequestContext().getCurrentProject())
                             || Boolean.valueOf(getParamUsetempfileproject()).booleanValue()) {
                             // resource is locked in the current project or the tempfileproject is used
                             m_isEditable = Boolean.TRUE;
@@ -962,7 +947,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
                         try {
                             List lockedResources = getCms().getLockedResources(
                                 resourceName,
-                                CmsLockFilter.FILTER_ALL.filterNotOwnedByUserId(getCms().getRequestContext().currentUser().getId()));
+                                CmsLockFilter.FILTER_ALL.filterNotOwnedByUserId(getCms().getRequestContext().getCurrentUser().getId()));
                             if (!lockedResources.isEmpty()) {
                                 m_isEditable = Boolean.FALSE;
                                 return m_isEditable.booleanValue();
@@ -1021,7 +1006,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
             }
         }
         result.append("<tr>\n");
-        // Modified by Shi Yusen, shiys@langhua.cn 2010-10-12
+        // Modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
         String propertyName =key("templateonedialog."+propName);
         if(CmsMessages.isUnknownKey(propertyName)){
         	propertyName=propName;

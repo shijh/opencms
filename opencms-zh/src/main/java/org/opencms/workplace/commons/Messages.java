@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/commons/Messages.java,v $
- * Date   : $Date: 2010-01-19 14:06:08 $
- * Version: $Revision: 1.32 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,15 +33,11 @@ import org.opencms.i18n.I_CmsMessageBundle;
 /**
  * Convenience class to access the localized messages of this OpenCms package.<p> 
  * 
- * @author Jan Baudisch 
- * 
- * @version $Revision: 1.32 $ 
- * 
  * @since 6.0.0 
  */
 public final class Messages extends A_CmsMessageBundle {
 
-	//Added by Shi Yusen, shiys@langhua.cn 2010-10-12
+	//Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
 	/** Message constant for key in the resource bundle. */
 	public static final String GUI_PROJECT_ONLINE_0 = "GUI_PROJECT_ONLINE_0";
 	/** Message constant for key in the resource bundle. */
@@ -153,7 +145,13 @@ public final class Messages extends A_CmsMessageBundle {
     public static final String ERR_PARSE_TIMESTAMP_1 = "ERR_PARSE_TIMESTAMP_1";
 
     /** Message constant for key in the resource bundle. */
+    public static final String ERR_PERMISSION_BLOCKING_LOCKS_0 = "ERR_PERMISSION_BLOCKING_LOCKS_0";
+
+    /** Message constant for key in the resource bundle. */
     public static final String ERR_PERMISSION_SELECT_TYPE_0 = "ERR_PERMISSION_SELECT_TYPE_0";
+
+    /** Message constant for key in the resource bundle. */
+    public static final String ERR_PREF_UPLOAD_VARIANT_NOT_FOUND_0 = "ERR_PREF_UPLOAD_VARIANT_NOT_FOUND_0";
 
     /** Message constant for key in the resource bundle. */
     public static final String ERR_PROGRESS_INTERRUPTED_0 = "ERR_PROGRESS_INTERRUPTED_0";
@@ -690,6 +688,9 @@ public final class Messages extends A_CmsMessageBundle {
     public static final String GUI_LABEL_DETAILS_0 = "GUI_LABEL_DETAILS_0";
 
     /** Message constant for key in the resource bundle. */
+    public static final String GUI_LABEL_DIRECT_EDIT_VIEW_0 = "GUI_LABEL_DIRECT_EDIT_VIEW_0";
+
+    /** Message constant for key in the resource bundle. */
     public static final String GUI_LABEL_EMAIL_0 = "GUI_LABEL_EMAIL_0";
 
     /** Message constant for key in the resource bundle. */
@@ -1026,6 +1027,9 @@ public final class Messages extends A_CmsMessageBundle {
     public static final String GUI_PREF_BUTTONSTYLE_TXT_0 = "GUI_PREF_BUTTONSTYLE_TXT_0";
 
     /** Message constant for key in the resource bundle. */
+    public static final String GUI_PREF_CHOOSE_UPLOAD_VARIANT_0 = "GUI_PREF_CHOOSE_UPLOAD_VARIANT_0";
+
+    /** Message constant for key in the resource bundle. */
     public static final String GUI_PREF_CHPWD_0 = "GUI_PREF_CHPWD_0";
 
     /** Message constant for key in the resource bundle. */
@@ -1168,6 +1172,12 @@ public final class Messages extends A_CmsMessageBundle {
 
     /** Message constant for key in the resource bundle. */
     public static final String GUI_PREF_USE_UPLOAD_APPLET_0 = "GUI_PREF_USE_UPLOAD_APPLET_0";
+
+    /** Message constant for key in the resource bundle. */
+    public static final String GUI_PREF_USE_UPLOAD_BASIC_0 = "GUI_PREF_USE_UPLOAD_BASIC_0";
+
+    /** Message constant for key in the resource bundle. */
+    public static final String GUI_PREF_USE_UPLOAD_GWT_0 = "GUI_PREF_USE_UPLOAD_GWT_0";
 
     /** Message constant for key in the resource bundle. */
     public static final String GUI_PRINCIPALS_DETAIL_OTHEROU_NAME_0 = "GUI_PRINCIPALS_DETAIL_OTHEROU_NAME_0";

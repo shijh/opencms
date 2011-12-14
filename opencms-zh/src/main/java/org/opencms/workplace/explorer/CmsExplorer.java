@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/explorer/CmsExplorer.java,v $
- * Date   : $Date: 2010-07-14 13:44:28 $
- * Version: $Revision: 1.49 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +39,7 @@ import org.opencms.file.collectors.I_CmsResourceCollector;
 import org.opencms.file.types.CmsResourceTypePlain;
 import org.opencms.i18n.CmsEncoder;
 import org.opencms.jsp.CmsJspActionElement;
+import org.opencms.loader.CmsLoaderException;
 import org.opencms.main.CmsException;
 import org.opencms.main.CmsLog;
 import org.opencms.main.CmsRuntimeException;
@@ -57,7 +54,6 @@ import org.opencms.workplace.list.I_CmsListResourceCollector;
 import org.opencms.workplace.tools.CmsToolManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -76,10 +72,6 @@ import org.apache.commons.logging.Log;
  * <li>/views/explorer/explorer_body_fs.jsp
  * </ul>
  * <p>
- *
- * @author  Alexander Kandzior 
- * 
- * @version $Revision: 1.49 $ 
  * 
  * @since 6.0.0 
  */
@@ -96,12 +88,6 @@ public class CmsExplorer extends CmsWorkplace {
 
     /** The "list" view selection. */
     public static final String VIEW_LIST = "listview";
-
-    /** All views as array. */
-    public static final String[] VIEWS = {VIEW_EXPLORER, VIEW_GALLERY, VIEW_LIST};
-
-    /** All views as list. */
-    public static final List VIEWS_LIST = Arrays.asList(VIEWS);
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsExplorer.class);
@@ -147,6 +133,26 @@ public class CmsExplorer extends CmsWorkplace {
      */
     public static String getWorkplaceExplorerLink(final CmsJspActionElement jsp, final String explorerRootPath) {
 
+        return getWorkplaceExplorerLink(jsp.getCmsObject(), explorerRootPath);
+
+    }
+
+    /**
+     * Creates a link for the OpenCms workplace that will reload the whole workplace, switch to the explorer view, the
+     * site of the given explorerRootPath and show the folder given in the explorerRootPath.
+     * <p>
+     * 
+     * @param cms
+     *            the cms object
+     * 
+     * @param explorerRootPath
+     *            a root relative folder link (has to end with '/').
+     * 
+     * @return a link for the OpenCms workplace that will reload the whole workplace, switch to the explorer view, the
+     *         site of the given explorerRootPath and show the folder given in the explorerRootPath.
+     */
+    public static String getWorkplaceExplorerLink(final CmsObject cms, final String explorerRootPath) {
+
         // split the root site: 
         StringBuffer siteRoot = new StringBuffer();
         StringBuffer path = new StringBuffer('/');
@@ -165,8 +171,8 @@ public class CmsExplorer extends CmsWorkplace {
             }
             count++;
         }
-        String targetVfsFolder = siteRoot.toString();
-        String targetSiteRoot = path.toString();
+        String targetSiteRoot = siteRoot.toString();
+        String targetVfsFolder = path.toString();
         // build the link
         StringBuilder link2Source = new StringBuilder();
         link2Source.append("/system/workplace/views/workplace.jsp?");
@@ -176,14 +182,16 @@ public class CmsExplorer extends CmsWorkplace {
         link2Source.append("&");
         link2Source.append(CmsFrameset.PARAM_WP_VIEW);
         link2Source.append("=");
-        link2Source.append(jsp.link("/system/workplace/views/explorer/explorer_fs.jsp"));
+        link2Source.append(OpenCms.getLinkManager().substituteLinkForUnknownTarget(
+            cms,
+            "/system/workplace/views/explorer/explorer_fs.jsp"));
         link2Source.append("&");
         link2Source.append(CmsWorkplace.PARAM_WP_SITE);
         link2Source.append("=");
         link2Source.append(targetSiteRoot);
 
         String result = link2Source.toString();
-        result = jsp.link(result);
+        result = OpenCms.getLinkManager().substituteLinkForUnknownTarget(cms, result);
         return result;
     }
 
@@ -196,7 +204,7 @@ public class CmsExplorer extends CmsWorkplace {
      */
     public String getExplorerBodyUri() {
 
-        String body = "explorer_body_fs.jsp";
+        String body = CmsWorkplace.VFS_PATH_VIEWS + "explorer/explorer_body_fs.jsp";
         if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(m_uri)) {
             body += "?" + PARAMETER_URI + "=" + m_uri;
         }
@@ -244,7 +252,7 @@ public class CmsExplorer extends CmsWorkplace {
         content.append(getInitializationHeader());
 
         // now get the entries for the file list
-        List resources = getResources(getSettings().getExplorerResource());
+        List<CmsResource> resources = getResources(getSettings().getExplorerResource());
 
         // if a folder contains to much entries we split them to pages of C_ENTRYS_PER_PAGE length
         int startat = 0;
@@ -292,14 +300,14 @@ public class CmsExplorer extends CmsWorkplace {
                 referenceProject = getCms().readProject(getSettings().getExplorerProjectId());
             }
         } catch (CmsException ex) {
-            referenceProject = getCms().getRequestContext().currentProject();
+            referenceProject = getCms().getRequestContext().getCurrentProject();
         }
 
         CmsResourceUtil resUtil = new CmsResourceUtil(getCms());
         resUtil.setReferenceProject(referenceProject);
 
         for (int i = startat; i < stopat; i++) {
-            CmsResource res = (CmsResource)resources.get(i);
+            CmsResource res = resources.get(i);
             resUtil.setResource(res);
             content.append(getInitializationEntry(
                 resUtil,
@@ -603,7 +611,14 @@ public class CmsExplorer extends CmsWorkplace {
 
         // the resource id of plain resources
         content.append("top.plainresid=");
-        content.append(CmsResourceTypePlain.getStaticTypeId());
+        int plainId;
+        try {
+            plainId = OpenCms.getResourceManager().getResourceType(CmsResourceTypePlain.getStaticTypeName()).getTypeId();
+        } catch (CmsLoaderException e) {
+            // this should really never happen
+            plainId = CmsResourceTypePlain.getStaticTypeId();
+        }
+        content.append(plainId);
         content.append(";\n");
 
         // the auto lock setting
@@ -638,20 +653,32 @@ public class CmsExplorer extends CmsWorkplace {
         content.append("top.enableNewButton(");
         content.append(writeAccess);
         content.append(");\n");
+
         // the folder
+        String siteFolderPath = CmsResource.getFolderPath(getCms().getRequestContext().removeSiteRoot(
+            currentResource.getRootPath()));
+        if (OpenCms.getSiteManager().startsWithShared(siteFolderPath)
+            && OpenCms.getSiteManager().startsWithShared(getCms().getRequestContext().getSiteRoot())) {
+            siteFolderPath = siteFolderPath.substring(OpenCms.getSiteManager().getSharedFolder().length() - 1);
+        }
+
         content.append("top.setDirectory(\"");
         content.append(CmsResource.getFolderPath(currentResource.getRootPath()));
         content.append("\",\"");
-        content.append(CmsResource.getFolderPath(getCms().getRequestContext().removeSiteRoot(
-            currentResource.getRootPath())));
+        content.append(siteFolderPath);
+
         content.append("\");\n");
         content.append("top.rD();\n");
-        List reloadTreeFolders = (List)getJsp().getRequest().getAttribute(REQUEST_ATTRIBUTE_RELOADTREE);
+
+        //unchecked cast to List<String>
+        @SuppressWarnings("unchecked")
+        List<String> reloadTreeFolders = (List<String>)getJsp().getRequest().getAttribute(REQUEST_ATTRIBUTE_RELOADTREE);
+
         if (reloadTreeFolders != null) {
             // folder tree has to be reloaded after copy, delete, move, rename operation
             String reloadFolder = "";
             for (int i = 0; i < reloadTreeFolders.size(); i++) {
-                reloadFolder = (String)reloadTreeFolders.get(i);
+                reloadFolder = reloadTreeFolders.get(i);
                 if (getSettings().getUserSettings().getRestrictExplorerView()) {
                     // in restricted view, adjust folder path to reload: remove restricted folder name
                     if (reloadFolder.length() >= rootFolder.length()) {
@@ -695,14 +722,10 @@ public class CmsExplorer extends CmsWorkplace {
     @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
-        String currentResource = CmsEncoder.escapeXml(request.getParameter(PARAMETER_RESOURCE));
-        String mode = CmsEncoder.escapeXml(request.getParameter(PARAMETER_MODE));
+        String currentResource = request.getParameter(PARAMETER_RESOURCE);
+        String mode = request.getParameter(PARAMETER_MODE);
         if (CmsStringUtil.isNotEmpty(mode)) {
-            if (VIEWS_LIST.contains(mode)) {
-                settings.setExplorerMode(mode);
-            } else {
-                settings.setExplorerMode(VIEW_EXPLORER);
-            }
+            settings.setExplorerMode(mode);
         } else {
             // null argument, use explorer view if no other view currently specified
             if (!(VIEW_GALLERY.equals(settings.getExplorerMode()) || VIEW_LIST.equals(settings.getExplorerMode()))) {
@@ -710,7 +733,7 @@ public class CmsExplorer extends CmsWorkplace {
             }
         }
 
-        m_uri = CmsEncoder.escapeXml(request.getParameter(PARAMETER_URI));
+        m_uri = request.getParameter(PARAMETER_URI);
 
         if (CmsStringUtil.isNotEmpty(currentResource) && folderExists(getCms(), currentResource)) {
             // resource is a folder, set resource name
@@ -724,7 +747,7 @@ public class CmsExplorer extends CmsWorkplace {
             }
         }
 
-        String selectedPage = CmsEncoder.escapeXml(request.getParameter(PARAMETER_PAGE));
+        String selectedPage = request.getParameter(PARAMETER_PAGE);
         if (selectedPage != null) {
             int page = 1;
             try {
@@ -760,7 +783,7 @@ public class CmsExplorer extends CmsWorkplace {
         }
 
         // the flat url 
-        settings.setExplorerFlaturl(CmsEncoder.escapeXml(request.getParameter(PARAMETER_FLATURL)));
+        settings.setExplorerFlaturl(request.getParameter(PARAMETER_FLATURL));
     }
 
     /**
@@ -793,7 +816,7 @@ public class CmsExplorer extends CmsWorkplace {
      * @param resource the resource to read the files from (usually a folder)
      * @return a list of resources to display
      */
-    private List getResources(String resource) {
+    private List<CmsResource> getResources(String resource) {
 
         if (VIEW_LIST.equals(getSettings().getExplorerMode())) {
             // check if the list must show the list view or the check content view
@@ -811,7 +834,7 @@ public class CmsExplorer extends CmsWorkplace {
                     }
                 }
             }
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } else if (VIEW_GALLERY.equals(getSettings().getExplorerMode())) {
             // select galleries
             A_CmsAjaxGallery gallery = A_CmsAjaxGallery.createInstance(getSettings().getGalleryType(), getJsp());
@@ -819,16 +842,16 @@ public class CmsExplorer extends CmsWorkplace {
         } else {
             // default is to return a list of all files in the folder
             try {
-            	//Modified by Shi Yusen, shiys@langhua.cn 2010-10-13
+            	//Modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
         		CmsUserSettings settings = new CmsUserSettings(getCms());
     			int treesort = settings.getExplorerTreeSort();
-    			List resources = getCms().getResourcesInFolder(resource,
+    			List<CmsResource> resources = getCms().getResourcesInFolder(resource,
 						CmsResourceFilter.ONLY_VISIBLE);
 				if (treesort == 1) {
-					List resourcesFolder = new ArrayList();
+					List<CmsResource> resourcesFolder = new ArrayList<CmsResource>();
 					CmsResource res =null;
 					for(int i=0;i<resources.size();i++){
-						  res = (CmsResource)resources.get(i);
+						  res = (CmsResource) resources.get(i);
 						  if(res.isFolder()){
 							  resourcesFolder.add(res);
 						  }
@@ -844,10 +867,10 @@ public class CmsExplorer extends CmsWorkplace {
 					Collections.sort(resources, comparator);
 					return resources;
 				} else if (treesort == 3) {
-					List resourcesFolder = new ArrayList();
+					List<CmsResource> resourcesFolder = new ArrayList<CmsResource>();
 					CmsResource res =null;
 					for (int i=0;i<resources.size();i++){
-						res = (CmsResource)resources.get(i);
+						res = (CmsResource) resources.get(i);
 						if (res.isFolder()){
 						    resourcesFolder.add(res);
 						}
@@ -868,7 +891,7 @@ public class CmsExplorer extends CmsWorkplace {
                 if (LOG.isInfoEnabled()) {
                     LOG.info(e);
                 }
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
     }

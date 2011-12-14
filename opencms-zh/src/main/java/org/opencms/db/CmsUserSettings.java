@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/db/CmsUserSettings.java,v $
- * Date   : $Date: 2010-01-18 10:01:23 $
- * Version: $Revision: 1.54 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,9 +31,9 @@ import org.opencms.configuration.CmsDefaultUserSettings;
 import org.opencms.configuration.CmsWorkplaceConfiguration;
 import org.opencms.configuration.I_CmsXmlConfiguration;
 import org.opencms.file.CmsObject;
-import org.opencms.file.CmsUser;
 import org.opencms.file.CmsResource.CmsResourceCopyMode;
 import org.opencms.file.CmsResource.CmsResourceDeleteMode;
+import org.opencms.file.CmsUser;
 import org.opencms.i18n.CmsLocaleManager;
 import org.opencms.main.CmsContextInfo;
 import org.opencms.main.CmsException;
@@ -53,17 +49,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 
 /**
  * Object to conveniently access and modify the users workplace settings.<p>
- *
- * @author  Andreas Zahner 
- * @author  Michael Emmerich 
- * 
- * @version $Revision: 1.54 $
  * 
  * @since 6.0.0
  */
@@ -136,6 +128,16 @@ public class CmsUserSettings {
         }
     }
 
+    /** A enum for the different upload variants. */
+    public enum UploadVariant {
+        /** The java applet upload. */
+        applet,
+        /** The default html upload. */
+        basic,
+        /** The gwt upload. */
+        gwt,
+    }
+
     /** Key for additional info address. */
     public static final String ADDITIONAL_INFO_ADDRESS = "USER_ADDRESS";
 
@@ -157,6 +159,9 @@ public class CmsUserSettings {
     /** Key for additional info explorer settings. */
     public static final String ADDITIONAL_INFO_EXPLORERSETTINGS = "USER_EXPLORERSETTINGS";
 
+    /** Key for additional info institution. */
+    public static final String ADDITIONAL_INFO_INSTITUTION = "USER_INSTITUTION";
+
     /** Key for additional info flags. */
     public static final String ADDITIONAL_INFO_PREFERENCES = "USER_PREFERENCES";
 
@@ -165,13 +170,6 @@ public class CmsUserSettings {
 
     /** Key for additional info time warp. */
     public static final String ADDITIONAL_INFO_TIMEWARP = "USER_TIMEWARP";
-
-    /**
-     *  Key for additional info city.
-     *  
-     *  @deprecated use {@link #ADDITIONAL_INFO_CITY} instead
-     */
-    public static final String ADDITIONAL_INFO_TOWN = "USER_TOWN";
 
     /** Key for additional info upload applet client folder path. */
     public static final String ADDITIONAL_INFO_UPLOADAPPLET_CLIENTFOLDER = "USER_UPLOADAPPLET_CLIENTFOLDER";
@@ -221,6 +219,9 @@ public class CmsUserSettings {
     /** Flag for displaying the user who last modified column. */
     public static final int FILELIST_USER_LASTMODIFIED = 2048;
 
+    /** Identifier for the login user agreement accepted information. */
+    public static final String LOGIN_USERAGREEMENT_ACCEPTED = "LOGIN_UA_ACCEPTED";
+
     /** Identifier prefix for all keys in the user additional info table. */
     public static final String PREFERENCES = "USERPREFERENCES_";
 
@@ -266,7 +267,7 @@ public class CmsUserSettings {
 
     private int m_editorButtonStyle;
 
-    private TreeMap m_editorSettings;
+    private SortedMap<String, String> m_editorSettings;
 
     private int m_explorerButtonStyle;
 
@@ -311,7 +312,7 @@ public class CmsUserSettings {
     private String m_startFolder;
 
     /** Contains the key value entries with start setting for different gallery types. */
-    private TreeMap m_startGalleriesSettings;
+    private SortedMap<String, String> m_startGalleriesSettings;
 
     private String m_startSite;
 
@@ -320,10 +321,11 @@ public class CmsUserSettings {
     /** The custom user surf time. */
     private long m_timeWarp;
 
-    private boolean m_uploadApplet;
-
     /** The path of the preselected folder for the upload applet on the client machine. */
     private String m_uploadAppletClientFolder;
+
+    /** Stores the upload variant enum. */
+    private UploadVariant m_uploadVariant;
 
     private CmsUser m_user;
 
@@ -339,10 +341,10 @@ public class CmsUserSettings {
     /** Workplace search result list view style. */
     private CmsSearchResultStyle m_workplaceSearchViewStyle;
 
-    /** Added by Shi Yusen, shiys@langhua.cn 2010-10-12*/
+    /** Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
     private int m_explorerTreeLabel;
     
-    /** Added by Shi Yusen, shiys@langhua.cn 2010-10-12*/
+    /** Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
     private int m_explorerTreeSort;
     
     /**
@@ -355,12 +357,12 @@ public class CmsUserSettings {
         m_explorerButtonStyle = CmsUserSettings.BUTTONSTYLE_DEFAULT;
         m_explorerFileEntries = CmsUserSettings.ENTRYS_PER_PAGE_DEFAULT;
         m_explorerSettings = CmsUserSettings.FILELIST_NAME;
-        m_editorSettings = new TreeMap();
-        m_startGalleriesSettings = new TreeMap();
+        m_editorSettings = new TreeMap<String, String>();
+        m_startGalleriesSettings = new TreeMap<String, String>();
         m_showFileUploadButton = true;
         m_showPublishNotification = false;
         m_listAllProjects = false;
-        m_uploadApplet = true;
+        m_uploadVariant = UploadVariant.gwt;
         m_publishButtonAppearance = CmsDefaultUserSettings.PUBLISHBUTTON_SHOW_ALWAYS;
         m_newFolderCreateIndexPage = Boolean.TRUE;
         m_newFolderEditProperties = Boolean.TRUE;
@@ -376,7 +378,7 @@ public class CmsUserSettings {
      */
     public CmsUserSettings(CmsObject cms) {
 
-        this(cms.getRequestContext().currentUser());
+        this(cms.getRequestContext().getCurrentUser());
     }
 
     /**
@@ -508,7 +510,7 @@ public class CmsUserSettings {
      * 
      * @return the editor settings of the user
      */
-    public Map getEditorSettings() {
+    public Map<String, String> getEditorSettings() {
 
         return m_editorSettings;
     }
@@ -605,7 +607,7 @@ public class CmsUserSettings {
      */
     public String getPreferredEditor(String resourceType) {
 
-        return (String)m_editorSettings.get(resourceType);
+        return m_editorSettings.get(resourceType);
     }
 
     /**
@@ -679,7 +681,7 @@ public class CmsUserSettings {
      * 
      * @return the start galleries settings of the user
      */
-    public Map getStartGalleriesSettings() {
+    public Map<String, String> getStartGalleriesSettings() {
 
         return m_startGalleriesSettings;
     }
@@ -692,7 +694,7 @@ public class CmsUserSettings {
      */
     public String getStartGallery(String galleryType) {
 
-        return (String)m_startGalleriesSettings.get(galleryType);
+        return m_startGalleriesSettings.get(galleryType);
 
     }
 
@@ -784,6 +786,16 @@ public class CmsUserSettings {
     public String getUploadAppletClientFolder() {
 
         return m_uploadAppletClientFolder;
+    }
+
+    /**
+     * Returns the uploadVariant.<p>
+     *
+     * @return the uploadVariant
+     */
+    public UploadVariant getUploadVariant() {
+
+        return m_uploadVariant;
     }
 
     /**
@@ -893,13 +905,10 @@ public class CmsUserSettings {
             m_showPublishNotification = OpenCms.getWorkplaceManager().getDefaultUserSettings().getShowPublishNotification();
         }
         // workplace upload applet mode
-        try {
-            m_uploadApplet = ((Boolean)m_user.getAdditionalInfo(PREFERENCES
-                + CmsWorkplaceConfiguration.N_WORKPLACEGENERALOPTIONS
-                + CmsWorkplaceConfiguration.N_UPLOADAPPLET)).booleanValue();
-        } catch (Throwable t) {
-            m_uploadApplet = OpenCms.getWorkplaceManager().getDefaultUserSettings().useUploadApplet();
-        }
+        setUploadVariant(String.valueOf(m_user.getAdditionalInfo(PREFERENCES
+            + CmsWorkplaceConfiguration.N_WORKPLACEGENERALOPTIONS
+            + CmsWorkplaceConfiguration.N_UPLOADAPPLET)));
+
         // locale
         Object obj = m_user.getAdditionalInfo(PREFERENCES
             + CmsWorkplaceConfiguration.N_WORKPLACESTARTUPSETTINGS
@@ -951,7 +960,7 @@ public class CmsUserSettings {
         } catch (Throwable t) {
             m_explorerFileEntries = OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerFileEntries();
         }
-        // explorer tree label. added by Shi Yusen, shiys@langhua.cn    2010-10-12    
+        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13     
         try {
             m_explorerTreeLabel = ((Integer)m_user.getAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -959,7 +968,7 @@ public class CmsUserSettings {
         } catch (Throwable t) {
             m_explorerTreeLabel = OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerTreeLabel();
         }
-        // explorer tree Sort. added by Shi Yusen, shiys@langhua.cn    2010-10-12    
+        // explorer tree Sort. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13     
         try {
             m_explorerTreeSort = ((Integer)m_user.getAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -1064,31 +1073,32 @@ public class CmsUserSettings {
             m_directeditButtonStyle = OpenCms.getWorkplaceManager().getDefaultUserSettings().getDirectEditButtonStyle();
         }
         // editor settings
-        m_editorSettings = new TreeMap();
-        Iterator itKeys = m_user.getAdditionalInfo().keySet().iterator();
+        m_editorSettings = new TreeMap<String, String>();
+        Iterator<String> itKeys = m_user.getAdditionalInfo().keySet().iterator();
         while (itKeys.hasNext()) {
-            String key = (String)itKeys.next();
+            String key = itKeys.next();
             if (key.startsWith(PREFERENCES + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS)) {
                 String editKey = key.substring((PREFERENCES + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS).length());
-                m_editorSettings.put(editKey, m_user.getAdditionalInfo(key));
+                m_editorSettings.put(editKey, m_user.getAdditionalInfo(key).toString());
             }
         }
         if (m_editorSettings.isEmpty()) {
-            m_editorSettings = new TreeMap(OpenCms.getWorkplaceManager().getDefaultUserSettings().getEditorSettings());
+            m_editorSettings = new TreeMap<String, String>(
+                OpenCms.getWorkplaceManager().getDefaultUserSettings().getEditorSettings());
 
         }
         // start gallery settings 
-        m_startGalleriesSettings = new TreeMap();
-        Iterator gKeys = m_user.getAdditionalInfo().keySet().iterator();
+        m_startGalleriesSettings = new TreeMap<String, String>();
+        Iterator<String> gKeys = m_user.getAdditionalInfo().keySet().iterator();
         while (gKeys.hasNext()) {
-            String key = (String)gKeys.next();
+            String key = gKeys.next();
             if (key.startsWith(PREFERENCES + CmsWorkplaceConfiguration.N_STARTGALLERIES)) {
                 String editKey = key.substring((PREFERENCES + CmsWorkplaceConfiguration.N_STARTGALLERIES).length());
-                m_startGalleriesSettings.put(editKey, m_user.getAdditionalInfo(key));
+                m_startGalleriesSettings.put(editKey, m_user.getAdditionalInfo(key).toString());
             }
         }
         if (m_startGalleriesSettings.isEmpty()) {
-            m_startGalleriesSettings = new TreeMap();
+            m_startGalleriesSettings = new TreeMap<String, String>();
         }
 
         // start site
@@ -1128,9 +1138,9 @@ public class CmsUserSettings {
         try {
             boolean enabled = ((Boolean)m_user.getAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_ENABLED)).booleanValue();
             String destination = (String)m_user.getAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_DESTINATION);
-            List vfsList = CmsStringUtil.splitAsList((String)m_user.getAdditionalInfo(PREFERENCES
-                + SYNC_SETTINGS
-                + SYNC_VFS_LIST), '|');
+            List<String> vfsList = CmsStringUtil.splitAsList(
+                (String)m_user.getAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_VFS_LIST),
+                '|');
             m_synchronizeSettings = new CmsSynchronizeSettings();
             m_synchronizeSettings.setEnabled(enabled);
             m_synchronizeSettings.setDestinationPathInRfs(destination);
@@ -1191,10 +1201,10 @@ public class CmsUserSettings {
                 + CmsWorkplaceConfiguration.N_REPORTTYPE);
         }
         // workplace upload applet
-        if (useUploadApplet() != OpenCms.getWorkplaceManager().getDefaultUserSettings().useUploadApplet()) {
+        if (getUploadVariant() != OpenCms.getWorkplaceManager().getDefaultUserSettings().getUploadVariant()) {
             m_user.setAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_WORKPLACEGENERALOPTIONS
-                + CmsWorkplaceConfiguration.N_UPLOADAPPLET, Boolean.valueOf(useUploadApplet()));
+                + CmsWorkplaceConfiguration.N_UPLOADAPPLET, getUploadVariant().name());
         } else if (cms != null) {
             m_user.deleteAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_WORKPLACEGENERALOPTIONS
@@ -1313,7 +1323,7 @@ public class CmsUserSettings {
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
                 + CmsWorkplaceConfiguration.N_ENTRIES);
         }
-        // explorer tree label. added by Shi Yusen, shiys@langhua.cn  2010-10-12
+        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
         if (getExplorerTreeLabel() != OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerTreeLabel()) {
             m_user.setAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -1323,7 +1333,7 @@ public class CmsUserSettings {
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
                 + CmsWorkplaceConfiguration.N_TREELABEL);
         }
-        //explorer tree sort. added by Shi Yusen, shiys@langhua.cn  2010-10-12
+        //explorer tree sort. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
         if (getExplorerTreeSort() != OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerTreeSort()) {
             m_user.setAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -1449,13 +1459,13 @@ public class CmsUserSettings {
         }
         // editor settings
         if (m_editorSettings.size() > 0) {
-            Iterator itEntries = m_editorSettings.entrySet().iterator();
+            Iterator<Map.Entry<String, String>> itEntries = m_editorSettings.entrySet().iterator();
             while (itEntries.hasNext()) {
-                Map.Entry entry = (Map.Entry)itEntries.next();
+                Map.Entry<String, String> entry = itEntries.next();
                 if (entry.getValue() != null) {
-                    m_user.setAdditionalInfo(PREFERENCES
-                        + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS
-                        + entry.getKey(), entry.getValue().toString());
+                    m_user.setAdditionalInfo(
+                        PREFERENCES + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS + entry.getKey(),
+                        entry.getValue());
                 } else {
                     m_user.deleteAdditionalInfo(PREFERENCES
                         + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS
@@ -1463,9 +1473,9 @@ public class CmsUserSettings {
                 }
             }
         } else if (cms != null) {
-            Iterator itKeys = m_user.getAdditionalInfo().keySet().iterator();
+            Iterator<String> itKeys = m_user.getAdditionalInfo().keySet().iterator();
             while (itKeys.hasNext()) {
-                String key = (String)itKeys.next();
+                String key = itKeys.next();
                 if (key.startsWith(PREFERENCES + CmsWorkplaceConfiguration.N_EDITORPREFERREDEDITORS)) {
                     m_user.deleteAdditionalInfo(key);
                 }
@@ -1473,13 +1483,13 @@ public class CmsUserSettings {
         }
         // start settings for galleries
         if (m_startGalleriesSettings.size() > 0) {
-            Iterator itEntries = m_startGalleriesSettings.entrySet().iterator();
+            Iterator<Map.Entry<String, String>> itEntries = m_startGalleriesSettings.entrySet().iterator();
             while (itEntries.hasNext()) {
-                Map.Entry entry = (Map.Entry)itEntries.next();
+                Map.Entry<String, String> entry = itEntries.next();
                 if ((entry.getValue() != null) && !entry.getValue().equals(CmsPreferences.INPUT_DEFAULT)) {
                     m_user.setAdditionalInfo(
                         PREFERENCES + CmsWorkplaceConfiguration.N_STARTGALLERIES + entry.getKey(),
-                        entry.getValue().toString());
+                        entry.getValue());
                 } else {
                     // delete from user settings if value of the entry is null or "default" 
                     m_user.deleteAdditionalInfo(PREFERENCES
@@ -1488,9 +1498,9 @@ public class CmsUserSettings {
                 }
             }
         } else if (cms != null) {
-            Iterator itKeys = m_user.getAdditionalInfo().keySet().iterator();
+            Iterator<String> itKeys = m_user.getAdditionalInfo().keySet().iterator();
             while (itKeys.hasNext()) {
-                String key = (String)itKeys.next();
+                String key = itKeys.next();
                 if (key.startsWith(PREFERENCES + CmsWorkplaceConfiguration.N_STARTGALLERIES)) {
                     m_user.deleteAdditionalInfo(key);
                 }
@@ -1512,9 +1522,9 @@ public class CmsUserSettings {
             m_user.setAdditionalInfo(
                 PREFERENCES + SYNC_SETTINGS + SYNC_DESTINATION,
                 getSynchronizeSettings().getDestinationPathInRfs());
-            m_user.setAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_VFS_LIST, CmsStringUtil.collectionAsString(
-                getSynchronizeSettings().getSourceListInVfs(),
-                "|"));
+            m_user.setAdditionalInfo(
+                PREFERENCES + SYNC_SETTINGS + SYNC_VFS_LIST,
+                CmsStringUtil.collectionAsString(getSynchronizeSettings().getSourceListInVfs(), "|"));
         } else {
             m_user.deleteAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_ENABLED);
             m_user.deleteAdditionalInfo(PREFERENCES + SYNC_SETTINGS + SYNC_DESTINATION);
@@ -1654,9 +1664,9 @@ public class CmsUserSettings {
      * 
      * @param settings the editor settings of the user
      */
-    public void setEditorSettings(Map settings) {
+    public void setEditorSettings(Map<String, String> settings) {
 
-        m_editorSettings = new TreeMap(settings);
+        m_editorSettings = new TreeMap<String, String>(settings);
     }
 
     /**
@@ -1973,9 +1983,9 @@ public class CmsUserSettings {
      * 
      * @param settings the start galleries setting of the user
      */
-    public void setStartGalleriesSetting(Map settings) {
+    public void setStartGalleriesSetting(Map<String, String> settings) {
 
-        m_startGalleriesSettings = new TreeMap(settings);
+        m_startGalleriesSettings = new TreeMap<String, String>(settings);
     }
 
     /**
@@ -2061,6 +2071,38 @@ public class CmsUserSettings {
     }
 
     /**
+     * Sets the upload variant.<p>
+     *
+     * @param uploadVariant the upload variant as String
+     */
+    public void setUploadVariant(String uploadVariant) {
+
+        UploadVariant upload = null;
+        try {
+            upload = UploadVariant.valueOf(uploadVariant);
+        } catch (Exception e) {
+            // may happen, set default
+            if (upload == null) {
+                upload = OpenCms.getWorkplaceManager().getDefaultUserSettings().getUploadVariant();
+            }
+            if (upload == null) {
+                upload = UploadVariant.gwt;
+            }
+        }
+        setUploadVariant(upload);
+    }
+
+    /**
+     * Sets the upload variant.<p>
+     *
+     * @param uploadVariant the upload variant
+     */
+    public void setUploadVariant(UploadVariant uploadVariant) {
+
+        m_uploadVariant = uploadVariant;
+    }
+
+    /**
      * Sets the current user for the settings.<p>
      * 
      * @param user the CmsUser
@@ -2068,16 +2110,6 @@ public class CmsUserSettings {
     public void setUser(CmsUser user) {
 
         m_user = user;
-    }
-
-    /**
-     *  Sets if the upload applet should be used.<p>
-     * 
-     * @param use true if the upload applet should be used, otherwise false
-     */
-    public void setUseUploadApplet(boolean use) {
-
-        m_uploadApplet = use;
     }
 
     /**
@@ -2251,16 +2283,6 @@ public class CmsUserSettings {
     }
 
     /**
-     * Determines if the upload applet should be used.<p>
-     * 
-     * @return true if the if the upload applet should be used, otherwise false
-     */
-    public boolean useUploadApplet() {
-
-        return m_uploadApplet;
-    }
-
-    /**
      * Sets a specific explorer setting depending on the set parameter.<p>
      * 
      * @param set true if the setting should be set, otherwise false
@@ -2275,7 +2297,7 @@ public class CmsUserSettings {
         }
     }
     
-    //add by Shi Yusen, shiys@langhua.cn 2010-10-12
+    //add by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 
     /**
      * Returns the explorer tree label of the user.<p>
      * 

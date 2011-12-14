@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src-modules/org/opencms/workplace/tools/searchindex/CmsSearchWidgetDialog.java,v $
- * Date   : $Date: 2010-01-18 10:01:26 $
- * Version: $Revision: 1.15 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,10 +67,6 @@ import javax.servlet.jsp.PageContext;
  * as widget object to fill. 
  * <p>
  * 
- * @author Achim Westermann 
- * 
- * @version $Revision: 1.15 $
- * 
  * @since 6.0.0
  */
 public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
@@ -134,7 +126,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#actionToggleElement()
      */
-    @Override
     public void actionToggleElement() {
 
         super.actionToggleElement();
@@ -149,7 +140,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return the standard javascript for submitting the dialog
      */
-    @Override
     public String dialogScriptSubmit() {
 
         StringBuffer html = new StringBuffer(512);
@@ -335,7 +325,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#closeDialogOnCommit()
      */
-    @Override
     protected boolean closeDialogOnCommit() {
 
         return false;
@@ -344,7 +333,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
     /**
      * @see org.opencms.workplace.CmsWidgetDialog#createDialogHtml(java.lang.String)
      */
-    @Override
     protected String createDialogHtml(String dialog) {
 
         StringBuffer result = new StringBuffer(1024);
@@ -391,7 +379,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return html code
      */
-    @Override
     protected String defaultActionHtmlContent() {
 
         StringBuffer result = new StringBuffer(2048);
@@ -431,7 +418,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#defineWidgets()
      */
-    @Override
     protected void defineWidgets() {
 
         // initialization -> initUserObject
@@ -476,7 +462,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.tools.searchindex.A_CmsEditSearchIndexDialog#initUserObject()
      */
-    @Override
     protected void initUserObject() {
 
         super.initUserObject();
@@ -506,7 +491,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
-    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         super.initWorkplaceRequestValues(settings, request);
@@ -570,14 +554,19 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
 
         String query = m_searchParams.getQuery();
         StringBuffer result = new StringBuffer();
-        /**
-         * For Chinese language, even single charactor should be able to search.
-         * It would be better if query minimal length can be configed in analyzer configuration.
-         * 
-         *  modified by Shi Yusen, shiys@langhua.cn
-         */
-        if (!CmsStringUtil.isEmptyOrWhitespaceOnly(query) && (m_searchParams.getSearchIndex().getLocaleString().startsWith("zh") || query.length() > 3)) {
-        // if (!CmsStringUtil.isEmptyOrWhitespaceOnly(query) && (query.length() > 3)) {
+        // for CJK language, min length can be 0; others, 3. Add by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
+        int minLength = 3;
+        for (int i=0; i<query.length(); i++) {
+        	int c = query.charAt(i);
+        	Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        	if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS || 
+        	    ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS || 
+        	    ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT) {
+        	    minLength = 0;
+        	    break;
+        	}
+        }
+        if (!CmsStringUtil.isEmptyOrWhitespaceOnly(query) && (query.length() > minLength)) {
             CmsSearchResultView resultView = new CmsSearchResultView(getJsp());
             // proprietary workplace admin link for pagelinks of search: 
             resultView.setSearchRessourceUrl(getJsp().link(

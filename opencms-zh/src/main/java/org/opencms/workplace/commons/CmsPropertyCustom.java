@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/commons/CmsPropertyCustom.java,v $
- * Date   : $Date: 2010-01-18 10:01:37 $
- * Version: $Revision: 1.31 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,20 +27,19 @@
 
 package org.opencms.workplace.commons;
 
+import org.opencms.configuration.CmsParameterConfiguration;
 import org.opencms.file.CmsProperty;
 import org.opencms.file.CmsPropertyDefinition;
 import org.opencms.file.CmsResource;
 import org.opencms.file.CmsResourceFilter;
 import org.opencms.file.CmsUser;
 import org.opencms.i18n.CmsEncoder;
-import org.opencms.i18n.CmsMessages;
 import org.opencms.jsp.CmsJspActionElement;
 import org.opencms.main.CmsException;
 import org.opencms.main.CmsLog;
 import org.opencms.main.OpenCms;
 import org.opencms.security.CmsRole;
 import org.opencms.util.CmsStringUtil;
-import org.opencms.workplace.CmsWorkplace;
 import org.opencms.workplace.CmsWorkplaceSettings;
 import org.opencms.workplace.I_CmsDialogHandler;
 import org.opencms.workplace.explorer.CmsExplorerTypeSettings;
@@ -57,7 +52,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.logging.Log;
 
 /**
@@ -71,10 +65,6 @@ import org.apache.commons.logging.Log;
  * <li>/commons/property_custom.jsp
  * </ul>
  * <p>
- * 
- * @author Andreas Zahner 
- * 
- * @version $Revision: 1.31 $ 
  * 
  * @since 6.0.0 
  */
@@ -120,7 +110,6 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * @param request the HttpServletRequest
      * @throws JspException if problems including sub-elements occur
      */
-    @Override
     public void actionEdit(HttpServletRequest request) throws JspException {
 
         // save initialized instance of this class in request attribute for included sub-elements
@@ -141,7 +130,6 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * 
      * @return the HTML output String for the edit properties form
      */
-    @Override
     public String buildEditForm() {
 
         StringBuffer result = new StringBuffer(2048);
@@ -152,7 +140,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
         // create the column heads
         result.append("<table border=\"0\">\n");
         result.append("<tr>\n");
-        // modified by Shi Yusen, shiys@langhua.cn 2010-10-13
+        // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
         result.append("\t<td class=\"textbold\" nowrap >");
         result.append(key(Messages.GUI_PROPERTY_0));
         result.append("</td>\n");
@@ -190,7 +178,6 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * 
      * @return the JavaScript to set the property form values delayed
      */
-    @Override
     public String buildSetFormValues() {
 
         StringBuffer result = new StringBuffer(1024);
@@ -241,7 +228,6 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * @param advancedAttributes additional attributes for the "advanced" button
      * @return the button row 
      */
-    @Override
     public String dialogButtonsOkCancelAdvanced(String okAttributes, String cancelAttributes, String advancedAttributes) {
 
         if (isEditable()) {
@@ -482,13 +468,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
         StringBuffer result = new StringBuffer(96);
         result.append("<tr>\n");
         result.append("\t<td style=\"white-space: nowrap;\" unselectable=\"on\">");
-        // Modified by Shi Yusen, shiys@langhua.cn 2010-10-13
-        String propName =key("templateonedialog."+propertyName);
-        if(CmsMessages.isUnknownKey(propName)){
-        	propName=propertyName;
-        }
-        result.append(propName);
-        // result.append(propertyName);
+        result.append(propertyName);
         result.append("</td>\n");
         result.append("\t<td class=\"maxwidth\">");
         return result;
@@ -544,7 +524,6 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
     /**
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
-    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         // fill the parameter values in the get/set methods
@@ -585,7 +564,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
         } else {
             setAction(ACTION_EDIT);
             String resName = CmsResource.getName(getParamResource());
-            if (CmsWorkplace.isTemporaryFileName(resName)) {
+            if (CmsResource.isTemporaryFileName(resName)) {
                 resName = resName.substring(1);
             }
             setParamTitle(key(Messages.GUI_PROPERTIES_1, new Object[] {resName}));
@@ -606,15 +585,14 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      */
     protected boolean isHideButtonAdvanced() {
 
-        I_CmsDialogHandler handler = (I_CmsDialogHandler)OpenCms.getWorkplaceManager().getDialogHandler(
-            getDialogHandler());
-        MultiValueMap handlerParams = (MultiValueMap)handler.getConfiguration();
+        I_CmsDialogHandler handler = OpenCms.getWorkplaceManager().getDialogHandler(getDialogHandler());
+        CmsParameterConfiguration handlerParams = handler.getConfiguration();
         if ((handlerParams != null) && handlerParams.containsKey(PARAM_HIDEADVANCED)) {
             // checks if "hideadvanced" is set to true
             boolean isHideAdvancedSet = false;
-            List hAdvanced = (List)handlerParams.get(PARAM_HIDEADVANCED);
+            List<String> hAdvanced = handlerParams.getList(PARAM_HIDEADVANCED);
             if (!hAdvanced.isEmpty()) {
-                isHideAdvancedSet = Boolean.valueOf((String)hAdvanced.get(0)).booleanValue();
+                isHideAdvancedSet = Boolean.valueOf(hAdvanced.get(0)).booleanValue();
             }
             if (isHideAdvancedSet) {
                 // if user has the role root admin
@@ -623,10 +601,9 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
                 }
                 if (handlerParams.containsKey(PARAM_SHOWGROUP)) {
                     // check if user is one of the configured groups
-                    CmsUser currentUser = getCms().getRequestContext().currentUser();
-                    List confGroups = (List)handlerParams.get(PARAM_SHOWGROUP);
-                    for (Iterator i = confGroups.iterator(); i.hasNext();) {
-                        String groupName = (String)i.next();
+                    CmsUser currentUser = getCms().getRequestContext().getCurrentUser();
+                    List<String> confGroups = handlerParams.getList(PARAM_SHOWGROUP);
+                    for (String groupName : confGroups) {
                         try {
                             if (getCms().userInGroup(currentUser.getName(), groupName)) {
                                 return false;
@@ -772,5 +749,4 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
             }
         }
     }
-
 }

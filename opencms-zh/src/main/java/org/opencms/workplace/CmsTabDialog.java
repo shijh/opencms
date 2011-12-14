@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/workplace/CmsTabDialog.java,v $
- * Date   : $Date: 2010-01-18 10:03:34 $
- * Version: $Revision: 1.27 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +35,7 @@ import org.opencms.util.CmsStringUtil;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,10 +55,6 @@ import org.apache.commons.logging.Log;
  * <li>User preferences (CmsPreferences.java)
  * </ul>
  * <p>
- *
- * @author  Andreas Zahner 
- * 
- * @version $Revision: 1.27 $ 
  * 
  * @since 6.0.0 
  */
@@ -182,7 +175,7 @@ public abstract class CmsTabDialog extends CmsDialog {
 
         StringBuffer result = new StringBuffer(512);
         StringBuffer lineRow = new StringBuffer(256);
-        List tabNames = getTabs();
+        List<String> tabNames = getTabs();
         if (tabNames.size() < 2) {
             // less than 2 tabs present, do not show them and create a border line
             result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"maxwidth\" style=\"empty-cells: show;\">\n");
@@ -192,14 +185,14 @@ public abstract class CmsTabDialog extends CmsDialog {
             result.append("</table>\n");
             return result.toString();
         }
-        Iterator i = tabNames.iterator();
+        Iterator<String> i = tabNames.iterator();
         int counter = 1;
         int activeTab = getActiveTab();
         result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"maxwidth\" style=\"empty-cells: show;\">\n");
         result.append("<tr>\n");
         while (i.hasNext()) {
             // build a tab entry
-            String curTab = (String)i.next();
+            String curTab = i.next();
             String curTabLink = "javascript:openTab('" + counter + "');";
             if (counter == activeTab) {
                 // create the currently active tab
@@ -212,7 +205,7 @@ public abstract class CmsTabDialog extends CmsDialog {
                 }
                 result.append(">");
                 result.append("<span class=\"tabactive\" unselectable=\"on\"");
-                // modyfied by Shi Yusen,shiys@langhua.cn 2010-10-13
+                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
                 result.append(" style=\"width: " + (curTab.length() * 12 + addDelta) + "px;\"");
                 // result.append(" style=\"width: " + (curTab.length() * 8 + addDelta) + "px;\"");
                 result.append(">");
@@ -223,7 +216,7 @@ public abstract class CmsTabDialog extends CmsDialog {
                 // create an inactive tab
                 result.append("\t<td class=\"dialogtab\" unselectable=\"on\">");
                 result.append("<a class=\"tab\" href=\"" + curTabLink + "\"");
-                // modyfied by Shi Yusen,shiys@langhua.cn 2010-10-13
+                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
                 result.append(" style=\"width: " + (curTab.length() * 12) + "px;\"");
                 // result.append(" style=\"width: " + (curTab.length() * 8) + "px;\"");
                 result.append(">");
@@ -284,9 +277,9 @@ public abstract class CmsTabDialog extends CmsDialog {
         if (m_activeTab < 0) {
             getActiveTab();
         }
-        List tabNames = getTabs();
+        List<String> tabNames = getTabs();
         try {
-            return (String)tabNames.get(m_activeTab - 1);
+            return tabNames.get(m_activeTab - 1);
         } catch (IndexOutOfBoundsException e) {
             // should usually never happen
             if (LOG.isInfoEnabled()) {
@@ -328,14 +321,14 @@ public abstract class CmsTabDialog extends CmsDialog {
      * @return the ordered parameter prefix List
      * @see org.opencms.workplace.CmsTabDialog#getTabs()
      */
-    public abstract List getTabParameterOrder();
+    public abstract List<String> getTabParameterOrder();
 
     /**
      * Returns a list with localized Strings representing the names of the tabs.<p>
      * 
      * @return list with localized String for the tabs
      */
-    public abstract List getTabs();
+    public abstract List<String> getTabs();
 
     /**
      * Builds the start html of the page, including setting of DOCTYPE and 
@@ -417,12 +410,12 @@ public abstract class CmsTabDialog extends CmsDialog {
     public String paramsAsHidden() {
 
         StringBuffer result = new StringBuffer(512);
-        String activeTab = (String)getTabParameterOrder().get(getActiveTab() - 1);
-        Map params = paramValues();
-        Iterator i = params.entrySet().iterator();
+        String activeTab = getTabParameterOrder().get(getActiveTab() - 1);
+        Map<String, Object> params = paramValues();
+        Iterator<Entry<String, Object>> i = params.entrySet().iterator();
         while (i.hasNext()) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String param = (String)entry.getKey();
+            Entry<String, Object> entry = i.next();
+            String param = entry.getKey();
             if (!param.startsWith(activeTab)) {
                 // add only parameters which are not displayed in currently active tab
                 result.append("<input type=\"hidden\" name=\"");

@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/src/org/opencms/i18n/CmsMessages.java,v $
- * Date   : $Date: 2010-08-13 12:53:18 $
- * Version: $Revision: 1.29 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,10 +50,6 @@ import org.apache.commons.logging.Log;
  * so that a template always execute. The class provides an {@link #isInitialized()} method
  * that can be checked to see if the instance was properly initialized.<p>
  * 
- * @author  Alexander Kandzior 
- * 
- * @version $Revision: 1.29 $ 
- * 
  * @since 6.0.0 
  */
 public class CmsMessages {
@@ -97,7 +89,6 @@ public class CmsMessages {
         } catch (Exception e) {
             m_resourceBundle = null;
             LOG.error(Messages.get().getBundle().key(Messages.ERR_CREATING_MESSAGES_2, bundleName, m_locale), e);
-
         }
     }
 
@@ -218,16 +209,6 @@ public class CmsMessages {
     }
 
     /**
-     * Returns the resource bundle this message object was initialized with.<p>
-     * 
-     * @return the resource bundle this message object was initialized with or null if initialization was not successful
-     */
-    public ResourceBundle getResourceBundle() {
-
-        return m_resourceBundle;
-    }
-
-    /**
      * Returns a formated date String from a Date value,
      * the format being {@link DateFormat#SHORT} and the locale
      * based on this instance.<p>
@@ -318,6 +299,16 @@ public class CmsMessages {
     }
 
     /**
+     * Returns the resource bundle this message object was initialized with.<p>
+     * 
+     * @return the resource bundle this message object was initialized with or null if initialization was not successful
+     */
+    public ResourceBundle getResourceBundle() {
+
+        return m_resourceBundle;
+    }
+
+    /**
      * Directly calls the getString(String) method of the wrapped ResourceBundle.<p>
      * 
      * If you use this this class on a template, you should consider using 
@@ -333,7 +324,7 @@ public class CmsMessages {
 
         if (m_resourceBundle != null) {
             try {
-				// modified by Shi Yusen, shiys@langhua.cn 2010-10-12
+				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
 
 				String value = m_resourceBundle.getString(keyName);
 
@@ -414,7 +405,7 @@ public class CmsMessages {
 
         try {
             if (m_resourceBundle != null) {
-				// modified by Shi Yusen, shiys@langhua.cn  2010-10-12
+				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
 
 				String value = m_resourceBundle.getString(keyName);
 
