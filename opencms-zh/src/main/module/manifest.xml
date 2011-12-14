@@ -11,12 +11,12 @@
 	<module>
 		<name>org.langhua.opencms.workplace</name>
 		<nicename><![CDATA[Chinese Language Module]]></nicename>
-		<group>Beijing Langhua Ltd.</group>
+		<group>Langhua Opensource</group>
 		<class/>
-		<description><![CDATA[Chinese Language Module for OpenCms 7.5.3. You can download this module free from http://langhua.org/opensource/opencms-zh/.]]></description>
-		<version>4.5.3.0</version>
-		<authorname><![CDATA[Shi Yusen]]></authorname>
-		<authoremail><![CDATA[shiys@langhua.cn]]></authoremail>
+		<description><![CDATA[Chinese Language Module for OpenCms 8.0.3. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
+		<version>8.0.3.0</version>
+		<authorname><![CDATA[Shi Jinghai]]></authorname>
+		<authoremail><![CDATA[huaruhai@hotmail.com]]></authoremail>
 		<datecreated/>
 		<userinstalled/>
 		<dateinstalled/>
@@ -28,17 +28,12 @@
 		</exportpoints>
 		<resources>
 			<resource uri="/system/modules/org.langhua.opencms.workplace/"/>
-			<resource uri="/system/workplace/locales/zh/"/>
-			<resource uri="/system/workplace/views/top_head.jsp"/>
 			<resource uri="/system/workplace/commons/chnav.jsp"/>
+			<resource uri="/system/workplace/commons/preferences.jsp"/>
+			<resource uri="/system/workplace/locales/zh/"/>
 			<resource uri="/system/workplace/resources/commons/explorer.js"/>
 			<resource uri="/system/workplace/resources/commons/tree.js"/>
-			<resource uri="/system/workplace/resources/editors/fckeditor/fckconfig.js"/>
 			<resource uri="/system/workplace/resources/editors/fckeditor/editor/lang/zh.js"/>
-			<resource uri="/system/workplace/commons/preferences.jsp"/>
-			<resource uri="/system/workplace/resources/editors/fckeditor/editor/js/fckeditorcode_ie.js"/>
-			<resource uri="/system/workplace/resources/editors/fckeditor/editor/dialog/fck_paste.html"/>
-			<resource uri="/system/workplace/editors/fckeditor/configwidget.js"/>
 		</resources>
 		<parameters/>
 	</module>
@@ -440,21 +435,6 @@
 			<datelastmodified>Mon, 16 Feb 2009 06:27:24 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Mon, 16 Feb 2009 06:27:17 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/setup/htmlmsg.properties</source>
-			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/setup/htmlmsg.properties</destination>
-			<type>plain</type>
-			<uuidstructure>edb71907-fbf2-11dd-92de-e9f13531af5b</uuidstructure>
-			<uuidresource>edb71908-fbf2-11dd-92de-e9f13531af5b</uuidresource>
-			<datelastmodified>Mon, 16 Feb 2009 06:27:53 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 16 Feb 2009 06:27:47 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -4003,30 +3983,6 @@
 			<accesscontrol/>
 		</file>
 		<file>
-			<source>system/workplace/editors/fckeditor/configwidget.js</source>
-			<destination>system/workplace/editors/fckeditor/configwidget.js</destination>
-			<type>jsp</type>
-			<uuidstructure>52516073-5cf1-11db-85b1-432854714568</uuidstructure>
-			<uuidresource>c45ff8e4-6b15-11da-890c-f5519f4138f7</uuidresource>
-			<datelastmodified>Wed, 16 May 2007 13:44:03 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 12 Dec 2005 13:46:59 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property type="shared">
-					<name>Title</name>
-					<value><![CDATA[Widgets custom config JS]]></value>
-				</property>
-				<property type="shared">
-					<name>export</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
 			<destination>system/workplace/resources</destination>
 			<type>folder</type>
 			<uuidstructure>82c16052-11b7-11db-91cd-fdbae480bac9</uuidstructure>
@@ -4132,62 +4088,6 @@
 			<accesscontrol/>
 		</file>
 		<file>
-			<destination>system/workplace/resources/editors/fckeditor/editor/dialog</destination>
-			<type>folder</type>
-			<uuidstructure>efac2898-e068-11dc-a7de-d17a851929f6</uuidstructure>
-			<datelastmodified>Thu, 21 Feb 2008 10:37:01 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 21 Feb 2008 10:37:01 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/resources/editors/fckeditor/editor/dialog/fck_paste.html</source>
-			<destination>system/workplace/resources/editors/fckeditor/editor/dialog/fck_paste.html</destination>
-			<type>plain</type>
-			<uuidstructure>f0a68e88-e068-11dc-a7de-d17a851929f6</uuidstructure>
-			<uuidresource>f0a68e89-e068-11dc-a7de-d17a851929f6</uuidresource>
-			<datelastmodified>Thu, 21 Feb 2008 10:38:27 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 21 Feb 2008 10:37:03 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/resources/editors/fckeditor/editor/js</destination>
-			<type>folder</type>
-			<uuidstructure>f8ccbcbf-e068-11dc-a7de-d17a851929f6</uuidstructure>
-			<datelastmodified>Thu, 21 Feb 2008 10:37:16 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 21 Feb 2008 10:37:16 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/resources/editors/fckeditor/editor/js/fckeditorcode_ie.js</source>
-			<destination>system/workplace/resources/editors/fckeditor/editor/js/fckeditorcode_ie.js</destination>
-			<type>plain</type>
-			<uuidstructure>f8dd85a4-e068-11dc-a7de-d17a851929f6</uuidstructure>
-			<uuidresource>f8dd85a5-e068-11dc-a7de-d17a851929f6</uuidresource>
-			<datelastmodified>Thu, 21 Feb 2008 10:38:25 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 21 Feb 2008 10:37:17 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
 			<destination>system/workplace/resources/editors/fckeditor/editor/lang</destination>
 			<type>folder</type>
 			<uuidstructure>f8e526c7-e068-11dc-a7de-d17a851929f6</uuidstructure>
@@ -4212,63 +4112,6 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/resources/editors/fckeditor/fckconfig.js</source>
-			<destination>system/workplace/resources/editors/fckeditor/fckconfig.js</destination>
-			<type>plain</type>
-			<uuidstructure>008c60ed-e069-11dc-a7de-d17a851929f6</uuidstructure>
-			<uuidresource>008c60ee-e069-11dc-a7de-d17a851929f6</uuidresource>
-			<datelastmodified>Thu, 21 Feb 2008 10:38:23 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 21 Feb 2008 10:37:29 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/views</destination>
-			<type>folder</type>
-			<uuidstructure>8405a06e-11b7-11db-91cd-fdbae480bac9</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>cache</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/views/top_head.jsp</source>
-			<destination>system/workplace/views/top_head.jsp</destination>
-			<type>jsp</type>
-			<uuidstructure>840f3d69-11b7-11db-91cd-fdbae480bac9</uuidstructure>
-			<uuidresource>9fa61712-f058-11d8-ba65-db38cc8f19d7</uuidresource>
-			<datelastmodified>Wed, 19 Nov 2008 05:48:50 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Top Frameset - Head Frame]]></value>
-				</property>
-				<property>
-					<name>export</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>

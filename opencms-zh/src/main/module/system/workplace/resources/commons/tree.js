@@ -1,12 +1,8 @@
 /*
- * File   : $Source: /usr/local/cvs/opencms/modules/org.opencms.workplace.explorer/resources/system/workplace/resources/commons/tree.js,v $
- * Date   : $Date: 2010-05-28 10:55:27 $
- * Version: $Revision: 1.15 $
- *
  * This library is part of OpenCms -
  * the Open Source Content Management System
  *
- * Copyright (c) 2002 - 2010 Alkacon Software GmbH (http://www.alkacon.com)
+ * Copyright (c) Alkacon Software GmbH (http://www.alkacon.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,12 +30,30 @@ var treeHeadHtml1 =
     "<html>\n<head>\n" +
     "<meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=";
 
+var mousedownHandler = "function(e) {"+
+"var target;"+
+"if (!e) var e = window.event;"+
+"if (e.target) {"+  
+"   target = e.target;"+ 
+"} else if (e.srcElement) {"+ 
+"target = e.srcElement;"+ 
+"}"+
+"if (target.nodeType == 3) {"+
+    "target = target.parentNode;"+
+"}"+
+"if (target && target.tagName && target.tagName.match(/HTML/i)) {"+
+"   return true;"+
+"}"+
+"return false;"+ 
+"}";
+
+
 var treeHeadHtml2 =
     "\">\n" +
     "<title>OpenCms explorer tree</title>\n" +
     "<script type=\"text/javascript\">\n" +
     "document.oncontextmenu = new Function('return false;');\n" +
-    "document.onmousedown = new Function('return false;');\n" +
+    "document.onmousedown = " + mousedownHandler + ";\n" +
     "document.onmouseup = new Function('return false;');\n" +
     "function linkOver(obj) {\n" +
     "var cls = obj.className;\n" +
@@ -143,18 +157,18 @@ function initResources(encoding, workplacePath, skinPath, contextPath) {
     addTreeIcons();
 }
 
-//moditied by Shi Yusen, shiys@langhua.cn    2010-10-13
+//moditied by Shi Jinghai, huaruhai@hotmail.com    2011-12-15
 function nodeObject(name, title, type, folder, id, parentId, state, grey, open){
-	this.name = name;
+    this.name = name;
     this.title = title;
-	this.type = type;
-	this.folder = (folder == 1) ? true : false;
-	this.id = id;
-	this.parentId = parentId;
-	this.state = state;
-	this.grey = (grey == 1) ? true : false;
-	this.open = open;
-	this.childs = null;
+    this.type = type;
+    this.folder = (folder === 1) ? true : false;
+    this.id = id;
+    this.parentId = parentId;
+    this.state = state;
+    this.grey = (grey === 1) ? true : false;
+    this.open = open;
+    this.childs = null;
 }
 
 // returns a node based on its ID
@@ -269,6 +283,19 @@ function dfsTree(doc, node, depth, last, shape) {
     var loop1;
 
     doc.write("<tr><td>");
+    
+    if (node.folder && node.childs) {
+       var seen = {};
+       var newChildren = [];
+       for (var i = 0; i < node.childs.length; i++) {
+          var currentChild = node.childs[i];
+          if (!seen[currentChild]) {
+             newChildren.push(currentChild);
+          }
+          seen[currentChild] = true;
+       }
+       node.childs = newChildren;
+    }
 
     if (!node.parentId) {
         showPic(doc, tree.icon[9]); // root folder
@@ -351,7 +378,7 @@ function dfsTree(doc, node, depth, last, shape) {
         }
     } 
 
-    // modified by Shi Yusen, shiys@langhua.cn 2010-10-13
+    // modified by Shi Jinghai, huaruhai@hotmail.com  2011-12-15
     doc.write("&nbsp;<a class=\"" + linkClass + "\" onclick=\"parent.doAction(document, " + node.id + ");\" onmouseover=\"linkOver(this);\" onmouseout=\"linkOut(this);\">" + node.title + "</a>");
     // doc.write("&nbsp;<a class=\"" + linkClass + "\" onclick=\"parent.doAction(document, " + node.id + ");\" onmouseover=\"linkOver(this);\" onmouseout=\"linkOut(this);\">" + node.name + "</a>");
 
@@ -425,31 +452,36 @@ function setNoChilds(nodeId) {
     }
 }
 
-// returns the node id from a given name
+//returns the node id from a given name
 function getNodeIdByName(nodeName) {
     var node = tree.root;
+    // special case for the shared folder
+    var isShared = (window.sharedFolderName == tree.root.name); 
 
     // remove first slash; split the path into an array
     var nameParts = nodeName.substr(1).split("/");
 
     // search the tree and try to find a matching folder for each part of the path
     if (nodeName != "/") {
-    	for (var i=0; i<nameParts.length && node; i++) {
-        	var children = node.childs;
+      for (var i=0; i<nameParts.length && node; i++) {
+         if (isShared && i == 0 && ("/" + nameParts[i] + "/" == window.sharedFolderName)) {
+            continue;
+         }
+         var children = node.childs;
         
-        	// clear the current node until we find the next child node.
-        	// if no child is found, then we know that the search was not successful, because 'node' will remain null
-        	node = null;
+         // clear the current node until we find the next child node.
+         // if no child is found, then we know that the search was not successful, because 'node' will remain null
+         node = null;
 
-        	for (var j=0; children && j<children.length; j++) {
-            	var subnode = getNodeById(children[j]);
-            	if (subnode && subnode.name === nameParts[i]) {
-                	// found the next sub-node => continue searching on the next level
-                	node = subnode;
-                	break;
-            	}
-        	}
-    	}
+         for (var j=0; children && j<children.length; j++) {
+            var subnode = getNodeById(children[j]);
+            if (subnode && subnode.name === nameParts[i]) {
+               // found the next sub-node => continue searching on the next level
+               node = subnode;
+               break;
+            }
+         }
+      }
     }
     if (node) {
         return node.id;
@@ -482,7 +514,7 @@ function getNodeNameById(nodeId) {
     }
 }
 
-// modified by Shi Yusen, shiys@langhua.cn   2010-10-13
+// modified by Shi Jinghai, huaruhai@hotmail.com   2011-12-15
 function aC(name, title, type, folder, id, parentId, state, grey) {
     var theParent = getNodeById(parentId);
     var oldNode = getNodeById(id);
@@ -671,7 +703,7 @@ function updateCurrentFolder(doc, folderName) {
         if (folderName == "") {
             // assure that folder name is never empty (i.e. the root folder itself)
             folderName = "/";
-        }
+          }
     }
     var nodeId = getNodeIdByName(folderName);
     var nodeName = null;
