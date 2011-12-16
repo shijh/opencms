@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*,java.io.File" session="true" pageEncoding="utf-8"%><%--
+<%@ page import="org.opencms.setup.*,java.util.*,java.io.File" session="true" pageEncoding="utf-8" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -25,7 +25,7 @@
 			return false;
 		}
 		else if (document.forms[0].db.value == "")	{
-			alert("请输入数据库名称");
+			alert("请输入数据库名");
 			document.forms[0].db.focus();
 			return false;
 		}
@@ -51,35 +51,14 @@
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
 <tr><td style="vertical-align: top;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "Database") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "数据库") %>
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<td>Select Database</td>
-		<td>
-			<select name="database" style="width: 250px;" size="1" onchange="location.href='../../step_3_database_selection.jsp?database='+this.options[this.selectedIndex].value;">
-			<!-- --------------------- JSP CODE --------------------------- -->
-			<%
-				/* get all available databases */
-				List databases = Bean.getSortedDatabases();
-				/* 	List all databases found in the dbsetup.properties */
-				if (databases !=null && databases.size() > 0)	{
-					for(int i=0;i<databases.size();i++)	{
-						String db = (String) databases.get(i);
-						String dn = Bean.getDatabaseName(db);
-						String selected = "";
-						if(Bean.getDatabase().equals(db))	{
-							selected = "selected";
-						}
-						out.println("<option value='"+db+"' "+selected+">"+dn);
-					}
-				}
-				else	{
-					out.println("<option value='null'>没有找到数据库");
-				}
-			%>
-			<!-- --------------------------------------------------------- -->
-			</select>
-		</td>
+		<td><%= Bean.getHtmlForDbSelection() %></td>
+		<% if (Bean.getFullDatabaseKey().endsWith("_jpa")) { %>
+			<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
+		<% } %>
 	</tr>
 </table>
 <%= Bean.getHtmlPart("C_BLOCK_END") %>
@@ -88,7 +67,11 @@
 <tr><td style="vertical-align: middle;">
 
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
-<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 80px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% if (Bean.getFullDatabaseKey().contains("_jpa")) { %>
+	<iframe src="database_information_jpa.html" name="dbinfo" style="width: 100%; height: 80px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% } else { %>
+	<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 82px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% } %>
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
 
 </td></tr>
@@ -104,7 +87,7 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>数据库连接</td>
+		<td>安装时的连接</td>
 		<td><input type="text" name="dbCreateUser" size="8" style="width:150px;" value='<%= Bean.getDbCreateUser() %>'></td>
 		<td style="text-align: right;"><input type="text" name="dbCreatePwd" size="8" style="width:150px;" value='<%= Bean.getDbCreatePwd() %>'></td>
 		<td><%= Bean.getHtmlHelpIcon("1", "../../") %></td>
@@ -165,9 +148,14 @@
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "5") %>
-安装程序<b>创建</b>内容管理系统的数据库表。<br>&nbsp;<br>
+安装程序<b>创建</b>内容管理系统的HSQLDB数据库表。<br>&nbsp;<br>
 <b>注意</b>: 会覆盖已存在的数据库表！<br>&nbsp;<br>
 如果要使用一个已经存在的数据库，请不要选中这个选项。
+<%= Bean.getHtmlPart("C_HELP_END") %>
+
+<%= Bean.getHtmlPart("C_HELP_START", "6") %>
+本<b>JPA</b> (Java Persistence API) 驱动程序使用<b>Apache OpenJPA</b>实现。 
+<b>传统的SQL驱动程序</b>已经经过完整测试，与JPA驱动程序相比，性能要稍微好一点。 
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <% } else	{ %>

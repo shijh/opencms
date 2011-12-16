@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="utf-8"%><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="utf-8" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -54,32 +54,12 @@
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<td>选择数据库</td>
-		<td>
-			<select name="database" style="width: 250px;" size="1" onchange="location.href='../../step_3_database_selection.jsp?database='+this.options[this.selectedIndex].value;">
-			<!-- --------------------- JSP CODE --------------------------- -->
-			<%
-				/* get all available databases */
-				List databases = Bean.getSortedDatabases();
-				/* 	List all databases found in the dbsetup.properties */
-				if (databases !=null && databases.size() > 0)	{
-					for(int i=0;i<databases.size();i++)	{
-						String db = (String) databases.get(i);
-						String dn = Bean.getDatabaseName(db);
-						String selected = "";
-						if(Bean.getDatabase().equals(db))	{
-							selected = "selected";
-						}
-						out.println("<option value='"+db+"' "+selected+">"+dn);
-					}
-				}
-				else	{
-					out.println("<option value='null'>没有找到数据库");
-				}
-			%>
-			<!-- --------------------------------------------------------- -->
-			</select>
-		</td>
-		<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
+		<td><%= Bean.getHtmlForDbSelection() %></td>
+		<% if (Bean.getFullDatabaseKey().endsWith("_jpa")) { %>
+			<td><%= Bean.getHtmlHelpIcon("7", "../../") %></td>
+		<% } else { %>
+			<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
+		<% } %>
 	</tr>
 </table>
 <%= Bean.getHtmlPart("C_BLOCK_END") %>
@@ -88,7 +68,11 @@
 <tr><td style="vertical-align: middle;">
 
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
-<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 80px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% if (Bean.getFullDatabaseKey().contains("_jpa")) { %>
+	<iframe src="database_information_jpa.html" name="dbinfo" style="width: 100%; height: 80px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% } else { %>
+	<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 82px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<% } %>
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
 
 </td></tr>
@@ -127,7 +111,7 @@
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td colspan="2"><input type="checkbox" name="createDb" value="true" checked>创建数据库表  
+		<td colspan="2"><input type="checkbox" name="createDb" value="true" checked> 创建数据库表 
 		</td>
 		<td><%= Bean.getHtmlHelpIcon("5", "../../") %></td>
 	</tr>
@@ -138,9 +122,9 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060;  后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
@@ -161,19 +145,25 @@
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "4") %>
-输入MS SQL中用于内容管理系统的<b>数据库</b>名。
+输入SQLServer用于内容管理系统的<b>数据库</b>名。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "5") %>
-安装程序<b>创建</b>内容管理系统的MS SQL数据库表。<br>&nbsp;<br>
+安装程序<b>创建</b>内容管理系统的SQLServer数据库表。<br>&nbsp;<br>
 <b>注意</b>: 会覆盖已存在的数据库表！<br>&nbsp;<br>
 如果要使用一个已经存在的数据库，请不要选中这个选项。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "6") %>
-<b>MS-SQL安装说明:</b><br>&nbsp;<br>
-资源路径的最大长度是440个字符，超过这个长度无效。
+<b>SQLServer安装提示：</b><br>&nbsp;<br>
+资源路径最多440个字符，更长的资源路径不能正确使用。
+<%= Bean.getHtmlPart("C_HELP_END") %>
 
+<%= Bean.getHtmlPart("C_HELP_START", "7") %>
+<b>传统的SQL驱动程序</b>已经经过完整测试，与JPA驱动程序相比，性能要稍微好一点。 
+因为SQL驱动程序是每个关系数据库管理系统专用的，对于某些数据库，可能没有驱动程序。<br>&nbsp;<br>
+<b>JPA驱动程序</b>是新一代驱动程序，基于JPA规范(Java Persistence API)。 
+<b>Apache OpenJPA</b>实现了现代JPA，易于扩展，配置灵活。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <% } else	{ %>

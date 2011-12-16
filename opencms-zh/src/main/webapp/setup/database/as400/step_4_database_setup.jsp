@@ -44,7 +44,7 @@
 <%= Bean.getHtmlPart("C_HEAD_END") %>
 
 <% if (Bean.isInitialized()) { %>
-内容管理系统安装程序 - 安装<%= Bean.getDatabaseName(Bean.getDatabase()) %> 数据库
+内容管理系统安装程序 - 安装 <%= Bean.getDatabaseName(Bean.getDatabase()) %> 数据库
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <form method="post" onSubmit="return checkSubmit()" class="nomargin">
 
@@ -55,31 +55,7 @@
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<td>选择数据库</td>
-		<td>
-			<select name="database" style="width: 250px;" size="1" onchange="location.href='../../step_3_database_selection.jsp?database='+this.options[this.selectedIndex].value;">
-			<!-- --------------------- JSP CODE --------------------------- -->
-			<%
-				/* get all available databases */
-				List databases = Bean.getSortedDatabases();
-				/* 	List all databases found in the dbsetup.properties */
-				if (databases !=null && databases.size() > 0)	{
-					for(int i=0;i<databases.size();i++)	{
-						String db = (String) databases.get(i);
-						String dn = Bean.getDatabaseName(db);
-						String selected = "";
-						if(Bean.getDatabase().equals(db))	{
-							selected = "selected";
-						}
-						out.println("<option value='"+db+"' "+selected+">"+dn);
-					}
-				}
-				else	{
-					out.println("<option value='null'>没有找到数据库");
-				}
-			%>
-			<!-- --------------------------------------------------------- -->
-			</select>
-		</td>
+		<td><%= Bean.getHtmlForDbSelection() %></td>
 		<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
 	</tr>
 </table>
@@ -89,7 +65,7 @@
 <tr><td style="vertical-align: middle;">
 
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
-<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 80px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
+<iframe src="database_information.html" name="dbinfo" style="width: 100%; height: 82px; margin: 0; padding: 0; border-style: none;" frameborder="0" scrolling="no"></iframe>
 <div class="dialogspacer" unselectable="on">&nbsp;</div>
 
 </td></tr>
@@ -157,7 +133,7 @@
 
 <%= Bean.getHtmlPart("C_HELP_START", "5") %>
 安装工具只是为内容管理系统 <b>创建</b>表<br>&nbsp;<br>
-如果想使用已经存在的表那么不选择这个选项。
+如果想使用已经存在的表，那么不选择这个选项。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "6") %>
