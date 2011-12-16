@@ -86,7 +86,17 @@
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "1") %>
+<b>为什么需要网卡地址：</b><br>&nbsp;<br>
+OpenCms为全部资源基于128位UUID（Universally Unique IDentifier，Windows下称为GUID）算法生成唯一的键。
+要初始化这个算法，需要服务器的网卡地址。
+然而，由于安全沙箱模型，Java无法访问这个服务器硬件信息。<br>&nbsp;<br>
+如果不填这个数据项，会为你的服务器随机生成一个网卡地址。
+这意味着有<i>非常非常小</i>的机会，会生成重复的键。<br>&nbsp;<br>
+<b>请注意：</b>网卡MAC地址不是服务器的IP地址。
+有效的MAC地址看起来是这样的：<code>4f:a1:f1:c2:36:bf</code>。
+<%= Bean.getHtmlPart("C_HELP_END") %>
 
+<%= Bean.getHtmlPart("C_HELP_START", "2") %>
 <b>服务器名称：</b><br>&nbsp;<br>
 服务器名称会用于内容管理系统的多种日志信息。<br>&nbsp;<br>
 如果你需要比较多个不同服务器的日志文件，这会带来很多便利。

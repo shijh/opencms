@@ -16,23 +16,22 @@
 		db = new CmsSetupDb(Bean.getWebAppRfsPath());
 		// try to connect as the runtime user
 		db.setConnection(Bean.getDbDriver(), Bean.getDbWorkConStr(), Bean.getDbConStrParams(), Bean.getDbWorkUser(),Bean.getDbWorkPwd());
-		db.closeConnection();
 		if (!db.noErrors()) {
 		    // try to connect as the setup user
+		    db.closeConnection();
 			db.clearErrors();
 			db.setConnection(Bean.getDbDriver(), Bean.getDbCreateConStr(), Bean.getDbConStrParams(), Bean.getDbCreateUser(), Bean.getDbCreatePwd());
-			db.closeConnection();
 		}
 		conErrors = new ArrayList(db.getErrors());
 		db.clearErrors();
 		enableContinue = conErrors.isEmpty();
 		chkVars = db.checkVariables(Bean.getDatabase());
+		db.closeConnection();
 		if (enableContinue && db.noErrors() && chkVars == null && Bean.validateJdbc()) {
 			response.sendRedirect(nextPage);
 			return;
 		}
 	}
-
 %><%= Bean.getHtmlPart("C_HTML_START") %>
 内容管理系统安装程序
 <%= Bean.getHtmlPart("C_HEAD_START") %>
@@ -62,7 +61,7 @@
 									</ul>
 									另外请注意， 对<%=Bean.getDatabaseName(Bean.getDatabase())%>我们推荐使用下列JDBC驱动程序:<br>
 									<code><%=Bean.getDatabaseLibs(Bean.getDatabase()).toString()%></code><p>
-									请检查这个驱动程序在你的Java类的路径上。
+									请检查这个JDBC驱动程序在你的Java类的路径上。
                         </td>
 							</tr>
 							<tr>
@@ -118,13 +117,14 @@
 									<td><img src="resources/error.png" border="0"></td>
 									<td>&nbsp;&nbsp;</td>
 									<td style="width: 100%;">
-										<div style="width: 100%; height:80px; overflow: auto;">
+										<div style="width: 100%; height:140px; overflow: auto;">
 										<p style="margin-bottom: 4px;">检查服务器配置时出错!</p>
 										<%
 										out.println("-------------------------------------------" + "<br>");
-										Vector errors = db.getErrors();
-										for (int i = 0; i < errors.size(); i++)	{
-											out.println(errors.elementAt(i) + "<br>");
+										List<String> errors = db.getErrors();
+										Iterator<String> it = errors.iterator();
+										while (it.hasNext())	{
+											out.println(it.next() + "<br>");
 										}
 										db.clearErrors();
 										%>

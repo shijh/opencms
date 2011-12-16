@@ -9,7 +9,7 @@ Bean.prepareStep8b();
 <html>
 <head>
 <title>内容管理系统安装程序 - 导入模块</title>
-<meta http-equiv="Content-Type" content="text/html; charset=gbk">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <script language="JavaScript">
 <!--
 

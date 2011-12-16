@@ -1,4 +1,6 @@
-<%@ page import="java.util.*" session="true" pageEncoding="utf-8"%><%--
+<%@ page import="
+	java.util.*
+" session="true" pageEncoding="utf-8"%><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -122,13 +124,13 @@ function toggleContinueButton() {
 			<td colspan="2" valign="middle">
 			<%
 				if (setupTests.isRed()) {
-					out.println("<p>Y你的系统没有内容管理系统所需的组件。可以假设内容管理系统不能在你的系统上运行。</p>");
+					out.println("<p>你的系统没有内容管理系统所需的组件。可以假设内容管理系统不能在你的系统上运行。</p>");
 					out.println(violatedConditions);
 				} else if (setupTests.isYellow()) {
 					out.print("你的系统使用的组件没有与内容管理系统一起测试过。可能内容管理系统无法在你的系统上运行。");
 					out.println(questionableConditions);
 				} else {
-					out.print("<b>你的系统使用的组件经测试能够运行内容管理系统。</b>");
+					out.println("<b>你的系统使用的组件经测试能够运行内容管理系统。</b>");
 					if (!"".equals(questionableConditions)) {
 					    out.print(" <b>但是，请务必检查下列各点：</b>");					    
 						out.println(questionableConditions);

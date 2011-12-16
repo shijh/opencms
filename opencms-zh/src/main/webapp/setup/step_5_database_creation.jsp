@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true"  pageEncoding="utf-8"%><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="utf-8"%><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -153,9 +153,10 @@
 											<div style="width: 100%; height:70px; overflow: auto;">
 											<p style="margin-bottom: 4px;">无法删除数据库!</p>
 											<%
-											Vector errors = db.getErrors();
-											for (int i = 0; i < errors.size(); i++)	{
-												out.println(errors.elementAt(i) + "<br>");
+											List<String> errors = db.getErrors();
+											Iterator<String> it = errors.iterator();
+											while (it.hasNext())	{
+												out.println(it.next() + "<br>");
 												out.println("-------------------------------------------" + "<br>");
 											}
 											db.clearErrors();
@@ -200,9 +201,10 @@
 											<div style="width: 100%; height:70px; overflow: auto;">
 											<p style="margin-bottom: 4px;">无法创建数据库!</p>
 											<%
-											Vector errors = db.getErrors();
-											for (int i = 0; i < errors.size(); i++)	{
-												out.println(errors.elementAt(i) + "<br>");
+											List<String> errors = db.getErrors();
+											Iterator<String> it = errors.iterator();
+											while (it.hasNext())	{
+												out.println(it.next() + "<br>");
 												out.println("-------------------------------------------" + "<br>");
 											}
 											db.clearErrors();
@@ -259,9 +261,10 @@
 											<div style="width: 100%; height:70px; overflow: auto;">
 											<p style="margin-bottom: 4px;">无法创建库表!</p>
 											<%
-											Vector errors = db.getErrors();
-											for (int i = 0; i < errors.size(); i++)	{
-												out.println(errors.elementAt(i) + "<br>");
+											List<String> errors = db.getErrors();
+											Iterator<String> it = errors.iterator();
+											while (it.hasNext())	{
+												out.println(it.next() + "<br>");
 												out.println("-------------------------------------------" + "<br>");
 											}
 											db.clearErrors();

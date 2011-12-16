@@ -8,7 +8,7 @@
 <html>
 <head>
 <title>内容管理系统安装程序</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="refresh" content="0;url=<%=Bean.getDatabaseConfigPage(Bean.getDatabase()) %>">
 </head>
 <body>
