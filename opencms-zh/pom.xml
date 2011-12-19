@@ -2,29 +2,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>opencms-zh</groupId>
+	<groupId>org.opencms</groupId>
 	<artifactId>opencms-zh</artifactId>
-	<version>7.5.3</version>
+	<version>8.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>opencms-zh</name>
+	<description>OpenCms Chinese Localization</description>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<module.name>org.langhua.opencms.workplace</module.name>
 	</properties>
 
 	<repositories>
 		<repository>
-			<id>ibiblio-repository</id>
-			<name>ibiblio Maven2 Repository</name>
-			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+			<id>maven-central-1</id>
+			<name>Maven2 Central Repository 1</name>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
-		<repository>
-			<id>langhua.public</id>
-			<name>Langhua Opensource Public Maven2 Repository</name>
-			<url>http://192.168.1.5/maven2/public/</url>
-		</repository>
+		<!-- You can use a staging repository to test the pom files. -->
+		<!-- <repository> <id>maven-staging</id> <name>Maven2 Staging Repository</name> 
+			<url>https://oss.sonatype.org/content/repositories/orgopencms-102/</url> 
+			</repository> -->
 	</repositories>
 
 	<build>
@@ -59,14 +60,16 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.2</version>
 				<configuration>
 					<descriptors>
 						<descriptor>
 							${basedir}/assembly.xml
 						</descriptor>
 					</descriptors>
-					<finalName>org.langhua.opencms.workplace_${project.version}.0
+					<finalName>${module.name}_${project.version}.0
 					</finalName>
 					<outputDirectory>
 						${basedir}/target
@@ -96,18 +99,42 @@
 				<version>2.6</version>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
 				<executions>
 					<execution>
+						<!-- prepare source code from opencms-core -->
+						<id>prepare-sourcecode</id>
+						<phase>clean</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build.xml" target="copy">
+									<property name="opencms-core-basedir" value="/Users/ShiJinghai/git/opencms-core" />
+									<!-- Change this to true when you want to copy new opencms source 
+										code to this project. -->
+									<property name="overwrite.sourcecode" value="false" />
+								</ant>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>build opencms-zh.war</id>
+						<!-- this should be run after make-assembly as the new built org.langhua.opencms.workplace is needed. -->
 						<phase>package</phase>
 						<configuration>
-							<tasks>
-								<copy todir="/usr/share/tomcat5/webapps/opencms753/WEB-INF/classes">
-									<fileset dir="${basedir}/target/classes">
-										<include name="org/opencms/**/*.class" />
-									</fileset>
+							<target>
+								<unwar src="/Users/ShiJinghai/Downloads/opencms_8.0.3/opencms.war"
+									dest="${basedir}/target/opencms.war" overwrite="false" />
+								<copy todir="${basedir}/target/opencms.war/WEB-INF/classes" overwrite="true">
+									<fileset dir="${basedir}/target/classes" />
 								</copy>
-							</tasks>
+								<copy file="${basedir}/target/${module.name}_${project.version}.0.zip" todir="${basedir}/target/opencms.war/WEB-INF/packages/modules" overwrite="true" />
+								<war destfile="${basedir}/target/${artifactId}-${project.version}.war" basedir="${basedir}/target/opencms.war" />
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>
@@ -126,79 +153,30 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
+			<groupId>org.opencms</groupId>
+			<artifactId>opencms-core</artifactId>
+			<version>8.0.3-rev</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.2.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>1.8</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>opencms</groupId>
-			<artifactId>opencms</artifactId>
-			<version>7.5.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>opencms</groupId>
+			<groupId>org.opencms</groupId>
 			<artifactId>opencms-setup</artifactId>
-			<version>7.5.3</version>
+			<version>8.0.3-rev</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>opencms</groupId>
+			<groupId>org.opencms</groupId>
 			<artifactId>org.opencms.workplace.tools.searchindex</artifactId>
-			<version>7.5.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.safehaus.jug</groupId>
-			<artifactId>jug-lgpl</artifactId>
-			<version>2.0.0</version>
+			<version>8.0.3-rev</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
+
 	<distributionManagement>
 		<repository>
-			<id>langhua.public</id>
-			<url>
-                http://192.168.1.5/archiva/repository/public
-            </url>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 </project>

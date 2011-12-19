@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="OpenCms Chinese Module prepare source code" default="copy" basedir=".">
+
+	<property name="src.main.java" location="${basedir}/src/main/java" />
+	<property name="src.main.module" location="${basedir}/src/main/module" />
+	<property name="src.main.webapp" location="${basedir}/src/main/webapp" />
+	<property name="module.name" value="org.langhua.opencms.workplace" />
+	<property name="src.main.module.classes" location="${src.main.module}/system/modules/${module.name}/classes" />
+	<property name="src.main.module.workplace" location="${src.main.module}/system/workplace" />
+	
+	<target name="copy.java" description="Copy the necessary java files to this project">
+		<!-- 
+		 1. Allow user to choose using name or title to display a resource in workplace resource tree.
+		 2. Add a resource size comparator.
+		 3. Add localization to property dialog, use templateonedialog.propertyName style, for example, templateonedialog.ade.template.image.
+		 4. Add resource sort in resource list area.
+		 5. Allow single Chinese search.
+		 6. Add localization to online and offline project name.
+		 7. Expand tab dialog's tab size wider to display Chinese correcly.
+		 -->
+		<copy todir="${src.main.java}" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/src">
+				<include name="org/opencms/configuration/CmsDefaultUserSettings.java" />
+				<include name="org/opencms/configuration/CmsWorkplaceConfiguration.java" />
+				<include name="org/opencms/db/CmsDriverManager.java" />
+				<include name="org/opencms/db/CmsUserSettings.java" />
+				<include name="org/opencms/i18n/CmsMessages.java" />
+				<include name="org/opencms/workplace/CmsFrameset.java" />
+				<include name="org/opencms/workplace/CmsTabDialog.java" />
+				<include name="org/opencms/workplace/commons/CmsPreferences.java" />
+				<include name="org/opencms/workplace/commons/CmsPropertyAdvanced.java" />
+				<include name="org/opencms/workplace/commons/CmsPropertyCustom.java" />
+				<include name="org/opencms/workplace/commons/Messages.java" />
+				<include name="org/opencms/workplace/explorer/CmsExplorer.java" />
+				<include name="org/opencms/workplace/explorer/CmsExplorerTypeSettings.java" />
+				<include name="org/opencms/workplace/explorer/CmsTree.java" />
+			</fileset>
+		</copy>
+
+		<copy todir="${src.main.java}" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/src-setup">
+				<include name="org/opencms/setup/CmsSetupBean.java" />
+			</fileset>
+		</copy>
+
+		<copy todir="${src.main.java}" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/src-modules">
+				<include name="org/opencms/workplace/tools/searchindex/CmsSearchWidgetDialog.java" />
+			</fileset>
+		</copy>
+
+		<copy todir="${src.main.module.classes}" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/src">
+				<include name="org/opencms/configuration/opencms-workplace.dtd" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${src.main.module.workplace}" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/modules/org.opencms.workplace.explorer/resources/system/workplace">
+				<include name="commons/chnav.jsp" />
+				<include name="commons/preferences.jsp" />
+				<include name="resources/commons/explorer.js" />
+				<include name="resources/commons/tree.js" />
+			</fileset>
+		</copy>
+		
+		<copy file="${opencms-core-basedir}/modules/org.opencms.editors.fckeditor/resources/system/workplace/resources/editors/fckeditor/editor/lang/zh-cn.js"
+		      tofile="${src.main.module.workplace}/resources/editors/fckeditor/editor/lang/zh.js"
+		      overwrite="${overwrite.sourcecode}" />
+		
+	</target>
+
+	<target name="copy.webapp" description="Copy the necessary webapp files to this project">
+		<!-- 
+		 1. Localize *.html and *.jsp under webapp/setup.
+		 2. Localize components.properties and add org.langhua.opencms.workplace to component.workplace.modules.
+		 3. Add zh to webapp/WEB-INF/config/opencms-system.xml and opencms-workplace.xml and set zh as default locale.
+		 4. Add analyzer for zh in webapp/WEB-INF/config/opencms-search.xml.
+		 -->
+		<copy todir="${src.main.webapp}/setup" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/webapp/setup">
+				<include name="**/*.jsp" />
+				<include name="**/*.html" />
+				<include name="components.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${src.main.webapp}/WEB-INF" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/webapp/WEB-INF">
+				<include name="config/opencms-system.xml" />
+				<include name="config/opencms-workplace.xml" />
+				<include name="config/opencms-search.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy" description="Copy the necessary java and properties files to this project">
+		<antcall target="copy.java" />
+		<antcall target="copy.webapp" />
+	</target>
+</project>

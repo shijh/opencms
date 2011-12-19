@@ -1,4 +1,29 @@
-#Wed Oct 13 04:43:35 CST 2010
+#Thu Dec 15 04:47:47 CST 2011
 eclipse.preferences.version=1
 encoding//src/main/java/org/opencms/setup/CmsSetupBean.java=UTF-8
 encoding//src/main/module/system/modules/org.langhua.opencms.workplace/docs/localizationtool.jsp=UTF-8
+encoding//src/main/webapp/setup/browser_config.html=UTF-8
+encoding//src/main/webapp/setup/components.properties=UTF-8
+encoding//src/main/webapp/setup/database/as400/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/as400/step_4_database_setup.jsp=UTF-8
+encoding//src/main/webapp/setup/database/db2/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/derby/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/empress/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/firebird/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/h2/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/hsqldb/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/hsqldb/database_information_jpa.html=UTF-8
+encoding//src/main/webapp/setup/database/informix/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/ingres/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/interbase/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/intersystemscache/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/jdatastore/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/mssql/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/mssql/database_information_jpa.html=UTF-8
+encoding//src/main/webapp/setup/database/mysql/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/oracle/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/postgresql/database_information.html=UTF-8
+encoding//src/main/webapp/setup/database/postgresql/database_information_jpa.html=UTF-8
+encoding//src/main/webapp/setup/database/sybase/database_information.html=UTF-8
+encoding//src/main/webapp/setup/license.html=UTF-8
+encoding/<project>=UTF-8

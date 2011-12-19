@@ -8,7 +8,6 @@
 		<fileSet>
 			<lineEnding>unix</lineEnding>
 			<useDefaultExcludes>true</useDefaultExcludes>
-			<useStrictFiltering>false</useStrictFiltering>
 			<directory>${basedir}/src/main/module</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
@@ -21,7 +20,6 @@
         <fileSet>
             <lineEnding>unix</lineEnding>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <useStrictFiltering>false</useStrictFiltering>
             <directory>${basedir}/src/main/java</directory>
             <outputDirectory>/system/modules/org.langhua.opencms.workplace/classes/</outputDirectory>
             <includes>
@@ -30,7 +28,6 @@
         </fileSet>
         <fileSet>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <useStrictFiltering>false</useStrictFiltering>
             <directory>${basedir}/target/classes/</directory>
             <outputDirectory>/system/modules/org.langhua.opencms.workplace/classes/</outputDirectory>
             <includes>
