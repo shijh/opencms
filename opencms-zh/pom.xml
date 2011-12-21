@@ -123,17 +123,45 @@
 					</execution>
 					<execution>
 						<id>build opencms-zh.war</id>
-						<!-- this should be run after make-assembly as the new built org.langhua.opencms.workplace is needed. -->
+						<!-- this should be run after make-assembly as the new built org.langhua.opencms.workplace 
+							is needed. -->
 						<phase>package</phase>
 						<configuration>
 							<target>
 								<unwar src="/Users/ShiJinghai/Downloads/opencms_8.0.3/opencms.war"
 									dest="${basedir}/target/opencms.war" overwrite="false" />
-								<copy todir="${basedir}/target/opencms.war/WEB-INF/classes" overwrite="true">
+
+								<copy todir="${basedir}/target/opencms.war/WEB-INF/classes"
+									overwrite="true">
 									<fileset dir="${basedir}/target/classes" />
 								</copy>
-								<copy file="${basedir}/target/${module.name}_${project.version}.0.zip" todir="${basedir}/target/opencms.war/WEB-INF/packages/modules" overwrite="true" />
-								<war destfile="${basedir}/target/${artifactId}-${project.version}.war" basedir="${basedir}/target/opencms.war" />
+
+								<copy todir="${basedir}/target/opencms.war" overwrite="true">
+									<fileset dir="${basedir}/src/main/webapp" />
+								</copy>
+
+								<copy file="${basedir}/src/main/webapp/setup/versions.txt"
+									tofile="${basedir}/target/opencms.war/setup/versions.txt" overwrite="true">
+									<filterset>
+										<filter token="OPENCMS_VERSION" value="OpenCms ${project.version}" />
+									</filterset>
+								</copy>
+
+								<copy file="${basedir}/src/main/webapp/setup/license.html"
+									tofile="${basedir}/target/opencms.war/setup/license.html" overwrite="true">
+									<filterset>
+										<filter token="OPENCMS_VERSION_NUMBER" value="${project.version}" />
+										<filter token="OPENCMS_VERSION_NAME" value="${project.version}" />
+									</filterset>
+								</copy>
+
+								<copy
+									file="${basedir}/target/${module.name}_${project.version}.0.zip"
+									todir="${basedir}/target/opencms.war/WEB-INF/packages/modules"
+									overwrite="true" />
+
+								<war destfile="${basedir}/target/${artifactId}-${project.version}.war"
+									basedir="${basedir}/target/opencms.war" />
 							</target>
 						</configuration>
 						<goals>

@@ -41,6 +41,8 @@
 		<copy todir="${src.main.java}" overwrite="${overwrite.sourcecode}">
 			<fileset dir="${opencms-core-basedir}/src-setup">
 				<include name="org/opencms/setup/CmsSetupBean.java" />
+				<include name="org/opencms/setup/comptest/*.java" />
+				<exclude name="**/CmsSetupTestResult.java" />
 			</fileset>
 		</copy>
 

@@ -1,0 +1,10 @@
+#############################################################
+# @OPENCMS_VERSION@ (c) 2009 Alkacon Software GmbH
+# 
+# 本文件包含了你目前使用的信息配置。
+#                                          
+# 在使用安装程序时填入。
+# 日期：         The current date
+# 使用的JDK:     The currently used JDK
+# 使用的Servlet: The currently used Servlet Engine
+#############################################################
