@@ -122,9 +122,9 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 

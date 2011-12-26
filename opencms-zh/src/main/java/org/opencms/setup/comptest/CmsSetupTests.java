@@ -231,11 +231,11 @@ public class CmsSetupTests {
             // write the content to the file in server filesystem
             dOut = new PrintWriter(fOut);
             dOut.println();
-            dOut.println("############### 当前使用的配置 ################");
+            dOut.println("############### 当前配置 ################");
             dOut.println("日期：                "
                 + DateFormat.getDateTimeInstance().format(new java.util.Date(System.currentTimeMillis())));
             dOut.println("使用的JDK:            " + usedJDK);
-            dOut.println("使用的Servlet引擎: " + thisEngine);
+            dOut.println("使用的Servlet引擎:     " + thisEngine);
             dOut.close();
         } catch (IOException e) {
             // nothing we can do

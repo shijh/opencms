@@ -2267,4 +2267,113 @@ public class CmsPreferences extends CmsTabDialog {
         }
         return "";
     }
+
+    // Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-24
+    // start
+    /**
+     * Builds the html for  the explorer tree sort select  box.<p>
+     * 
+     * @param htmlAttributes optional html attributes for the &lgt;select&gt; tag
+     * @return the html for the explorer tree sort select box
+     */
+    public String buildSelectExplorerTreeSort(String htmlAttributes){
+    	int selectedIndex = Integer.parseInt(getParamTabExTreeSort());
+    	return buildSelectTreeSort(htmlAttributes,selectedIndex);
+    }
+    
+    /**
+     * Returns the "explorer tree sort" setting.<p>
+     * 
+     * @return the "explorer tree sort" setting
+     */
+    public String getParamTabExTreeSort(){
+    	 return "" + m_userSettings.getExplorerTreeSort();
+    }
+ 
+    /**
+     * Sets the "explorer tree sort" setting.<p>
+     * 
+     * @param value a String representation of an int value to set the "explorer tree sort" setting
+     */
+    public void setParamTabExTreeSort(String value) {
+
+        try {
+            m_userSettings.setExplorerTreeSort(Integer.parseInt(value));
+        } catch (Throwable t) {
+            // should usually never happen
+        }
+    }
+    
+    /**
+     * Builds the html for a common tree sort select box.<p>
+     * 
+     * @param htmlAttributes optional html attributes for the &lgt;select&gt; tag
+     * @param selectedIndex the index of the selected option
+     * @return the html for the common tree sort select box
+     */
+    private String buildSelectTreeSort(String htmlAttributes, int selectedIndex) {
+
+        List options = new ArrayList(2);
+        options.add(key(Messages.GUI_PREF_TREE_SORT_NAME_0));
+        options.add(key(Messages.GUI_PREF_TREE_SORT_TITLE_0));
+        options.add(key(Messages.GUI_PREF_TREE_SORT_SIZE_0));
+        options.add(key(Messages.GUI_PREF_TREE_SORT_TIME_0));
+        String[] vals = new String[] {"0", "1","2","3"};
+        List values = new ArrayList(java.util.Arrays.asList(vals));
+        return buildSelect(htmlAttributes, options, values, selectedIndex);
+    }
+    
+    /**
+     * Builds the html for the explorer tree label select box.<p>
+     * 
+     * @param htmlAttributes optional html attributes for the &lgt;select&gt; tag
+     * @return the html for the explorer tree label select box
+     */
+    public String buildSelectExplorerTreeLabel(String htmlAttributes) {
+
+        int selectedIndex = Integer.parseInt(getParamTabExTreeLabel());
+        return buildSelectTreeLabel(htmlAttributes, selectedIndex);
+    }
+    
+    /**
+     * Returns the "explorer tree label" setting.<p>
+     * 
+     * @return the "explorer tree label" setting
+     */
+    public String getParamTabExTreeLabel() {
+
+        return "" + m_userSettings.getExplorerTreeLabel();
+    }
+    
+    /**
+     * Sets the "explorer tree label" setting.<p>
+     * 
+     * @param value a String representation of an int value to set the "explorer tree label" setting
+     */
+    public void setParamTabExTreeLabel(String value) {
+
+        try {
+            m_userSettings.setExplorerTreeLabel(Integer.parseInt(value));
+        } catch (Throwable t) {
+            // should usually never happen
+        }
+    }
+    
+    /**
+     * Builds the html for a common tree label select box.<p>
+     * 
+     * @param htmlAttributes optional html attributes for the &lgt;select&gt; tag
+     * @param selectedIndex the index of the selected option
+     * @return the html for the common tree label select box
+     */
+    private String buildSelectTreeLabel(String htmlAttributes, int selectedIndex) {
+
+        List options = new ArrayList(2);
+        options.add(key(Messages.GUI_PREF_TREE_LABEL_NAME_0));
+        options.add(key(Messages.GUI_PREF_TREE_LABEL_TITLE_0));
+        String[] vals = new String[] {"0", "1"};
+        List values = new ArrayList(java.util.Arrays.asList(vals));
+        return buildSelect(htmlAttributes, options, values, selectedIndex);
+    }
+    // end
 }

@@ -71,7 +71,7 @@ public class CmsMessages {
 
     /** The resource bundle this message object was initialized with. */
     private ResourceBundle m_resourceBundle;
-
+    
     /**
      * Constructor for the messages with an initialized <code>java.util.Locale</code>.
      * 
@@ -325,18 +325,15 @@ public class CmsMessages {
         if (m_resourceBundle != null) {
             try {
 				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
-
 				String value = m_resourceBundle.getString(keyName);
-
 				try {
-					if (value.equals(CmsEncoder.escapeNonAscii(value))) {
-						value = new String(value.getBytes("ISO-8859-1"),
-								"UTF-8");
+					if (isNonAsciiUTF8(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1))) {
+						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
+								CmsEncoder.ENCODING_UTF_8);
 					}
 				} catch (UnsupportedEncodingException e1) {
 					e1.printStackTrace();
 				}
-
 				return value;
 				// return m_resourceBundle.getString(keyName);
             } catch (MissingResourceException e) {
@@ -406,18 +403,15 @@ public class CmsMessages {
         try {
             if (m_resourceBundle != null) {
 				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
-
 				String value = m_resourceBundle.getString(keyName);
-
 				try {
-					if (value.equals(CmsEncoder.escapeNonAscii(value))) {
-						value = new String(value.getBytes("ISO-8859-1"),
-								"UTF-8");
+					if (isNonAsciiUTF8(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1))) {
+						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
+								CmsEncoder.ENCODING_UTF_8);
 					}
 				} catch (UnsupportedEncodingException e1) {
 					// do nothing
 				}
-
 				return value;
 				// return m_resourceBundle.getString(keyName);
             }
@@ -627,4 +621,48 @@ public class CmsMessages {
 
         m_resourceBundle = resourceBundle;
     }
+
+	/**
+	 * Determines whether a given byte sequence is a valid utf-8 encoding,
+	 * encoding (at least in part) something *other* than normal Ascii (i.e. it
+	 * is utf-8 encoding something that is not just 7-bit ascii, which in utf-8
+	 * is indistinguishable from the original text).
+	 * <p>
+	 * <p/>
+	 * While this does not mean that the bytes *are* a utf-8 encoded string, the
+	 * chance of a random byte sequence (containing bytes with the high-bit set)
+	 * happening to be utf8 is roughly (1/2 ** (byte array length)).
+	 * <p>
+	 * see rfc 2279
+	 */
+	private static boolean isNonAsciiUTF8(byte[] sequence) {
+		boolean nonAsciiDetected = false;
+
+		int numberBytesInChar;
+		for (int i = 0; i < sequence.length - 3; i++) {
+			byte b = sequence[i];
+			if (((b >> 6) & 0x03) == 2)
+				return false;
+			byte test = b;
+			numberBytesInChar = 0;
+			while ((test & 0x80) > 0) {
+				test <<= 1;
+				numberBytesInChar++;
+			}
+
+			// check if multi-byte utf8 sequence found
+			// check that extended bytes are also good...
+			if (numberBytesInChar > 1) {
+				nonAsciiDetected = true;
+				for (int j = 1; j < numberBytesInChar; j++) {
+					if (((sequence[i + j] >> 6) & 0x03) != 2)
+						return false;
+				}
+				i += numberBytesInChar - 1; // increment i to the next utf8
+											// character start position.
+			}
+		}
+
+		return nonAsciiDetected;
+	}
 }

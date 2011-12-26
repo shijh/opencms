@@ -116,8 +116,8 @@
 								<tr>
 									<td colspan="2">&nbsp;</td>
 									<td>
-										<input type="submit" name="dropDb" class="dialogbutton" style="margin-left: 0;" value="Yes">&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="button" value="No" onClick="location.href='step_3_database_selection.jsp';" class="dialogbutton">
+										<input type="submit" name="dropDb" class="dialogbutton" style="margin-left: 0;" value="是" onClick="this.value='Yes';">&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" value="否" onClick="location.href='step_3_database_selection.jsp';" class="dialogbutton">
 									</td>
 								</tr>
 							</table>

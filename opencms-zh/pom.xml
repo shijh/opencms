@@ -114,6 +114,7 @@
 									<!-- Change this to true when you want to copy new opencms source 
 										code to this project. -->
 									<property name="overwrite.sourcecode" value="false" />
+									<property name="system.runtimeinfo" value="org.opencms.db.CmsDbContextFactory" />
 								</ant>
 							</target>
 						</configuration>
@@ -141,14 +142,16 @@
 								</copy>
 
 								<copy file="${basedir}/src/main/webapp/setup/versions.txt"
-									tofile="${basedir}/target/opencms.war/setup/versions.txt" overwrite="true">
+									tofile="${basedir}/target/opencms.war/setup/versions.txt"
+									overwrite="true">
 									<filterset>
 										<filter token="OPENCMS_VERSION" value="OpenCms ${project.version}" />
 									</filterset>
 								</copy>
 
 								<copy file="${basedir}/src/main/webapp/setup/license.html"
-									tofile="${basedir}/target/opencms.war/setup/license.html" overwrite="true">
+									tofile="${basedir}/target/opencms.war/setup/license.html"
+									overwrite="true">
 									<filterset>
 										<filter token="OPENCMS_VERSION_NUMBER" value="${project.version}" />
 										<filter token="OPENCMS_VERSION_NAME" value="${project.version}" />
@@ -160,7 +163,8 @@
 									todir="${basedir}/target/opencms.war/WEB-INF/packages/modules"
 									overwrite="true" />
 
-								<war destfile="${basedir}/target/${artifactId}-${project.version}.war"
+								<war
+									destfile="${basedir}/target/${project.artifactId}-${project.version}.war"
 									basedir="${basedir}/target/opencms.war" />
 							</target>
 						</configuration>

@@ -41,6 +41,7 @@
 		<copy todir="${src.main.java}" overwrite="${overwrite.sourcecode}">
 			<fileset dir="${opencms-core-basedir}/src-setup">
 				<include name="org/opencms/setup/CmsSetupBean.java" />
+				<include name="org/opencms/setup/CmsSetupDb.java" />
 				<include name="org/opencms/setup/comptest/*.java" />
 				<exclude name="**/CmsSetupTestResult.java" />
 			</fileset>
@@ -89,11 +90,16 @@
 		</copy>
 		<copy todir="${src.main.webapp}/WEB-INF" overwrite="${overwrite.sourcecode}">
 			<fileset dir="${opencms-core-basedir}/webapp/WEB-INF">
-				<include name="config/opencms-system.xml" />
 				<include name="config/opencms-workplace.xml" />
 				<include name="config/opencms-search.xml" />
 			</fileset>
 		</copy>
+		<copy file="${opencms-core-basedir}/webapp/WEB-INF/config/opencms-system.xml" tofile="${src.main.webapp}/WEB-INF/config/opencms-system.xml" overwrite="${overwrite.sourcecode}">
+			<filterset>
+				<filter token="RUNTIME_INFO" value="${system.runtimeinfo}" />
+			</filterset>
+		</copy>
+		<copy file="${opencms-core-basedir}/webapp/WEB-INF/classes/log4j.properties" tofile="${src.main.webapp}/WEB-INF/classes/log4j.properties" overwrite="${overwrite.sourcecode}" />
 	</target>
 
 	<target name="copy" description="Copy the necessary java and properties files to this project">

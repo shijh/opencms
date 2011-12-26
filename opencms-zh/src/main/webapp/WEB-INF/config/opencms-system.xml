@@ -49,7 +49,7 @@
 			<param name="compatibility.support.webAppNames">/opencms/opencms/</param>
 		</runtimeproperties>	
 		<runtimeclasses>
-			<runtimeinfo class="@RUNTIME_INFO@" />
+			<runtimeinfo class="org.opencms.db.CmsDbContextFactory" />
 		</runtimeclasses>	
 		<defaultusers>
 			<user-admin>Admin</user-admin>

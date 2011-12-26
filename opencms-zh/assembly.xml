@@ -15,6 +15,7 @@
 				<include>**/*.txt</include>
 				<include>**/*.jsp</include>
 				<include>**/*.properties</include>
+				<include>**/*.js</include>
 			</includes>
 		</fileSet>
         <fileSet>
@@ -37,7 +38,7 @@
 	</fileSets>
     <dependencySets>
         <dependencySet>
-            <outputFileNameMapping>${artifactId}.${extension}</outputFileNameMapping>
+            <outputFileNameMapping>${project.artifactId}.${extension}</outputFileNameMapping>
             <scope>runtime</scope>
             <outputDirectory>/system/modules/org.langhua.opencms.workplace/lib</outputDirectory>
         </dependencySet>
