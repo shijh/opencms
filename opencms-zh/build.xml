@@ -99,7 +99,6 @@
 				<filter token="RUNTIME_INFO" value="${system.runtimeinfo}" />
 			</filterset>
 		</copy>
-		<copy file="${opencms-core-basedir}/webapp/WEB-INF/classes/log4j.properties" tofile="${src.main.webapp}/WEB-INF/classes/log4j.properties" overwrite="${overwrite.sourcecode}" />
 	</target>
 
 	<target name="copy" description="Copy the necessary java and properties files to this project">

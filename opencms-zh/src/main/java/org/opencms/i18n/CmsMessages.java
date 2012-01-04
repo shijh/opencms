@@ -34,7 +34,9 @@ import org.opencms.util.CmsStringUtil;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -72,6 +74,14 @@ public class CmsMessages {
     /** The resource bundle this message object was initialized with. */
     private ResourceBundle m_resourceBundle;
     
+    /** The indicator whether a message string should be transfered from iso-8859-1 to utf-8. Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-27 **/
+    private boolean m_encodeTransfer = false;
+    
+    /** The locale list needs encode transfer. Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-27 **/
+    private static final Locale[] m_localesNeedTransfer = new Locale[] { new Locale("zh"), new Locale("zh_CN"), new Locale("zh_TW")};
+    
+    private static final List<Locale> m_localeListNeedTransfer = Arrays.asList(m_localesNeedTransfer);
+    
     /**
      * Constructor for the messages with an initialized <code>java.util.Locale</code>.
      * 
@@ -84,6 +94,9 @@ public class CmsMessages {
             m_locale = locale;
             m_bundleName = bundleName;
             m_resourceBundle = CmsResourceBundleLoader.getBundle(bundleName, m_locale);
+            if (m_localeListNeedTransfer.contains(m_locale)) {
+            	m_encodeTransfer = true;
+            }
         } catch (MissingResourceException e) {
             m_resourceBundle = null;
         } catch (Exception e) {
@@ -327,7 +340,7 @@ public class CmsMessages {
 				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
 				String value = m_resourceBundle.getString(keyName);
 				try {
-					if (isNonAsciiUTF8(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1))) {
+					if (m_encodeTransfer) {
 						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
 								CmsEncoder.ENCODING_UTF_8);
 					}
@@ -405,7 +418,7 @@ public class CmsMessages {
 				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
 				String value = m_resourceBundle.getString(keyName);
 				try {
-					if (isNonAsciiUTF8(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1))) {
+					if (m_encodeTransfer) {
 						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
 								CmsEncoder.ENCODING_UTF_8);
 					}
@@ -621,48 +634,4 @@ public class CmsMessages {
 
         m_resourceBundle = resourceBundle;
     }
-
-	/**
-	 * Determines whether a given byte sequence is a valid utf-8 encoding,
-	 * encoding (at least in part) something *other* than normal Ascii (i.e. it
-	 * is utf-8 encoding something that is not just 7-bit ascii, which in utf-8
-	 * is indistinguishable from the original text).
-	 * <p>
-	 * <p/>
-	 * While this does not mean that the bytes *are* a utf-8 encoded string, the
-	 * chance of a random byte sequence (containing bytes with the high-bit set)
-	 * happening to be utf8 is roughly (1/2 ** (byte array length)).
-	 * <p>
-	 * see rfc 2279
-	 */
-	private static boolean isNonAsciiUTF8(byte[] sequence) {
-		boolean nonAsciiDetected = false;
-
-		int numberBytesInChar;
-		for (int i = 0; i < sequence.length - 3; i++) {
-			byte b = sequence[i];
-			if (((b >> 6) & 0x03) == 2)
-				return false;
-			byte test = b;
-			numberBytesInChar = 0;
-			while ((test & 0x80) > 0) {
-				test <<= 1;
-				numberBytesInChar++;
-			}
-
-			// check if multi-byte utf8 sequence found
-			// check that extended bytes are also good...
-			if (numberBytesInChar > 1) {
-				nonAsciiDetected = true;
-				for (int j = 1; j < numberBytesInChar; j++) {
-					if (((sequence[i + j] >> 6) & 0x03) != 2)
-						return false;
-				}
-				i += numberBytesInChar - 1; // increment i to the next utf8
-											// character start position.
-			}
-		}
-
-		return nonAsciiDetected;
-	}
 }
