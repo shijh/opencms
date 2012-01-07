@@ -77,10 +77,10 @@ public class CmsMessages {
     /** The indicator whether a message string should be transfered from iso-8859-1 to utf-8. Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-27 **/
     private boolean m_encodeTransfer = false;
     
-    /** The locale list needs encode transfer. Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-27 **/
-    private static final Locale[] m_localesNeedTransfer = new Locale[] { new Locale("zh"), new Locale("zh_CN"), new Locale("zh_TW")};
+    /** The locale list needs encode transfer. Added by Shi Jinghai, huaruhai@hotmail.com  2012-1-5 **/
+    private static final Locale[] LOCALES_NEED_TRANSFER = new Locale[] { new Locale("zh"), new Locale("zh_CN"), new Locale("zh_TW")};
     
-    private static final List<Locale> m_localeListNeedTransfer = Arrays.asList(m_localesNeedTransfer);
+    public static final List<Locale> LOCALE_LIST_NEED_TRANSFER = Arrays.asList(LOCALES_NEED_TRANSFER);
     
     /**
      * Constructor for the messages with an initialized <code>java.util.Locale</code>.
@@ -94,7 +94,7 @@ public class CmsMessages {
             m_locale = locale;
             m_bundleName = bundleName;
             m_resourceBundle = CmsResourceBundleLoader.getBundle(bundleName, m_locale);
-            if (m_localeListNeedTransfer.contains(m_locale)) {
+            if (LOCALE_LIST_NEED_TRANSFER.contains(m_locale)) {
             	m_encodeTransfer = true;
             }
         } catch (MissingResourceException e) {

@@ -6,6 +6,7 @@
 	             org.opencms.file.types.*,
 	             org.opencms.main.*,
 	             org.opencms.util.*,
+	             org.opencms.gwt.*,
 	             org.opencms.workplace.*"%><%!
 	
 	public void createResourceWithParentFolders(CmsObject cms, String path,
@@ -66,8 +67,155 @@
 			}
 		}
 
+		Collections.sort(result);
 		return result;
 	}
+
+	public static List<String> collectOpenCmsModuleMessages(List<String> bundleMessages) {
+		Locale locale = new Locale("en");
+		// create a new list and add the base bundle
+		ArrayList<String> result = new ArrayList<String>();
+
+		//////////// iterate over all registered modules ////////////////        
+		Set<String> names = OpenCms.getModuleManager().getModuleNames();
+		if (names != null) {
+			// iterate all module names
+			Iterator<String> i = names.iterator();
+			while (i.hasNext()) {
+				String modName = i.next();
+				if (!modName.startsWith("org.opencms."))
+					continue;
+				//////////// collect the workplace.properties ////////////////
+				// this should result in a name like "my.module.name.workplace"
+				String bundleName = modName
+						+ CmsWorkplaceMessages.PREFIX_BUNDLE_WORKPLACE;
+				if (bundleMessages.contains(bundleName)) continue;
+				// try to load a bundle with the module names
+				CmsMessages msg = new CmsMessages(bundleName, locale);
+				// bundle was loaded, add to list of bundles
+				if (msg.isInitialized()
+						&& msg.getResourceBundle().keySet().size() > 0) {
+					result.add(bundleName);
+				}
+				//////////// collect the messages.properties ////////////////
+				// this should result in a name like "my.module.name.messages"
+				bundleName = modName
+						+ CmsWorkplaceMessages.PREFIX_BUNDLE_MESSAGES;
+				if (bundleMessages.contains(bundleName)) continue;
+				// try to load a bundle with the module names
+				msg = new CmsMessages(bundleName, locale);
+				// bundle was loaded, add to list of bundles
+				if (msg.isInitialized()
+						&& msg.getResourceBundle().keySet().size() > 0) {
+					result.add(bundleName);
+				}
+			}
+		}
+
+		Collections.sort(result);
+		return result;
+	}
+
+	public static List<String> collectClientMessages() {
+        String[] clientBundles = new String[] {
+                "org.opencms.ade.containerpage.clientmessages",
+                "org.opencms.ade.galleries.clientmessages",
+                "org.opencms.ade.publish.clientmessages",
+                "org.opencms.ade.sitemap.clientmessages",
+                "org.opencms.ade.upload.clientmessages",
+                "org.opencms.gwt.clientmessages"
+        };
+		Locale locale = new Locale("en");
+		// create a new list and add the base bundle
+		ArrayList<String> result = new ArrayList<String>();
+
+		for (String clientBundle : clientBundles) {
+			CmsMessages msg = new CmsMessages(clientBundle, locale);
+			// bundle was loaded, add to list of bundles
+			if (msg.isInitialized()
+					&& msg.getResourceBundle().keySet().size() > 0) {
+				result.add(clientBundle);
+			}
+		}
+
+		Collections.sort(result);
+		return result;
+	}
+	
+	public static List<String> collectServerMessages(CmsJspActionElement cms) {
+        I_CmsMessageBundle[] bundles = A_CmsMessageBundle.getOpenCmsMessageBundles();
+		ArrayList<String> result = new ArrayList<String>();
+        for(int i = 0; i < bundles.length; i++) {
+            result.add(bundles[i].getBundleName());
+        }
+        
+        Collections.sort(result);
+        return result;
+	}
+	
+	public static List<String> collectAdditionalMessages(List<String> bundleMessages) {
+		// all class folders under src-modules
+        String[] clientBundles = new String[] {
+                "org.opencms.editors.ckeditor",
+                "org.opencms.editors.editarea",
+                "org.opencms.editors.fckeditor",
+                "org.opencms.workplace.administration",
+                "org.opencms.workplace.tools.accounts",
+                "org.opencms.workplace.tools.cache",
+                "org.opencms.workplace.tools.content",
+                "org.opencms.workplace.tools.content.check",
+                "org.opencms.workplace.tools.content.convertxml",
+                "org.opencms.workplace.tools.content.languagecopy",
+                "org.opencms.workplace.tools.content.propertyviewer",
+                "org.opencms.workplace.tools.content.updatexml",
+                "org.opencms.workplace.tools.database",
+                "org.opencms.workplace.tools.galleryoverview",
+                "org.opencms.workplace.tools.history",
+                "org.opencms.workplace.tools.link",
+                "org.opencms.workplace.tools.modules",
+                "org.opencms.workplace.tools.projects",
+                "org.opencms.workplace.tools.publishqueue",
+                "org.opencms.workplace.tools.scheduler",
+                "org.opencms.workplace.tools.searchindex",
+                "org.opencms.workplace.tools.searchindex.sourcesearch",
+                "org.opencms.workplace.tools.workplace",
+                "org.opencms.workplace.tools.workplace.broadcast",
+                "org.opencms.workplace.tools.workplace.rfsfile"
+        };
+		Locale locale = new Locale("en");
+		// create a new list and add the base bundle
+		ArrayList<String> result = new ArrayList<String>();
+
+		for (String modName : clientBundles) {
+			//////////// collect the workplace.properties ////////////////
+			// this should result in a name like "my.module.name.workplace"
+			String bundleName = modName
+					+ CmsWorkplaceMessages.PREFIX_BUNDLE_WORKPLACE;
+			if (bundleMessages.contains(bundleName)) continue;
+			// try to load a bundle with the module names
+			CmsMessages msg = new CmsMessages(bundleName, locale);
+			// bundle was loaded, add to list of bundles
+			if (msg.isInitialized()
+					&& msg.getResourceBundle().keySet().size() > 0) {
+				result.add(bundleName);
+			}
+			//////////// collect the messages.properties ////////////////
+			// this should result in a name like "my.module.name.messages"
+			bundleName = modName
+					+ CmsWorkplaceMessages.PREFIX_BUNDLE_MESSAGES;
+			if (bundleMessages.contains(bundleName)) continue;
+			// try to load a bundle with the module names
+			msg = new CmsMessages(bundleName, locale);
+			// bundle was loaded, add to list of bundles
+			if (msg.isInitialized()
+					&& msg.getResourceBundle().keySet().size() > 0) {
+				result.add(bundleName);
+			}
+		}
+
+		Collections.sort(result);
+		return result;
+	}	
 %><%
         // Create a JSP action element
         CmsJspActionElement cms = new CmsJspActionElement(pageContext, request, response);
@@ -75,28 +223,27 @@
          
         // Check for template property
         String template = cms.property("template", "search", "undefined");
-        HashMap map;        
         
-        I_CmsMessageBundle[] bundles = A_CmsMessageBundle.getOpenCmsMessageBundles();
-        List bundleNames = new ArrayList();
-        for(int i = 0; i < bundles.length; i++) {
-            bundleNames.add(bundles[i].getBundleName());
-        }
-        String[] additionalBundles = cms.property("target").split(",");
-        if (additionalBundles != null) {
-            for(int i = 0; i < additionalBundles.length; i++) {
-                try {
-                    // check, if bundle exists; if yes, add it to the select
-                    String bundleName = ResourceBundle.getBundle(additionalBundles[i]).toString();
-                    bundleNames.add(additionalBundles[i]);
-                } catch (MissingResourceException e) {
-                    // continue
-                }
-            }
-        }
+        // OpenCms server side Messages
+        List<String> bundleNames = new ArrayList<String>();
+        bundleNames.addAll(collectServerMessages(cms));
+        
+        // OpenCms modules' Messages
+        bundleNames.add("");
+        bundleNames.addAll(collectOpenCmsModuleMessages(bundleNames));
+        
+        // OpenCms client side Messages
+        bundleNames.add("");
+        bundleNames.addAll(collectClientMessages());
+        
+        // Alkacon Modules' Messages
+        bundleNames.add("");
         bundleNames.addAll(collectAlkaconModuleMessages());
-        Collections.sort(bundleNames);
-
+        
+        // Additional Modules' Messages
+        bundleNames.add("");
+        bundleNames.addAll(collectAdditionalMessages(bundleNames));
+        
         String localeString = cms.property("locale").trim();
         if (localeString == null) {
             throw new IllegalArgumentException("你必须指定这个JSP的locale属性");
@@ -138,9 +285,9 @@
 
 
 您当前正在浏览的语言是：<%= locale.getDisplayName(new Locale("zh")) %>
+<i>
 [<%= localeString %>]
-</i>
-.
+</i>。
 
 <form name="messagebundles">
 
@@ -157,7 +304,7 @@
 </form>
 
 与这个本地化文件进行比较的翻译后的文件：
-</i><%= translatedBundle %><i>. <%
+<i><%= translatedBundle %></i>。 <%
         
      byte[] contents = "error".getBytes();
      try {
@@ -177,12 +324,12 @@
 
         // Now get a CmsMessages object with all keys from the workplace:        
         String[] magicKeys = { "version", "name", "content-encoding" };
-        List magicKeyList = Arrays.asList(magicKeys);
+        List<String> magicKeyList = Arrays.asList(magicKeys);
                            
-        Enumeration keys;
+        Enumeration<? extends Object> keys;
     
         keys = newMessages.keys();
-        List newList = new ArrayList();
+        List<String> newList = new ArrayList<String>();
         while (keys.hasMoreElements()) {                
                 String key = (String)keys.nextElement();
                 if (magicKeyList.indexOf(key) < 0) newList.add(key);
@@ -213,7 +360,7 @@
             keys = originalResourceBundle.getKeys();
         }
     	
-        List originalList = new ArrayList();
+        List<String> originalList = new ArrayList<String>();
         while (keys.hasMoreElements()) {
                 String key = (String)keys.nextElement();
                 if (magicKeyList.indexOf(key) < 0) originalList.add(key);
@@ -235,11 +382,11 @@
         Collections.sort(originalList);        
         Collections.sort(newList);        
         
-        List missingKeys = new ArrayList();
-        List matchingKeys = new ArrayList();
-        List unnecessaryKeys = new ArrayList();
+        List<String> missingKeys = new ArrayList<String>();
+        List<String> matchingKeys = new ArrayList<String>();
+        List<String> unnecessaryKeys = new ArrayList<String>();
         
-        Iterator i;
+        Iterator<String> i;
         
         i = originalList.iterator();
         while (i.hasNext()) {

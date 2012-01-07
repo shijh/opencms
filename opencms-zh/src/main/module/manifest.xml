@@ -4,7 +4,7 @@
 	<info>
 		<creator>Admin</creator>
 		<opencms_version>8.0.3</opencms_version>
-		<createdate>Wed, 04 Jan 2012 19:40:31 GMT</createdate>
+		<createdate>Sat, 07 Jan 2012 00:17:28 GMT</createdate>
 		<infoproject>Offline</infoproject>
 		<export_version>7</export_version>
 	</info>
@@ -14,7 +14,7 @@
 		<group>Langhua Opensource</group>
 		<class/>
 		<description><![CDATA[Chinese Language Module for OpenCms 8.0.3. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
-		<version>8.0.3.1</version>
+		<version>8.0.3.0</version>
 		<authorname><![CDATA[Shi Jinghai]]></authorname>
 		<authoremail><![CDATA[huaruhai@hotmail.com]]></authoremail>
 		<datecreated/>
@@ -322,6 +322,39 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/gwt</destination>
+			<type>folder</type>
+			<uuidstructure>cbc713bf-37e7-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 21:54:09 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 21:54:09 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/gwt/A_CmsClientMessageBundle.class</source>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/gwt/A_CmsClientMessageBundle.class</destination>
+			<type>binary</type>
+			<uuidstructure>0fffad42-37e8-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>0fffad43-37e8-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 21:56:03 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 21:56:03 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[A_CmsClientMessageBundle]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -784,6 +817,34 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/workplace/help</destination>
+			<type>folder</type>
+			<uuidstructure>d0e2fa4f-37e5-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 21:39:59 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 21:39:59 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/workplace/help/mappings_zh.properties</source>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/workplace/help/mappings_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>b4db1da4-37e6-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>b4db1da5-37e6-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Sat, 07 Jan 2012 00:05:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 21:46:21 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/workplace/tools</destination>
 			<type>folder</type>
 			<uuidstructure>29ebd2c7-fadd-11dd-8e48-5d4bedf1e28d</uuidstructure>
@@ -843,7 +904,7 @@
 			<type>jsp</type>
 			<uuidstructure>ac5167ea-b5bb-11dc-a62a-73f74a2d1f86</uuidstructure>
 			<uuidresource>ac5167eb-b5bb-11dc-a62a-73f74a2d1f86</uuidresource>
-			<datelastmodified>Tue, 03 Jan 2012 23:23:27 GMT</datelastmodified>
+			<datelastmodified>Sat, 07 Jan 2012 00:17:13 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Sat, 29 Dec 2007 03:10:56 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -856,10 +917,6 @@
 				<property>
 					<name>locale</name>
 					<value><![CDATA[zh]]></value>
-				</property>
-				<property>
-					<name>target</name>
-					<value><![CDATA[org.opencms.workplace.tools.publishqueue.messages,org.opencms.workplace.tools.link.messages,org.opencms.workplace.tools.galleryoverview.messages,org.opencms.frontend.templateone.xmlcontentdemo.workplace,org.opencms.frontend.templateone.modules.workplace,org.opencms.frontend.templateone.form.workplace,org.opencms.frontend.templateone.workplace,org.opencms.frontend.photoalbum.messages,org.opencms.frontend.layoutpage.messages,org.opencms.frontend.layoutpage.frontendmessages,org.opencms.frontend.layoutpage.workplace,org.opencms.workplace.workplace,org.opencms.file.wrapper.messages,org.opencms.workplace.tools.cache.messages,org.opencms.workplace.tools.cache.workplace,org.opencms.frontend.templateone.messages,org.opencms.frontend.templateone.form.messages,org.opencms.frontend.templateone.modules.messages,org.opencms.workplace.administration.messages,org.opencms.workplace.tools.content.messages,org.opencms.workplace.tools.content.check.messages,org.opencms.workplace.tools.database.messages,org.opencms.workplace.tools.history.messages,org.opencms.workplace.tools.modules.messages,org.opencms.workplace.tools.scheduler.messages,org.opencms.workplace.tools.searchindex.messages,org.opencms.workplace.tools.accounts.messages,org.opencms.workplace.tools.projects.messages,org.opencms.workplace.tools.widgetdemo.messages,org.opencms.workplace.tools.workplace.messages,org.opencms.workplace.tools.workplace.rfsfile.messages,org.opencms.workplace.tools.workplace.broadcast.messages,org.opencms.editors.fckeditor.messages,org.opencms.editors.htmlarea.messages,org.opencms.validation.messages]]></value>
 				</property>
 			</properties>
 			<relations/>
@@ -938,6 +995,741 @@
 				<property>
 					<name>locale</name>
 					<value><![CDATA[zh]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help</destination>
+			<type>folder</type>
+			<uuidstructure>77ad5230-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:16:31 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol>
+				<accessentry>
+					<uuidprincipal>USER.Export</uuidprincipal>
+					<flags>16</flags>
+					<permissionset>
+						<allowed>1</allowed>
+						<denied>0</denied>
+					</permissionset>
+				</accessentry>
+				<accessentry>
+					<uuidprincipal>GROUP.Guests</uuidprincipal>
+					<flags>38</flags>
+					<permissionset>
+						<allowed>1</allowed>
+						<denied>0</denied>
+					</permissionset>
+				</accessentry>
+			</accesscontrol>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/contribute.html</source>
+			<destination>system/workplace/locales/zh/help/contribute.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>784d8a47-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>784d8a48-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:29:40 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[5.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[参与]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[你怎样参与]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/index.html</source>
+			<destination>system/workplace/locales/zh/help/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>7850e5ac-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>7850e5ad-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:28:16 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[开始]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[OpenCms在线帮助]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/administration</destination>
+			<type>folder</type>
+			<uuidstructure>77beb753-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:37:05 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[3.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[管理]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[管理视图]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/index.html</source>
+			<destination>system/workplace/locales/zh/help/administration/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77f72ca8-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77f72ca9-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:26:31 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[4.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[管理]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[OpenCms管理]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/administration/accounts</destination>
+			<type>folder</type>
+			<uuidstructure>77c14f68-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:26:50 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[3.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[用户管理]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[用户管理]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/accounts/edit_user.html</source>
+			<destination>system/workplace/locales/zh/help/administration/accounts/edit_user.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77c3c06d-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>f824c551-e7b0-11d9-b351-d5c12ccb7197</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:27:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Description</name>
+					<value><![CDATA[编辑用户]]></value>
+				</property>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[编辑用户]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[编辑用户]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/accounts/index.html</source>
+			<destination>system/workplace/locales/zh/help/administration/accounts/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77cb3a83-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77cb3a84-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:25:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[用户管理]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/administration/accounts/new_user.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77d41427-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>f824c551-e7b0-11d9-b351-d5c12ccb7197</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:27:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Description</name>
+					<value><![CDATA[新建一个用户。]]></value>
+				</property>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[新建用户]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[新建用户]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/administration/projects</destination>
+			<type>folder</type>
+			<uuidstructure>77d80bcd-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:34:38 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[项目管理]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[项目管理]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/projects/history.html</source>
+			<destination>system/workplace/locales/zh/help/administration/projects/history.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77dcedd2-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77dcedd3-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:32:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[3.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[项目历史记录]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[项目历史记录]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/projects/index.html</source>
+			<destination>system/workplace/locales/zh/help/administration/projects/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77e74e18-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77e74e19-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:46:42 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[项目管理]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/projects/new.html</source>
+			<destination>system/workplace/locales/zh/help/administration/projects/new.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77eaf79c-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77eaf79d-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:33:57 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[新建项目]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[新建项目]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/administration/projects/settings.html</source>
+			<destination>system/workplace/locales/zh/help/administration/projects/settings.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77f027c2-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77f027c3-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:34:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[项目设置]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[项目设置]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/editors</destination>
+			<type>folder</type>
+			<uuidstructure>77fafd3e-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:37:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[编辑器]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[编辑器]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/editors/index.html</source>
+			<destination>system/workplace/locales/zh/help/editors/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>77ffb833-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>77ffb834-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:37:56 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[编辑器]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[编辑器]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/explorer</destination>
+			<type>folder</type>
+			<uuidstructure>7808b8e9-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:38:13 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[资源管理器]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[资源管理器]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/explorer/history.html</source>
+			<destination>system/workplace/locales/zh/help/explorer/history.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>78136750-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>78136751-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:39:08 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[资源的历史记录]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[资源的历史记录]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/explorer/index.html</source>
+			<destination>system/workplace/locales/zh/help/explorer/index.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>781a4526-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>781a4527-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:39:46 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[资源管理器]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[资源管理器]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/explorer/preferences.html</source>
+			<destination>system/workplace/locales/zh/help/explorer/preferences.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>7826531c-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>7826531d-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:40:14 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[编辑设置]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[编辑设置]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/explorer/publishresource.html</source>
+			<destination>system/workplace/locales/zh/help/explorer/publishresource.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>782d7f12-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>782d7f13-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:40:42 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[发布资源]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[发布资源]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/explorer/touch.html</source>
+			<destination>system/workplace/locales/zh/help/explorer/touch.html</destination>
+			<type>xmlpage</type>
+			<uuidstructure>78312898-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>78312899-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 23:41:14 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[1.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[更改时间]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[更改时间]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/org.opencms.workplace.help/jsptemplates/help]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/explorer/dialogs</destination>
+			<type>folder</type>
+			<uuidstructure>780ab4be-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:16:31 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/help/images</destination>
+			<type>folder</type>
+			<uuidstructure>7834ab0e-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 23:41:36 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[中文在线帮助的图片]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/images/context-menu.jpg</source>
+			<destination>system/workplace/locales/zh/help/images/context-menu.jpg</destination>
+			<type>image</type>
+			<uuidstructure>78367fd1-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>78367fd2-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property type="shared">
+					<name>image.size</name>
+					<value><![CDATA[w:610,h:427]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/help/images/preferences.jpg</source>
+			<destination>system/workplace/locales/zh/help/images/preferences.jpg</destination>
+			<type>image</type>
+			<uuidstructure>784af234-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>784af235-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 23:16:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property type="shared">
+					<name>image.size</name>
+					<value><![CDATA[w:629,h:213]]></value>
 				</property>
 			</properties>
 			<relations/>
@@ -1734,6 +2526,39 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/config</destination>
+			<type>folder</type>
+			<uuidstructure>699addbb-37e9-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 22:05:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:05:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/config/workplace_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/config/workplace_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>69a7fd1d-37e9-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>69a7fd1e-37e9-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 23:18:17 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:05:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/ade/containerpage</destination>
 			<type>folder</type>
 			<uuidstructure>91579d68-3015-11e1-8539-e4ce8f2df730</uuidstructure>
@@ -1743,6 +2568,26 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/containerpage/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/containerpage/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>f4946d78-371e-11e1-90d4-e4ce8f2df730</uuidstructure>
+			<uuidresource>f4946d79-371e-11e1-90d4-e4ce8f2df730</uuidresource>
+			<datelastmodified>Wed, 04 Jan 2012 22:41:34 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Wed, 04 Jan 2012 21:56:29 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -1813,6 +2658,26 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/galleries/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/galleries/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>2efd3881-3725-11e1-90d4-e4ce8f2df730</uuidstructure>
+			<uuidresource>2efd3882-3725-11e1-90d4-e4ce8f2df730</uuidresource>
+			<datelastmodified>Wed, 04 Jan 2012 23:15:59 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Wed, 04 Jan 2012 22:41:03 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<source>system/workplace/locales/zh/messages/org/opencms/ade/galleries/messages_zh.properties</source>
 			<destination>system/workplace/locales/zh/messages/org/opencms/ade/galleries/messages_zh.properties</destination>
 			<type>plain</type>
@@ -1842,6 +2707,26 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/publish/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/publish/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>9c8ce82f-3735-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>9c8ce830-3735-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 00:46:01 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 00:38:39 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -1879,6 +2764,26 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/sitemap/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/sitemap/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>ae9b240e-3736-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>ae9b240f-3736-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 06:40:48 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 00:46:19 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<source>system/workplace/locales/zh/messages/org/opencms/ade/sitemap/messages_zh.properties</source>
 			<destination>system/workplace/locales/zh/messages/org/opencms/ade/sitemap/messages_zh.properties</destination>
 			<type>plain</type>
@@ -1908,6 +2813,26 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/upload/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/upload/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>5c2e9a97-3768-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>5c2e9a98-3768-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 20:08:45 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 06:41:56 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -2122,6 +3047,52 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/dev</destination>
+			<type>folder</type>
+			<uuidstructure>500560a8-37ea-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 22:12:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:12:10 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/dev/demo</destination>
+			<type>folder</type>
+			<uuidstructure>501d075a-37ea-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 22:12:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:12:10 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/dev/demo/workplace_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/dev/demo/workplace_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>501e66ec-37ea-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>501e66ed-37ea-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 01:03:17 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:12:10 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/editors</destination>
 			<type>folder</type>
 			<uuidstructure>070e44d0-2e02-11dc-b049-e18fd21fe262</uuidstructure>
@@ -2131,6 +3102,39 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/editors/ckeditor</destination>
+			<type>folder</type>
+			<uuidstructure>63b8b66f-37ea-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 22:12:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:12:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/editors/ckeditor/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/editors/ckeditor/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>63c19011-37ea-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>63c19012-37ea-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 05:48:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:12:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -2669,6 +3673,59 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/gwt</destination>
+			<type>folder</type>
+			<uuidstructure>3c138ac7-37d9-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 05 Jan 2012 20:09:55 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 20:09:55 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/gwt/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/gwt/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>3c2230c9-37d9-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>3c2230ca-37d9-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 05 Jan 2012 21:34:35 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 20:09:55 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/gwt/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/gwt/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>5e64ec6c-37eb-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>5e64ec6d-37eb-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 08:47:56 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 Jan 2012 22:19:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -4084,6 +5141,138 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/convertxml</destination>
+			<type>folder</type>
+			<uuidstructure>917c820d-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 07:46:39 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:39 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/convertxml/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/convertxml/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>918a169f-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>918a16a0-383a-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 10:16:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:39 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/languagecopy</destination>
+			<type>folder</type>
+			<uuidstructure>93f04132-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 07:46:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/languagecopy/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/languagecopy/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>93f7bb44-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>93f7bb45-383a-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 18:57:22 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/propertyviewer</destination>
+			<type>folder</type>
+			<uuidstructure>971fd647-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 07:46:49 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:49 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/propertyviewer/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/propertyviewer/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>972eca69-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>972eca6a-383a-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 19:22:19 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:49 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/updatexml</destination>
+			<type>folder</type>
+			<uuidstructure>99b2dd3c-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 07:46:53 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:53 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/updatexml/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/content/updatexml/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>99bf123e-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>99bf123f-383a-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 19:33:54 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:53 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/database</destination>
 			<type>folder</type>
 			<uuidstructure>edf697c6-2e04-11dc-b049-e18fd21fe262</uuidstructure>
@@ -4341,6 +5530,39 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/searchindex/sourcesearch</destination>
+			<type>folder</type>
+			<uuidstructure>9bcc4661-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Fri, 06 Jan 2012 07:46:57 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:57 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/searchindex/sourcesearch/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/searchindex/sourcesearch/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>9bd4d1e3-383a-11e1-bdc5-e4ce8f2df730</uuidstructure>
+			<uuidresource>9bd4d1e4-383a-11e1-bdc5-e4ce8f2df730</uuidresource>
+			<datelastmodified>Fri, 06 Jan 2012 20:46:02 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 Jan 2012 07:46:57 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>

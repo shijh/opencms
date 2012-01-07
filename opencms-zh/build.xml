@@ -35,6 +35,7 @@
 				<include name="org/opencms/workplace/explorer/CmsExplorer.java" />
 				<include name="org/opencms/workplace/explorer/CmsExplorerTypeSettings.java" />
 				<include name="org/opencms/workplace/explorer/CmsTree.java" />
+				<include name="org/opencms/gwt/A_CmsClientMessageBundle.java" />
 			</fileset>
 		</copy>
 
@@ -72,6 +73,16 @@
 		      tofile="${src.main.module.workplace}/resources/editors/fckeditor/editor/lang/zh.js"
 		      overwrite="${overwrite.sourcecode}" />
 		
+		<copy todir="${src.main.module.workplace}/locales/zh" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/modules/org.opencms.workplace.help.en/resources/system/workplace/locales/en">
+				<include name="**/*.html" />
+				<include name="**/*.jpg" />
+			</fileset>
+		</copy>
+		
+		<copy file="${opencms-core-basedir}/modules/org.opencms.workplace.help.en/resources/system/modules/org.opencms.workplace.help/classes/org/opencms/workplace/help/mappings.properties"
+		      tofile="${src.main.module.classes}/org/opencms/workplace/help/mappings_zh.properties"
+		      overwrite="${overwrite.sourcecode}" />
 	</target>
 
 	<target name="copy.webapp" description="Copy the necessary webapp files to this project">
