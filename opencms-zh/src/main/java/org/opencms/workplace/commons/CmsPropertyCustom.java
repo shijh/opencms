@@ -34,6 +34,7 @@ import org.opencms.file.CmsResource;
 import org.opencms.file.CmsResourceFilter;
 import org.opencms.file.CmsUser;
 import org.opencms.i18n.CmsEncoder;
+import org.opencms.i18n.CmsMessages;
 import org.opencms.jsp.CmsJspActionElement;
 import org.opencms.main.CmsException;
 import org.opencms.main.CmsLog;
@@ -487,7 +488,13 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
         // iterate over the properties
         while (i.hasNext()) {
             String curProperty = (String)i.next();
-            result.append(buildPropertyEntry(curProperty, curProperty, editable));
+            // Modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
+            String propertyName = key("templateonedialog."+curProperty);
+            if(CmsMessages.isUnknownKey(propertyName)){
+            	propertyName = curProperty;
+            }
+            result.append(buildPropertyEntry(curProperty, propertyName, editable));
+            // result.append(buildPropertyEntry(curProperty, curProperty, editable));
         }
         return result;
     }

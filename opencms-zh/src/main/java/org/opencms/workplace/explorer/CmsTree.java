@@ -507,6 +507,7 @@ public class CmsTree extends CmsWorkplace {
 	                result.append(getNode(
 	                    resource.getRootPath(),
 	                    resource.getName(),
+	                    resource.getName(),
 	                    resource.getTypeId(),
 	                    resource.isFolder(),
 	                    resource.getState(),
@@ -727,21 +728,28 @@ public class CmsTree extends CmsWorkplace {
      * Creates the output for a tree node.<p>
      * 
      * @param path the path of the resource represented by this tree node
-     * @param title the resource name
+     * @param name the resource name
+     * @param title the resource title
      * @param type the resource type 
      * @param folder if the resource is a folder
      * @param state the resource state
      * @param grey if true, the node is displayed in grey
      *
      * @return the output for a tree node
+     * 
+	 * Modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
      */
-    private String getNode(String path, String title, int type, boolean folder, CmsResourceState state, boolean grey) {
+    private String getNode(String path, String name, String title, int type, boolean folder, CmsResourceState state, boolean grey) {
 
         StringBuffer result = new StringBuffer(64);
         String parent = CmsResource.getParentFolder(path);
         result.append("parent.aC(\"");
         // name
-        result.append(title);
+        result.append(name);
+		result.append("\",\"");
+		// title
+		title = CmsEncoder.escapeXml(title);
+		result.append(CmsEncoder.escapeNonAscii(title));
         result.append("\",");
         // type
         result.append(type);
@@ -793,8 +801,8 @@ public class CmsTree extends CmsWorkplace {
             } else {
                 title = titleProperty.getValue();
             }
-			// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
-			return getNode(resource.getRootPath(), title, title, resource.getTypeId(), true, resource.getState(), false);
+			// modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
+			return getNode(resource.getRootPath(), resource.getRootPath(), title, resource.getTypeId(), true, resource.getState(), false);
             // return getNode(resource.getRootPath(), title, resource.getTypeId(), true, resource.getState(), false);
         } catch (CmsException e) {
             // should usually never happen
@@ -953,66 +961,4 @@ public class CmsTree extends CmsWorkplace {
 
         m_treeType = type;
     }
-
-	/**
-	 * Creates the output for a tree node.
-	 * <p>
-	 * 
-	 * @param path
-	 *            the path of the resource represented by this tree node
-	 * @param name
-	 *            the resource name
-	 * @param title
-	 *            the resource title
-	 * @param type
-	 *            the resource type
-	 * @param state
-	 *            the resource state
-	 * @param grey
-	 *            if true, the node is displayed in grey
-	 * 
-	 * @return the output for a tree node
-	 * 
-	 * @author Shi Jinghai, huaruhai@hotmail.com 2011-12-14
-	 */
-	private String getNode(String path, String name, String title, int type,
-			boolean folder, CmsResourceState state, boolean grey) {
-		StringBuffer result = new StringBuffer(64);
-		String parent = CmsResource.getParentFolder(path);
-		result.append("parent.aC(\"");
-		// path
-		result.append(name);
-		result.append("\",\"");
-		// name (title)
-		title = CmsEncoder.escapeXml(title);
-		result.append(CmsEncoder.escapeNonAscii(title));
-		result.append("\",");
-		// type
-		result.append(type);
-		result.append(",");
-		// folder
-		if (folder) {
-			result.append(1);
-		} else {
-			result.append(0);
-		}
-		result.append(",");
-		// hashcode of path
-		result.append(path.hashCode());
-		result.append(",");
-		// hashcode of parent path
-		result.append((parent != null) ? parent.hashCode() : 0);
-		result.append(",");
-		// resource state
-		result.append(state);
-		result.append(",");
-		// project status
-		if (grey) {
-			result.append(1);
-		} else {
-			result.append(0);
-		}
-		result.append(");\n");
-		return result.toString();
-	}
 }

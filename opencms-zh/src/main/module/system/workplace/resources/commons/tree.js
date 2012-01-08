@@ -535,7 +535,7 @@ function aC(name, title, type, folder, id, parentId, state, grey) {
         }
     } else {
         // the node is already part of the tree, just update it
-        var newNode = new nodeObject(name, type, folder, id, parentId, oldNode.state, oldNode.grey, oldNode.open);
+        var newNode = new nodeObject(name, title, type, folder, id, parentId, oldNode.state, oldNode.grey, oldNode.open);
         newNode.childs = oldNode.childs;
         tree.nodes[id] = newNode;
         // the parents "child node list" must have been cleared before adding new nodes
