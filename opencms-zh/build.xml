@@ -83,6 +83,13 @@
 		<copy file="${opencms-core-basedir}/modules/org.opencms.workplace.help.en/resources/system/modules/org.opencms.workplace.help/classes/org/opencms/workplace/help/mappings.properties"
 		      tofile="${src.main.module.classes}/org/opencms/workplace/help/mappings_zh.properties"
 		      overwrite="${overwrite.sourcecode}" />
+
+		<copy todir="${src.main.module.workplace}/editors/fckeditor/plugins" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/modules/org.opencms.editors.fckeditor/resources/system/workplace/editors/fckeditor/plugins">
+				<include name="downloadgallery/fckplugin.js" />
+				<include name="imagegallery/fckplugin.js" />
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="copy.webapp" description="Copy the necessary webapp files to this project">

@@ -16,6 +16,9 @@
 				<include>**/*.jsp</include>
 				<include>**/*.properties</include>
 				<include>**/*.js</include>
+				<include>**/*.html</include>
+				<include>**/*.jpg</include>
+				<include>**/*.dtd</include>
 			</includes>
 		</fileSet>
         <fileSet>
