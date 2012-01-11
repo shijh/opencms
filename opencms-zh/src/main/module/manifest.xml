@@ -36,6 +36,10 @@
 			<resource uri="/system/workplace/resources/editors/fckeditor/editor/lang/zh.js"/>
 			<resource uri="/system/workplace/editors/fckeditor/plugins/imagegallery/fckplugin.js"/>
 			<resource uri="/system/workplace/editors/fckeditor/plugins/downloadgallery/fckplugin.js"/>
+			<resource uri="/sites/default/index.html"/>
+			<resource uri="/sites/default/release/.content/article/a_00046.html"/>
+			<resource uri="/sites/default/release/.content/article/a_00047.html"/>
+			<resource uri="/sites/default/release/welcome.jsp"/>
 		</resources>
 		<parameters/>
 	</module>
@@ -1063,7 +1067,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>784d8a47-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>784d8a48-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:29:40 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:42:43 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:32 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1149,7 +1153,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>77f72ca8-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>77f72ca9-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:26:31 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:15:47 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1205,11 +1209,11 @@
 			<source>system/workplace/locales/zh/help/administration/accounts/edit_user.html</source>
 			<destination>system/workplace/locales/zh/help/administration/accounts/edit_user.html</destination>
 			<type>xmlpage</type>
-			<uuidstructure>77c3c06d-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
-			<uuidresource>f824c551-e7b0-11d9-b351-d5c12ccb7197</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:27:22 GMT</datelastmodified>
+			<uuidstructure>7bcfb6e9-3b23-11e1-919b-e4ce8f2df730</uuidstructure>
+			<uuidresource>7bcfb6ea-3b23-11e1-919b-e4ce8f2df730</uuidresource>
+			<datelastmodified>Tue, 10 Jan 2012 21:04:31 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
+			<datecreated>Tue, 10 Jan 2012 00:38:58 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
@@ -1223,7 +1227,7 @@
 				</property>
 				<property>
 					<name>NavText</name>
-					<value><![CDATA[编辑用户]]></value>
+					<value><![CDATA[创建/编辑用户]]></value>
 				</property>
 				<property>
 					<name>Title</name>
@@ -1325,7 +1329,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>77e74e18-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>77e74e19-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:46:42 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:32:48 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1349,7 +1353,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>77eaf79c-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>77eaf79d-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:33:57 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:51:43 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1381,7 +1385,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>77f027c2-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>77f027c3-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:34:22 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:52:48 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1497,7 +1501,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>78136750-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>78136751-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:39:08 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 21:58:11 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1529,7 +1533,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>781a4526-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>781a4527-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:39:46 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 22:31:32 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1561,7 +1565,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>7826531c-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>7826531d-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:40:14 GMT</datelastmodified>
+			<datelastmodified>Wed, 11 Jan 2012 06:15:26 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1593,7 +1597,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>782d7f12-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>782d7f13-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:40:42 GMT</datelastmodified>
+			<datelastmodified>Wed, 11 Jan 2012 06:24:02 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1625,7 +1629,7 @@
 			<type>xmlpage</type>
 			<uuidstructure>78312898-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>78312899-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Fri, 06 Jan 2012 23:41:14 GMT</datelastmodified>
+			<datelastmodified>Wed, 11 Jan 2012 06:28:44 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1668,7 +1672,7 @@
 			<destination>system/workplace/locales/zh/help/images</destination>
 			<type>folder</type>
 			<uuidstructure>7834ab0e-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
-			<datelastmodified>Fri, 06 Jan 2012 23:41:36 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 22:04:41 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1688,12 +1692,20 @@
 			<type>image</type>
 			<uuidstructure>78367fd1-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>78367fd2-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 22:11:56 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:31 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
+				<property>
+					<name>Description</name>
+					<value><![CDATA[关联菜单图片]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[关联菜单]]></value>
+				</property>
 				<property type="shared">
 					<name>image.size</name>
 					<value><![CDATA[w:610,h:427]]></value>
@@ -1708,12 +1720,20 @@
 			<type>image</type>
 			<uuidstructure>784af234-38bc-11e1-bdc5-e4ce8f2df730</uuidstructure>
 			<uuidresource>784af235-38bc-11e1-bdc5-e4ce8f2df730</uuidresource>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
+			<datelastmodified>Tue, 10 Jan 2012 22:12:21 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 06 Jan 2012 23:16:32 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
+				<property>
+					<name>Description</name>
+					<value><![CDATA[设置界面图片]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[设置]]></value>
+				</property>
 				<property type="shared">
 					<name>image.size</name>
 					<value><![CDATA[w:629,h:213]]></value>
@@ -5812,6 +5832,248 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>sites</destination>
+			<type>folder</type>
+			<uuidstructure>3e1ebcd4-3a72-11e1-919b-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Mon, 09 Jan 2012 03:30:14 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 09 Jan 2012 03:30:14 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>sites/default</destination>
+			<type>folder</type>
+			<uuidstructure>3e212dd6-3a72-11e1-919b-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Wed, 29 Jun 2011 10:51:27 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 09 Jan 2012 03:30:14 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[OpenCms 8 Demo]]></value>
+				</property>
+				<property>
+					<name>style.layout</name>
+					<value><![CDATA[/.content/style]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol>
+				<accessentry>
+					<uuidprincipal>GROUP.Users</uuidprincipal>
+					<flags>34</flags>
+					<permissionset>
+						<allowed>7</allowed>
+						<denied>0</denied>
+					</permissionset>
+				</accessentry>
+			</accesscontrol>
+		</file>
+		<file>
+			<source>sites/default/index.html</source>
+			<destination>sites/default/index.html</destination>
+			<type>containerpage</type>
+			<uuidstructure>da97aa19-77c5-11e0-be13-000c2972a6a4</uuidstructure>
+			<uuidresource>da97aa1a-77c5-11e0-be13-000c2972a6a4</uuidresource>
+			<datelastmodified>Wed, 11 Jan 2012 10:22:28 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 May 2011 09:47:28 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[0.25]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[Welcome to OpenCms]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Welcome to OpenCms]]></value>
+				</property>
+				<property>
+					<name>style.columns</name>
+					<value><![CDATA[2]]></value>
+				</property>
+				<property>
+					<name>style.layout</name>
+					<value><![CDATA[/release/.content/style]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>sites/default/release</destination>
+			<type>subsitemap</type>
+			<uuidstructure>3f6dc54d-7712-11e0-bfd0-1797e684fbbe</uuidstructure>
+			<datelastmodified>Wed, 29 Jun 2011 10:30:26 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 May 2011 12:21:47 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>NavPos</name>
+					<value><![CDATA[2.0]]></value>
+				</property>
+				<property>
+					<name>NavText</name>
+					<value><![CDATA[Release Notes]]></value>
+				</property>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[OpenCms release notes and welcome pages]]></value>
+				</property>
+				<property>
+					<name>export</name>
+					<value><![CDATA[false]]></value>
+				</property>
+				<property>
+					<name>locale</name>
+					<value><![CDATA[en]]></value>
+				</property>
+				<property>
+					<name>style.columns</name>
+					<value><![CDATA[2]]></value>
+				</property>
+				<property>
+					<name>style.layout</name>
+					<value><![CDATA[/release/.content/style]]></value>
+				</property>
+				<property>
+					<name>template</name>
+					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>sites/default/release/.content</destination>
+			<type>content_folder</type>
+			<uuidstructure>39938abe-a19e-11e0-b12f-df452125cf28</uuidstructure>
+			<datelastmodified>Wed, 29 Jun 2011 10:52:14 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Tue, 28 Jun 2011 15:49:36 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Container contents]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>sites/default/release/.content/article</destination>
+			<type>v8articlegallery</type>
+			<uuidstructure>6a8d2bdf-7715-11e0-bfd0-1797e684fbbe</uuidstructure>
+			<datelastmodified>Wed, 29 Jun 2011 09:04:00 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 05 May 2011 12:44:28 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Articles (Release Notes)]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[true]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>sites/default/release/.content/article/a_00046.html</source>
+			<destination>sites/default/release/.content/article/a_00046.html</destination>
+			<type>v8article</type>
+			<uuidstructure>24edefc0-c7eb-11e0-a3d5-7b2444d59c19</uuidstructure>
+			<uuidresource>24edefc1-c7eb-11e0-a3d5-7b2444d59c19</uuidresource>
+			<datelastmodified>Wed, 11 Jan 2012 22:15:56 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Tue, 16 Aug 2011 09:35:57 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Documentation link for welcome page]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>sites/default/release/.content/article/a_00047.html</source>
+			<destination>sites/default/release/.content/article/a_00047.html</destination>
+			<type>v8article</type>
+			<uuidstructure>c77b0e49-c80f-11e0-a3d5-7b2444d59c19</uuidstructure>
+			<uuidresource>c77b0e4a-c80f-11e0-a3d5-7b2444d59c19</uuidresource>
+			<datelastmodified>Wed, 11 Jan 2012 10:33:37 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Tue, 16 Aug 2011 13:58:11 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Further Information]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>sites/default/release/welcome.jsp</source>
+			<destination>sites/default/release/welcome.jsp</destination>
+			<type>jsp</type>
+			<uuidstructure>c8d5c415-77c5-11e0-be13-000c2972a6a4</uuidstructure>
+			<uuidresource>c8d5c416-77c5-11e0-be13-000c2972a6a4</uuidresource>
+			<datelastmodified>Wed, 11 Jan 2012 22:11:15 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 06 May 2011 09:46:58 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>512</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Welcome JSP code]]></value>
+				</property>
+				<property>
+					<name>cache</name>
+					<value><![CDATA[uri;user]]></value>
+				</property>
+				<property type="shared">
+					<name>export</name>
+					<value><![CDATA[false]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
