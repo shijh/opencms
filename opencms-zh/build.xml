@@ -26,6 +26,7 @@
 				<include name="org/opencms/db/CmsDriverManager.java" />
 				<include name="org/opencms/db/CmsUserSettings.java" />
 				<include name="org/opencms/i18n/CmsMessages.java" />
+				<include name="org/opencms/main/OpenCmsCore.java" />
 				<include name="org/opencms/workplace/CmsFrameset.java" />
 				<include name="org/opencms/workplace/CmsTabDialog.java" />
 				<include name="org/opencms/workplace/commons/CmsPreferences.java" />

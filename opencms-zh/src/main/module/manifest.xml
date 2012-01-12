@@ -418,6 +418,49 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/main</destination>
+			<type>folder</type>
+			<uuidstructure>6417d347-3d01-11e1-aa73-e4ce8f2df730</uuidstructure>
+			<datelastmodified>Thu, 12 Jan 2012 09:39:58 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 12 Jan 2012 09:39:58 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/main/OpenCmsCore$1.class</source>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/main/OpenCmsCore$1.class</destination>
+			<type>binary</type>
+			<uuidstructure>8eeddbfa-3d01-11e1-aa73-e4ce8f2df730</uuidstructure>
+			<uuidresource>8eeddbfb-3d01-11e1-aa73-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 12 Jan 2012 09:41:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 12 Jan 2012 09:41:10 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/main/OpenCmsCore.class</source>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/main/OpenCmsCore.class</destination>
+			<type>binary</type>
+			<uuidstructure>8f1e3acd-3d01-11e1-aa73-e4ce8f2df730</uuidstructure>
+			<uuidresource>8f1e3ace-3d01-11e1-aa73-e4ce8f2df730</uuidresource>
+			<datelastmodified>Thu, 12 Jan 2012 09:41:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 12 Jan 2012 09:41:10 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/setup</destination>
 			<type>folder</type>
 			<uuidstructure>784b708d-fbf2-11dd-92de-e9f13531af5b</uuidstructure>
