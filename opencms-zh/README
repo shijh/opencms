@@ -1,0 +1,41 @@
+Usage Guide for opencms-zh Project
+
+
+Purpose
+This project is on building OpenCms Chinese distribution, including source code modifications, properties translation and setup wizard translation.
+
+
+Usage
+1. Download source code of this project from github.com.
+
+2. Download source code of opencms-core from https://github.com/alkacon/opencms-core.
+
+3. Download opencms.war from www.opencms.org.
+
+4. Config pom.xml:
+4.1 Set "opencms-core-basedir" point to your local opencms-core directory
+    <property name="opencms-core-basedir" value="/Users/ShiJinghai/git/opencms-core" />
+    
+4.2 Set src in unwar point to your local opencms.war
+    <unwar src="/Users/ShiJinghai/Downloads/opencms_8.0.3/opencms.war"
+		   dest="${basedir}/target/opencms.war" overwrite="false" />
+
+5. Run maven clean.
+   The necessary source code will be copied from opencms-core to this project. You can compare to decide whether they should be modified.
+
+6. Run maven package.
+   This will build a opencms-zh-{version}.war under target folder.
+
+7. Deploy the opencms-zh war and install it as a normal opencms war.
+
+
+Trouble Shooting
+1. How could I know what you changed in the source code?
+   You can search Shi Jinghai in the source code to see what changes. I commented every changes in java with a format like this:
+       // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
+       result.append(" style=\"width: " + (curTab.length() * 12 + addDelta) + "px;\"");
+       // result.append(" style=\"width: " + (curTab.length() * 8 + addDelta) + "px;\"");
+
+
+Feedback
+Welcome any feedback on this project! You can use github.com to comment the source code.
