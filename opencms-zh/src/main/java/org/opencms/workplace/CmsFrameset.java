@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -102,6 +103,24 @@ public class CmsFrameset extends CmsWorkplace {
     public CmsFrameset(CmsJspActionElement jsp) {
 
         super(jsp);
+    }
+
+    /**
+     * Performs additional filtering on the list of projects for the project selector.<p>
+     * 
+     * @param projects the original project list
+     *  
+     * @return the filtered project list 
+     */
+    public List<CmsProject> filterProjectsForSelector(List<CmsProject> projects) {
+
+        List<CmsProject> result = new ArrayList<CmsProject>();
+        for (CmsProject project : projects) {
+            if (!project.isWorkflowProject()) {
+                result.add(project);
+            }
+        }
+        return result;
     }
 
     /**
@@ -198,6 +217,7 @@ public class CmsFrameset extends CmsWorkplace {
             }
             allProjects = Collections.emptyList();
         }
+        allProjects = filterProjectsForSelector(allProjects);
 
         boolean singleOu = true;
         String ouFqn = null;
@@ -232,8 +252,6 @@ public class CmsFrameset extends CmsWorkplace {
         }
 
         // now loop through all projects and fill the result vectors
-        // modified by Shi Jinghai, huaruhai@hotmail.com   2011-12-14
-        String locale = getCms().getRequestContext().getLocale().getLanguage();
         for (int i = 0, n = allProjects.size(); i < n; i++) {
             CmsProject project = allProjects.get(i);
             String projectId = project.getUuid().toString();
@@ -248,13 +266,7 @@ public class CmsFrameset extends CmsWorkplace {
                     projectName = projectName + " - " + project.getOuFqn();
                 }
             }
-            if (locale.equalsIgnoreCase("zh")) {
-                if (projectName.equalsIgnoreCase("online")) {
-                    projectName = key(org.opencms.workplace.commons.Messages.GUI_PROJECT_ONLINE_0);
-                } else if (projectName.equalsIgnoreCase("offline")) {
-                    projectName = key(org.opencms.workplace.commons.Messages.GUI_PROJECT_OFFLINE_0);
-                }
-            }
+
             values.add(projectId);
             options.add(projectName);
 
@@ -393,12 +405,11 @@ public class CmsFrameset extends CmsWorkplace {
         }
         // add eventual request parameters to startup uri
         if (getJsp().getRequest().getParameterMap().size() > 0) {
-            @SuppressWarnings("unchecked")
-            Set<Entry<?, ?>> params = getJsp().getRequest().getParameterMap().entrySet();
-            Iterator<Entry<?, ?>> i = params.iterator();
+            Set<Entry<String, String[]>> params = ((Map<String, String[]>) getJsp().getRequest().getParameterMap()).entrySet();
+            Iterator<Entry<String, String[]>> i = params.iterator();
             while (i.hasNext()) {
-                Entry<?, ?> entry = i.next();
-                result = CmsRequestUtil.appendParameter(result, (String)entry.getKey(), ((String[])entry.getValue())[0]);
+                Entry<String, String[]> entry = i.next();
+                result = CmsRequestUtil.appendParameter(result, entry.getKey(), entry.getValue()[0]);
             }
         }
         // append the frame name to the startup uri
