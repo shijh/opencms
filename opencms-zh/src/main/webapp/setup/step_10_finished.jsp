@@ -49,7 +49,6 @@ openWin();
 				<td style="width: 100%;">					
 				   内容管理系统的欢迎页面应该显示在一个新打开的浏览器窗口中。<br>
 				    如果没有显示出来，点击<a target="OpenCms" href="<%= openLink %>">这里</a>来打开它。<br><br>
-				    如果出现错误页面，请重新启动你的Servlet服务器（如Apache Tomcat），然后重试。
 				</td>
 			</tr>
 		</table>

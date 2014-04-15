@@ -28,6 +28,10 @@
 			alert("请输入数据库名");
 			document.forms[0].db.focus();
 			return false;
+		} else if (!isValidDbName(document.forms[0].db.value)) {
+		    alert("无效的数据库名");
+			document.forms[0].db.focus();
+		    return false; 
 		}
 		else	{
 			return true;
@@ -46,7 +50,7 @@
 <% if (Bean.isInitialized()) { %>
 内容管理系统安装程序 - Apache OpenJPA 兼容数据库安装
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
-<form method="post" onSubmit="return checkSubmit()" class="nomargin">
+<form method="post" onSubmit="return checkSubmit()" class="nomargin" autocomplete="off">
 
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
 <tr><td style="vertical-align: top;">

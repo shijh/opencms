@@ -1,5 +1,5 @@
 #############################################################
-# @OPENCMS_VERSION@ (c) 2009 Alkacon Software GmbH
+# @OPENCMS_VERSION@ (c) 2014 Alkacon Software GmbH
 # 
 # 本文件包含了你目前使用的信息配置。
 #                                          

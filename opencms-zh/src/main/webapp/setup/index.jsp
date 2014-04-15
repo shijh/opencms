@@ -1,4 +1,4 @@
-<%@ page session="true"  pageEncoding="UTF-8"%><%--
+<%@ page session="true" pageEncoding="UTF-8"%><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -76,7 +76,7 @@ try {
 	<% } else if (! isInitialized) { %>
 		<tr>
 			<td style="vertical-align: middle;">
-				<%= Bean.getHtmlPart("C_BLOCK_START", "启动安装程序时出错")%>
+				<%= Bean.getHtmlPart("C_BLOCK_START", "启动安装程序时出错") %>
 				<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 					<tr>
 						<td><img src="resources/error.png" border="0"></td>

@@ -37,6 +37,10 @@
 			alert("请输入数据库名");
 			document.forms[0].dbName.focus();
 			return false;
+		} else if (!isValidDbName(document.forms[0].dbName.value)) {
+		    alert("无效的数据库名");
+			document.forms[0].dbName.focus();
+		    return false; 
 		}
 		else if (document.forms[0].createDb.value != "" && document.forms[0].templateDb.value == "") {
 			alert("请输入模板数据库名");
@@ -60,7 +64,7 @@
 <% if (Bean.isInitialized()) { %>
 内容管理系统安装程序 - 安装<%= Bean.getDatabaseName(Bean.getDatabase()) %>数据库
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
-<form method="POST" onSubmit="return checkSubmit()" class="nomargin">
+<form method="POST" onSubmit="return checkSubmit()" class="nomargin" autocomplete="off">
 
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
 <tr><td style="vertical-align: top;">
