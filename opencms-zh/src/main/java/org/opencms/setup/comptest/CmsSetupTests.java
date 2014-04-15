@@ -46,9 +46,16 @@ import java.util.List;
  */
 public class CmsSetupTests {
 
+    /** Flag indicating tests where successful. */
     private boolean m_green;
+
+    /** Flag indicating tests where not successful. */
     private boolean m_red;
+
+    /** The test results. */
     private List<CmsSetupTestResult> m_testResults;
+
+    /** Indicating there should be a warning. */
     private boolean m_yellow;
 
     /**
@@ -128,6 +135,17 @@ public class CmsSetupTests {
      */
     public void runTests(CmsSetupBean setupBean) {
 
+        runTests(setupBean, null);
+    }
+
+    /**
+     * Runs all tests.<p>
+     * 
+     * @param setupBean the CmsSetup bean of the setup wizard
+     * @param serverInfo optional server info, if not present the server info is retrieved from the bean
+     */
+    public void runTests(CmsSetupBean setupBean, String serverInfo) {
+
         boolean hasRed = false;
         boolean hasYellow = false;
 
@@ -170,11 +188,15 @@ public class CmsSetupTests {
             setGreen();
         }
 
-        // save the detected software component versions in a text file
-        writeVersionInfo(
-            setupBean.getServletConfig().getServletContext().getServerInfo(),
-            System.getProperty("java.version"),
-            setupBean.getWebAppRfsPath());
+        if (serverInfo == null) {
+            // save the detected software component versions in a text file
+            writeVersionInfo(
+                setupBean.getServletConfig().getServletContext().getServerInfo(),
+                System.getProperty("java.version"),
+                setupBean.getWebAppRfsPath());
+        } else {
+            writeVersionInfo(serverInfo, System.getProperty("java.version"), setupBean.getWebAppRfsPath());
+        }
     }
 
     /**

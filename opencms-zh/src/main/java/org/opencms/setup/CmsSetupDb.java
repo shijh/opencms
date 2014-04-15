@@ -28,6 +28,7 @@
 package org.opencms.setup;
 
 import org.opencms.main.CmsException;
+import org.opencms.main.CmsLog;
 import org.opencms.util.CmsDataTypeUtil;
 import org.opencms.util.CmsStringUtil;
 
@@ -50,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+
 /**
  * Helper class to call database setup scripts.<p>
  * 
@@ -63,9 +66,19 @@ public class CmsSetupDb extends Object {
     /** The folder where the setup wizard is located. */
     public static final String SETUP_FOLDER = "setup/";
 
+    /** The log object for this class. */
+    private static final Log LOG = CmsLog.getLog(CmsSetupDb.class);
+
+    /** The setup base path. */
     private String m_basePath;
+
+    /** A SQL connection. */
     private Connection m_con;
+
+    /** A flag signaling if error logging is enabled. */
     private boolean m_errorLogging;
+
+    /** A list to store error messages. */
     private List<String> m_errors;
 
     /**
@@ -474,16 +487,14 @@ public class CmsSetupDb extends Object {
             }
             Class.forName(DbDriver).newInstance();
             m_con = DriverManager.getConnection(jdbcUrl, DbUser, DbPwd);
-
-            System.out.print("OpenCms setup connection established: " + m_con);
-            System.out.println(" [autocommit: " + m_con.getAutoCommit() + "]");
-
+            LOG.info("已建立OpenCms安装程序连接：" + m_con);
+            LOG.info(" [自动提交：" + m_con.getAutoCommit() + "]");
         } catch (ClassNotFoundException e) {
-            System.out.println("Class not found exception: " + e);
+            System.out.println("发生没有找到Java类的意外错误：" + e);
             m_errors.add(Messages.get().getBundle().key(Messages.ERR_LOAD_JDBC_DRIVER_1, DbDriver));
             m_errors.add(CmsException.getStackTraceAsString(e));
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            System.out.println("意外错误：" + CmsException.getStackTraceAsString(e));
             m_errors.add(Messages.get().getBundle().key(Messages.ERR_DB_CONNECT_1, DbConStr));
             m_errors.add(CmsException.getStackTraceAsString(e));
         }
@@ -568,9 +579,9 @@ public class CmsSetupDb extends Object {
 
             if (!queryToExecute.startsWith("UPDATE CMS_ONLINE_STRUCTURE SET STRUCTURE_VERSION")
                 && !queryToExecute.startsWith("UPDATE CMS_OFFLINE_STRUCTURE SET STRUCTURE_VERSION")) {
-                System.out.println("executing query: " + queryToExecute);
+                System.out.println("正在执行查询语句：" + queryToExecute);
                 if ((params != null) && !params.isEmpty()) {
-                    System.out.println("params: " + params);
+                    System.out.println("参数是：" + params);
                 }
             }
             result = stmt.executeUpdate();
@@ -637,7 +648,7 @@ public class CmsSetupDb extends Object {
                         } catch (SQLException e) {
                             if (!abortOnError) {
                                 if (m_errorLogging) {
-                                    m_errors.add("Error executing SQL statement: " + statement);
+                                    m_errors.add("执行SQL语句时出错：" + statement);
                                     m_errors.add(CmsException.getStackTraceAsString(e));
                                 }
                             } else {
@@ -654,12 +665,12 @@ public class CmsSetupDb extends Object {
             }
         } catch (SQLException e) {
             if (m_errorLogging) {
-                m_errors.add("Error executing SQL statement: " + statement);
+                m_errors.add("执行SQL语句时出错：" + statement);
                 m_errors.add(CmsException.getStackTraceAsString(e));
             }
         } catch (Exception e) {
             if (m_errorLogging) {
-                m_errors.add("Error parsing database setup SQL script in line: " + line);
+                m_errors.add("解析数据库安装SQL脚本时出错，行号：" + line);
                 m_errors.add(CmsException.getStackTraceAsString(e));
             }
         } finally {
@@ -696,7 +707,7 @@ public class CmsSetupDb extends Object {
             executeSql(new FileReader(filename), replacers, abortOnError);
         } catch (FileNotFoundException e) {
             if (m_errorLogging) {
-                m_errors.add("Database setup SQL script not found: " + filename);
+                m_errors.add("没有找到数据库安装的SQL脚本：" + filename);
                 m_errors.add(CmsException.getStackTraceAsString(e));
             }
         }
