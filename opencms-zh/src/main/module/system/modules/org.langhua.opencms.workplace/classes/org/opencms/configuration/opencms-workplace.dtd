@@ -19,14 +19,17 @@
 	editorpreconditions?,
 	directeditprovider?, 
 	exportpoints, 
-	autolock?, 
+	autolock?,
+	acacia-unlock?, 
 	xmlcontentautocorrection?,	
 	enableusermanagement?, 	
 	defaultpropertiesonstructure,
 	enableadvancedpropertytabs,
+	categoryfolder?,
 	group-translation?,
 	maxfileuploadsize?, 
 	labeledfolders?,
+	repositoryfolder?,
 	workflow?,
 	rfsfileviewsettings?,
 	explorertypes+,
@@ -34,8 +37,21 @@
 	default-preferences,
 	workplace-customfoot?,
 	tool-manager?,
-	user-lists?
+	user-lists?,
+	synchronization?,
+	keep-alive?,
+	gallery-default-scope?
 	)>
+
+<!--
+# Configuration for the RFS synchronization
+-->
+<!ELEMENT synchronization (exclude-pattern+) >
+
+<!--
+# A string pattern to exclude when synchronizing
+-->
+<!ELEMENT exclude-pattern (#PCDATA) >
 
 <!--
 # The user additional information configuration.
@@ -210,6 +226,12 @@
 -->
 <!ELEMENT autolock (#PCDATA)>
 
+
+<!--
+# Enables or disables automatic unlocking of resources by the Acacia editor.
+-->
+<!ELEMENT acacia-unlock (#PCDATA)>
+
 <!--
 # Enables or disables the auto correction of XML content resources in the editor if the XML Schema Definition has changed.
 # If this is set to "true" (the default) the XML content editor corrects automatically the edited content
@@ -266,6 +288,19 @@
 # contains sensitive data.
 -->
 <!ELEMENT labeledfolders (resource*)>
+
+<!--
+# The repository folder handler class.
+# class: the class of the handler replacing the default implementation
+# needs to implement the interface org.opencms.workplace.I_CmsRepositoryFolderHandler
+-->
+<!ELEMENT repositoryfolder EMPTY>
+<!ATTLIST repositoryfolder class CDATA #REQUIRED>
+
+<!--
+# name of the decentralized category folder. If not set, "/.categories/ is used.
+-->
+<!ELEMENT categoryfolder (#PCDATA)>
 
 <!--
 # Rfs file view settings:
@@ -483,7 +518,8 @@
 									publishrelatedresources?,
 									newfolder-editproperties?, 
 									newfolder-createindexpage?,
-									show-uploadtypedialog?)>
+									show-uploadtypedialog?, 
+									subsitemap-creation-mode?)>
 <!--
 # The buttonstyle controls the appearence of the buttons on the workplace.
 # Possible values are [image|textimage|text].
@@ -498,15 +534,10 @@
 
 <!--
 # By setting this element, the file upload variant can be choosen
-# Possible values are [applet|basic|gwt|true|false]
+# Possible values are [basic|gwt]
 #
-# applet: use the java based upload applet
 # basic:  use the default html upload
 # gwt:    use the gwt based upload
-# true:   use the java based upload applet
-# false:  use the default html upload
-#
-# true and false are possible vaules for backward compatibility.
 -->	
 <!ELEMENT uploadapplet (#PCDATA)>
 
@@ -558,6 +589,8 @@
 <!ELEMENT newfolder-createindexpage (#PCDATA)>
 
 <!ELEMENT show-uploadtypedialog (#PCDATA)>
+
+<!ELEMENT subsitemap-creation-mode (#PCDATA)>
 
 <!ELEMENT newfolder-editproperties (#PCDATA)>
 								
@@ -624,7 +657,7 @@
 								
 <!--
 # The explorer generaloptions describes the general layout settings for the explorer.
-# Add treelabel and treesort. Shi Jinghai, huaruhai@hotmail.com 2011-12-14 
+# Add treelabel and treesort. Shi Jinghai, huaruhai@hotmail.com 2014-4-16 
 -->										
 <!ELEMENT explorer-generaloptions (buttonstyle,
 								   entries,entryoptions?,
@@ -799,6 +832,7 @@ The treesort can be name, title, size, time.
 <!ATTLIST startgallery type CDATA #REQUIRED>
 <!ATTLIST startgallery path CDATA #REQUIRED>
 
+
 <!--
 # The workflow preferences define the default workflow options.
 -->		
@@ -841,6 +875,10 @@ The treesort can be name, title, size, time.
 
 <!ELEMENT user-lists EMPTY>
 <!ATTLIST user-lists mode CDATA #REQUIRED>
+
+<!ELEMENT keep-alive (#PCDATA)>
+
+<!ELEMENT gallery-default-scope (#PCDATA)>
 
 <!--
 # Include the explorer types DTD.

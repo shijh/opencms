@@ -66,7 +66,7 @@ default:
 
 <form name="main" action="<%= wp.getDialogUri() %>" method="post" class="nomargin" onsubmit="return submitAction('<%= wp.DIALOG_OK %>', null, 'main');">
 <%= wp.paramsAsHidden() %><input type="hidden" name="<%= wp.PARAM_FRAMENAME %>" value="">
-<%= wp.dialogTabContentStart(wp.getParamTitle(), "style=\"height: 260px;\" id=\"tabcontent\"") %>
+<%= wp.dialogTabContentStart(wp.getParamTitle(), "id=\"tabcontent\"") %>
 
 <%
 switch (wp.getActiveTab()) {
@@ -152,7 +152,7 @@ case 2:
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_BUTTON_STYLE_EXPLORER_0) %></td>
 			<td><%= wp.buildSelectExplorerButtonStyle("name=\"" + CmsPreferences.PARAM_EXPLORER_BUTTONSTYLE + "\" style=\"width: 200px;\"") %></td>
-			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2011-12-15 -->
+			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
 		    <td style="width: 40px;">&nbsp;</td>
 			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_LABEL_SELECTOR_0) %></td>
 			<td><%= wp.buildSelectExplorerTreeLabel("name=\"" + CmsPreferences.PARAM_EXPLORER_TREELABEL + "\" style=\"width: 200px;\"") %></td>
@@ -161,7 +161,7 @@ case 2:
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_FILES_PER_PAGE_0) %></td>
 			<td><%= wp.buildSelectExplorerFileEntries("name=\"" + CmsPreferences.PARAM_EXPLORER_FILEENTRIES + "\" style=\"width: 200px;\"") %></td>
-			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2011-12-15 -->
+			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
 		    <td style="width: 40px;">&nbsp;</td>
 			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_SORT_SELECTOR_0) %></td>
 			<td><%= wp.buildSelectExplorerTreeSort("name=\"" + CmsPreferences.PARAM_EXPLORER_TREESORT + "\" style=\"width: 200px;\"") %></td>
@@ -326,7 +326,7 @@ case 6:
 		<%= wp.buildUserInformation() %>
 		<%= wp.dialogBlockEnd() %>
 		<%= wp.dialogSpacer() %>
-		<input type="button" class="dialogbutton" style="margin-left: 0px; width: 120px;" value="<%= wp.key(Messages.GUI_PREF_CHPWD_0) %>" onclick="togglePassword();">
+		<input type="button" class="dialogbutton" style="margin-left: 0px; min-width: 120px;" value="<%= wp.key(Messages.GUI_PREF_CHPWD_0) %>" onclick="togglePassword();">
 		<%= wp.dialogSpacer() %>
 		<div class="hide" id="changepwd">
 			<%= wp.dialogBlockStart("") %>
