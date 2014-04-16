@@ -71,18 +71,18 @@ var treeHeadHtml2 =
     "}\n" +
     "</script>\n" +
     "<style type=\"text/css\">\n" +
-    "body  { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; padding: 2px 0px 0px 2px; margin: 0px; background-color: Window; }\n" +
-    "p, td { vertical-align: bottom; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; white-space: nowrap; color: WindowText; }\n" +
+    "body  { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; padding: 2px 0px 0px 2px; margin: 0px; background-color: /*begin-color Window*/#ffffff/*end-color*/; }\n" +
+    "p, td { vertical-align: bottom; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; white-space: nowrap; color: /*begin-color WindowText*/#000000/*end-color*/; }\n" +
     "a     { vertical-align: bottom; text-decoration: none; cursor: pointer; }\n" +
     "a.ig  { vertical-align: bottom; text-decoration: none; color: #888888; }\n" +
-    "a.igi { vertical-align: bottom; text-decoration: underline; color: #000088; }\n" +
+    "a.igi { vertical-align: bottom; text-decoration: underline; color: /*begin-color TextHover*/#b31b34/*end-color*/; }\n" +
     "a.tf  { vertical-align: bottom; text-decoration: none; color: #000000; }\n" +
-    "a.tfi { vertical-align: bottom; text-decoration: underline; color: #000088; }\n" +
+    "a.tfi { vertical-align: bottom; text-decoration: underline; color: /*begin-color TextHover*/#b31b34/*end-color*/; }\n" +
     "a.fc  { vertical-align: bottom; color: #b40000; } " +
-    "a.fci { vertical-align: bottom; text-decoration: underline; color: #000088; } " +
+    "a.fci { vertical-align: bottom; text-decoration: underline; color: /*begin-color TextHover*/#b31b34/*end-color*/; } " +
     "a.fn  { vertical-align: bottom; color: #0000aa; } " +
-    "a.fni { vertical-align: bottom; text-decoration: underline; color: #000088; } " +
-    "a:hover { vertical-align: bottom; text-decoration: underline; color: #000088; }\n" +
+    "a.fni { vertical-align: bottom; text-decoration: underline; color: /*begin-color TextHover*/#b31b34/*end-color*/; } " +
+    "a:hover { vertical-align: bottom; text-decoration: underline; color: /*begin-color TextHover*/#b31b34/*end-color*/; }\n" +
     "span.pad { }\n" +
     "img.icon { width: 16px; height: 16px; border: 0px; padding: 0px; margin: 0px; vertical-align: bottom; }\n" +
     "</style>\n" +
@@ -157,7 +157,7 @@ function initResources(encoding, workplacePath, skinPath, contextPath) {
     addTreeIcons();
 }
 
-//moditied by Shi Jinghai, huaruhai@hotmail.com    2011-12-15
+//moditied by Shi Jinghai, huaruhai@hotmail.com    2014-4-16
 function nodeObject(name, title, type, folder, id, parentId, state, grey, open){
     this.name = name;
     this.title = title;
@@ -378,7 +378,7 @@ function dfsTree(doc, node, depth, last, shape) {
         }
     } 
 
-    // modified by Shi Jinghai, huaruhai@hotmail.com  2011-12-15
+    // modified by Shi Jinghai, huaruhai@hotmail.com  2014-4-16
     doc.write("&nbsp;<a class=\"" + linkClass + "\" onclick=\"parent.doAction(document, " + node.id + ");\" onmouseover=\"linkOver(this);\" onmouseout=\"linkOut(this);\">" + node.title + "</a>");
     // doc.write("&nbsp;<a class=\"" + linkClass + "\" onclick=\"parent.doAction(document, " + node.id + ");\" onmouseover=\"linkOver(this);\" onmouseout=\"linkOut(this);\">" + node.name + "</a>");
 
@@ -514,7 +514,7 @@ function getNodeNameById(nodeId) {
     }
 }
 
-// modified by Shi Jinghai, huaruhai@hotmail.com   2011-12-15
+// modified by Shi Jinghai, huaruhai@hotmail.com   2014-4-16
 function aC(name, title, type, folder, id, parentId, state, grey) {
     var theParent = getNodeById(parentId);
     var oldNode = getNodeById(id);
@@ -621,13 +621,31 @@ function doActionFolderOpen(doc, nodeId) {
     }
 }
 
+function reverseString(s) {
+   return s.split("").reverse().join("");
+ }
+
+ function removeDuplicateSlashes(url){
+   // collapse duplicate consecutive slashes not preceded by colons; reverse the string and use lookaheads because JS regexes don't support lookbehinds
+   return reverseString(reverseString(url).replace(/\/+(?!:)/g, "/"));
+ }
+
 function doActionInsertSelected(doc, nodeId) {
     var filePrefix = "";
     if (getSitePrefix()) {
         filePrefix = getSitePrefix();
     }
-    window.opener.setFormValue(filePrefix + getNodeNameById(nodeId));
+    var valueToSet = removeDuplicateSlashes(filePrefix + getNodeNameById(nodeId));
+    getForm().setFormValue(valueToSet);
 }
+
+function getForm() {
+   if (window['setFormValue']) {
+      return window;
+   }
+   return window.opener; 
+}
+
 
 // called if the folder name is clicked in the tree
 function doAction(doc, nodeId) {
