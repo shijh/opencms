@@ -37,7 +37,7 @@ import org.opencms.i18n.I_CmsMessageBundle;
  */
 public final class Messages extends A_CmsMessageBundle {
 
-	//Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
+	// Added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
 	/** Message constant for key in the resource bundle. */
 	public static final String GUI_PROJECT_ONLINE_0 = "GUI_PROJECT_ONLINE_0";
 	/** Message constant for key in the resource bundle. */
@@ -56,7 +56,7 @@ public final class Messages extends A_CmsMessageBundle {
     public static final String GUI_PREF_TREE_SORT_SIZE_0 = "GUI_PREF_TREE_SORT_SIZE_0";
     /** Message constant for key in the resource bundle. */
     public static final String GUI_PREF_TREE_SORT_TIME_0 = "GUI_PREF_TREE_SORT_TIME_0";
-    // End 
+    // End by Shi Jinghai
     /** Message constant for key in the resource bundle. */
     public static final String ERR_AVAILABILITY_BAD_TIMEWINDOW_0 = "ERR_AVAILABILITY_BAD_TIMEWINDOW_0";
 

@@ -111,6 +111,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * @param request the HttpServletRequest
      * @throws JspException if problems including sub-elements occur
      */
+    @Override
     public void actionEdit(HttpServletRequest request) throws JspException {
 
         // save initialized instance of this class in request attribute for included sub-elements
@@ -131,6 +132,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * 
      * @return the HTML output String for the edit properties form
      */
+    @Override
     public String buildEditForm() {
 
         StringBuffer result = new StringBuffer(2048);
@@ -139,10 +141,9 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
         boolean editable = isEditable();
 
         // create the column heads
-        result.append("<table border=\"0\">\n");
+        result.append("<table border=\"0\" style=\"width:100%\">\n");
         result.append("<tr>\n");
-        // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
-        result.append("\t<td class=\"textbold\" nowrap >");
+        result.append("\t<td class=\"textbold\" nowrap>");
         result.append(key(Messages.GUI_PROPERTY_0));
         result.append("</td>\n");
         result.append("\t<td class=\"textbold\">");
@@ -179,13 +180,14 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * 
      * @return the JavaScript to set the property form values delayed
      */
+    @Override
     public String buildSetFormValues() {
 
         StringBuffer result = new StringBuffer(1024);
-        Iterator i = getExplorerTypeSettings().getProperties().iterator();
+        Iterator<String> i = getExplorerTypeSettings().getProperties().iterator();
         // iterate over the customized properties
         while (i.hasNext()) {
-            String curProperty = (String)i.next();
+            String curProperty = i.next();
             if (getActiveProperties().containsKey(curProperty)) {
                 CmsProperty property = (CmsProperty)getActiveProperties().get(curProperty);
                 String propValue = property.getValue();
@@ -229,6 +231,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
      * @param advancedAttributes additional attributes for the "advanced" button
      * @return the button row 
      */
+    @Override
     public String dialogButtonsOkCancelAdvanced(String okAttributes, String cancelAttributes, String advancedAttributes) {
 
         if (isEditable()) {
@@ -484,11 +487,11 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
     protected StringBuffer buildTextInput(boolean editable) {
 
         StringBuffer result = new StringBuffer(256);
-        Iterator i = getExplorerTypeSettings().getProperties().iterator();
+        Iterator<String> i = getExplorerTypeSettings().getProperties().iterator();
         // iterate over the properties
         while (i.hasNext()) {
             String curProperty = (String)i.next();
-            // Modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
+            // Modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
             String propertyName = key("templateonedialog."+curProperty);
             if(CmsMessages.isUnknownKey(propertyName)){
             	propertyName = curProperty;
@@ -531,6 +534,7 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
     /**
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
+    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         // fill the parameter values in the get/set methods
@@ -641,10 +645,10 @@ public class CmsPropertyCustom extends CmsPropertyAdvanced {
                 switchToTempProject();
             }
             // write the common properties defined in the explorer type settings
-            Iterator i = getExplorerTypeSettings().getProperties().iterator();
+            Iterator<String> i = getExplorerTypeSettings().getProperties().iterator();
             // iterate over the properties
             while (i.hasNext()) {
-                String curProperty = (String)i.next();
+                String curProperty = i.next();
                 String paramValue = request.getParameter(PREFIX_VALUE + curProperty);
                 String oldValue = request.getParameter(PREFIX_HIDDEN + curProperty);
                 writeProperty(curProperty, paramValue, oldValue);

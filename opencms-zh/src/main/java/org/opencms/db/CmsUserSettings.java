@@ -130,12 +130,10 @@ public class CmsUserSettings {
 
     /** A enum for the different upload variants. */
     public enum UploadVariant {
-        /** The java applet upload. */
-        applet,
         /** The default html upload. */
         basic,
         /** The gwt upload. */
-        gwt,
+        gwt
     }
 
     /** Key for additional info address. */
@@ -249,30 +247,43 @@ public class CmsUserSettings {
     /** Default workplace search index name. */
     private static final String SEARCH_INDEX_DEFAULT = "Offline project (VFS)";
 
+    /** The direct publish setting. */
     private boolean m_dialogDirectpublish;
 
+    /** The expand inherited permissions setting. */
     private boolean m_dialogExpandInheritedPermissions;
 
+    /** The expand user permissions setting. */
     private boolean m_dialogExpandUserPermissions;
 
+    /** The resource copy mode setting. */
     private CmsResourceCopyMode m_dialogFileCopy;
 
+    /** The resource delete mode setting. */
     private CmsResourceDeleteMode m_dialogFileDelete;
 
+    /** The folder copy mode setting. */
     private CmsResourceCopyMode m_dialogFolderCopy;
 
+    /** The inherit permission on folder setting. */
     private boolean m_dialogPermissionsInheritOnFolder;
 
+    /** The direct edit button setting. */
     private int m_directeditButtonStyle;
 
+    /** The editor button style setting. */
     private int m_editorButtonStyle;
 
+    /** The editor settings. */
     private SortedMap<String, String> m_editorSettings;
 
+    /** The explorer button style. */
     private int m_explorerButtonStyle;
 
+    /** The explorer file entries setting. */
     private int m_explorerFileEntries;
 
+    /** The explorer setting. */
     private int m_explorerSettings;
 
     /** The list of numbers in the preferences dialog, how much entries shown on a page. */
@@ -281,6 +292,7 @@ public class CmsUserSettings {
     /** Flag to determine if all projects should be list. */
     private boolean m_listAllProjects;
 
+    /** The locale.*/
     private Locale m_locale;
 
     /** Controls if the "create index page" check box in the new folder dialog should be initially be checked or not. */
@@ -289,18 +301,22 @@ public class CmsUserSettings {
     /** Controls if the "edit properties" check box in the new folder dialog should be initially be checked or not. */
     private Boolean m_newFolderEditProperties;
 
+    /** The project. */
     private String m_project;
 
     /** Controls appearance of the publish button. */
     private String m_publishButtonAppearance;
 
+    /** The restricted explorer view setting. */
     private boolean m_restrictExplorerView;
 
+    /** The show export setting. */
     private boolean m_showExportSettings;
 
     /** Flag that controls display of the file upload button. */
     private boolean m_showFileUploadButton;
 
+    /** The show lock setting. */
     private boolean m_showLock;
 
     /** Flag to determine if the publish notifications should be shown. */
@@ -309,13 +325,16 @@ public class CmsUserSettings {
     /** Controls if the resource type dialog for uploaded resources (not the applet) is shown or not. */
     private Boolean m_showUploadTypeDialog;
 
+    /** The start folder. */
     private String m_startFolder;
 
     /** Contains the key value entries with start setting for different gallery types. */
     private SortedMap<String, String> m_startGalleriesSettings;
 
+    /** The start site. */
     private String m_startSite;
 
+    /** The synchronize settings. */
     private CmsSynchronizeSettings m_synchronizeSettings;
 
     /** The custom user surf time. */
@@ -327,12 +346,16 @@ public class CmsUserSettings {
     /** Stores the upload variant enum. */
     private UploadVariant m_uploadVariant;
 
+    /** The user. */
     private CmsUser m_user;
 
+    /** The view. */
     private String m_view;
 
+    /** The workplace button style. */
     private int m_workplaceButtonStyle;
 
+    /** The workplace report type. */
     private String m_workplaceReportType;
 
     /** The name of the search index to use in the workplace. */
@@ -341,10 +364,10 @@ public class CmsUserSettings {
     /** Workplace search result list view style. */
     private CmsSearchResultStyle m_workplaceSearchViewStyle;
 
-    /** Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
+    /** Added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 */
     private int m_explorerTreeLabel;
     
-    /** Added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 */
+    /** Added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 */
     private int m_explorerTreeSort;
     
     /**
@@ -960,7 +983,7 @@ public class CmsUserSettings {
         } catch (Throwable t) {
             m_explorerFileEntries = OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerFileEntries();
         }
-        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13     
+        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         try {
             m_explorerTreeLabel = ((Integer)m_user.getAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -968,7 +991,7 @@ public class CmsUserSettings {
         } catch (Throwable t) {
             m_explorerTreeLabel = OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerTreeLabel();
         }
-        // explorer tree Sort. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13     
+        // explorer tree Sort. added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         try {
             m_explorerTreeSort = ((Integer)m_user.getAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -1098,7 +1121,8 @@ public class CmsUserSettings {
             }
         }
         if (m_startGalleriesSettings.isEmpty()) {
-            m_startGalleriesSettings = new TreeMap<String, String>();
+            m_startGalleriesSettings = new TreeMap<String, String>(
+                OpenCms.getWorkplaceManager().getDefaultUserSettings().getStartGalleriesSettings());
         }
 
         // start site
@@ -1323,7 +1347,7 @@ public class CmsUserSettings {
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
                 + CmsWorkplaceConfiguration.N_ENTRIES);
         }
-        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
+        // explorer tree label. added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         if (getExplorerTreeLabel() != OpenCms.getWorkplaceManager().getDefaultUserSettings().getExplorerTreeLabel()) {
             m_user.setAdditionalInfo(PREFERENCES
                 + CmsWorkplaceConfiguration.N_EXPLORERGENERALOPTIONS
@@ -2297,7 +2321,7 @@ public class CmsUserSettings {
         }
     }
     
-    //add by Shi Jinghai, huaruhai@hotmail.com 2011-12-13 
+    //add by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
     /**
      * Returns the explorer tree label of the user.<p>
      * 

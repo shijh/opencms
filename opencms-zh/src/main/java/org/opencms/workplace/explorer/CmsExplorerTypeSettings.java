@@ -33,6 +33,7 @@ import org.opencms.i18n.CmsMessages;
 import org.opencms.main.CmsLog;
 import org.opencms.main.OpenCms;
 import org.opencms.security.CmsPermissionSet;
+import org.opencms.security.CmsRole;
 import org.opencms.util.CmsStringUtil;
 import org.opencms.workplace.CmsWorkplace;
 import org.opencms.workplace.CmsWorkplaceManager;
@@ -70,40 +71,74 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsExplorerTypeSettings.class);
+
+    /** The explorer type access. */
     private CmsExplorerTypeAccess m_access;
+
     /** Flag for showing that this is an additional resource type which defined in a module. */
     private boolean m_addititionalModuleExplorerType;
+
+    /** The auto set navigation flag. */
     private boolean m_autoSetNavigation;
+
+    /** The auto set title flag. */
     private boolean m_autoSetTitle;
+
     /** The name of the big icon for this explorer type. */
     private String m_bigIcon;
+
+    /** The context menu. */
     private CmsExplorerContextMenu m_contextMenu;
 
+    /** The context menu entries. */
     private List<CmsExplorerContextMenuItem> m_contextMenuEntries;
 
+    /** The description image. */
     private String m_descriptionImage;
 
+    /**The edit options flag. */
     private boolean m_hasEditOptions;
+
+    /** The icon. */
     private String m_icon;
+
     /** The icon rules for this explorer type. */
     private Map<String, CmsIconRule> m_iconRules;
 
+    /** The info. */
     private String m_info;
+
+    /** The key. */
     private String m_key;
+
+    /** The name. */
     private String m_name;
+
     /** Optional class name for a new resource handler. */
     private String m_newResourceHandlerClassName;
+
+    /** The new resource order value. */
     private Integer m_newResourceOrder;
+
+    /** The new resource page. */
     private String m_newResourcePage;
+
+    /** The new resource URI. */
     private String m_newResourceUri;
+
+    /** The properties. */
     private List<String> m_properties;
 
+    /** The enabled properties. */
     private boolean m_propertiesEnabled;
 
+    /** The reference. */
     private String m_reference;
 
+    /** The show in navigation flag. */
     private boolean m_showNavigation;
 
+    /** The title key. */
     private String m_titleKey;
 
     /**
@@ -121,6 +156,7 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
         m_addititionalModuleExplorerType = false;
         m_newResourceOrder = new Integer(0);
         m_iconRules = new HashMap<String, CmsIconRule>();
+
     }
 
     /**
@@ -180,6 +216,51 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
         } else {
             return false;
         }
+    }
+
+    /**
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() {
+
+        CmsExplorerTypeSettings result = new CmsExplorerTypeSettings();
+        result.m_access = m_access;
+        result.m_properties = new ArrayList<String>(m_properties);
+        result.m_contextMenuEntries = m_contextMenuEntries;
+        result.m_contextMenu = (CmsExplorerContextMenu)m_contextMenu.clone();
+        result.m_hasEditOptions = m_hasEditOptions;
+        result.m_propertiesEnabled = m_propertiesEnabled;
+        result.m_showNavigation = m_showNavigation;
+        result.m_addititionalModuleExplorerType = m_addititionalModuleExplorerType;
+        result.m_newResourceOrder = m_newResourceOrder;
+        result.m_autoSetNavigation = m_autoSetNavigation;
+        result.m_autoSetTitle = m_autoSetTitle;
+        result.m_bigIcon = m_bigIcon;
+        result.m_descriptionImage = m_descriptionImage;
+        result.m_hasEditOptions = m_hasEditOptions;
+        result.m_icon = m_icon;
+        result.m_info = m_info;
+        result.m_key = m_key;
+        result.m_name = m_name;
+        result.m_newResourceHandlerClassName = m_newResourceHandlerClassName;
+        result.m_newResourcePage = m_newResourcePage;
+        result.m_newResourceUri = m_newResourceUri;
+        result.m_reference = m_reference;
+        result.m_titleKey = m_titleKey;
+
+        result.m_iconRules = new HashMap<String, CmsIconRule>();
+        for (Map.Entry<String, CmsIconRule> rule : m_iconRules.entrySet()) {
+            result.m_iconRules.put(rule.getKey(), (CmsIconRule)rule.getValue().clone());
+        }
+
+        result.m_contextMenuEntries = new ArrayList<CmsExplorerContextMenuItem>();
+        for (CmsExplorerContextMenuItem entry : m_contextMenuEntries) {
+            // TODO: must also be cloned
+            result.m_contextMenuEntries.add(entry);
+        }
+
+        return result;
     }
 
     /**
@@ -355,7 +436,7 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
         result.append("\nvi.resource[").append(resTypeId).append("]=new res(\"").append(settings.getName()).append(
             "\", ");
         result.append("\"");
-        // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
+        // modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         String key = messages.key(settings.getKey());
         if (CmsMessages.isUnknownKey(key)) {
             result.append(settings.getName());
@@ -363,7 +444,7 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
             result.append(key);
         }
         // result.append(messages.key(settings.getKey()));
-        result.append("\", vi.skinPath + \"filetypes/");
+        result.append("\", vi.skinPath + \"" + CmsWorkplace.RES_PATH_FILETYPES);
         result.append(settings.getIcon());
         result.append("\", \"");
         result.append(settings.getNewResourceUri());
@@ -530,6 +611,10 @@ public class CmsExplorerTypeSettings implements Comparable<CmsExplorerTypeSettin
      */
     public boolean isEditable(CmsObject cms, CmsResource resource) {
 
+        if (!cms.getRequestContext().getCurrentProject().isOnlineProject()
+            && OpenCms.getRoleManager().hasRole(cms, CmsRole.ROOT_ADMIN)) {
+            return true;
+        }
         // determine if this resource type is editable for the current user
         CmsPermissionSet permissions = getAccess().getPermissions(cms, resource);
         return permissions.requiresWritePermission();

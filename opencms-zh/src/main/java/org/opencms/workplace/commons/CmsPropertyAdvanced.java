@@ -28,6 +28,7 @@
 package org.opencms.workplace.commons;
 
 import org.opencms.configuration.CmsParameterConfiguration;
+import org.opencms.file.CmsObject;
 import org.opencms.file.CmsProperty;
 import org.opencms.file.CmsPropertyDefinition;
 import org.opencms.file.CmsResource;
@@ -50,6 +51,7 @@ import org.opencms.workplace.CmsTabDialog;
 import org.opencms.workplace.CmsWorkplace;
 import org.opencms.workplace.CmsWorkplaceSettings;
 import org.opencms.workplace.I_CmsDialogHandler;
+import org.opencms.workplace.I_CmsPostUploadDialogHandler;
 import org.opencms.workplace.explorer.CmsExplorerTypeSettings;
 import org.opencms.workplace.explorer.CmsNewResource;
 
@@ -81,30 +83,38 @@ import org.apache.commons.logging.Log;
  * 
  * @since 6.0.0 
  */
-public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHandler {
+public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHandler, I_CmsPostUploadDialogHandler {
 
     /** Value for the action: save defined property. */
     public static final int ACTION_SAVE_DEFINE = 400;
+
     /** Value for the action: save edited properties. */
     public static final int ACTION_SAVE_EDIT = 300;
+
     /** Value for the action: show define property form. */
     public static final int ACTION_SHOW_DEFINE = 200;
+
     /** Value for the action: show edit properties form. */
     public static final int ACTION_SHOW_EDIT = 100;
 
     /** Constant for the "Define" button in the build button method. */
     public static final int BUTTON_DEFINE = 201;
+
     /** Constant for the "Finish" button in the build button method. */
     public static final int BUTTON_FINISH = 202;
 
     /** Request parameter value for the action: save defined property. */
     public static final String DIALOG_SAVE_DEFINE = "savedefine";
+
     /** Request parameter value for the action: save edited properties. */
     public static final String DIALOG_SAVE_EDIT = "saveedit";
+
     /** Request parameter value for the action: show information form. */
     public static final String DIALOG_SHOW_DEFAULT = "default";
+
     /** Request parameter value for the action: show define property form. */
     public static final String DIALOG_SHOW_DEFINE = "define";
+
     /** Request parameter value for the action: show edit properties form. */
     public static final String DIALOG_SHOW_EDIT = "edit";
 
@@ -113,34 +123,46 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
 
     /** Value for the dialog mode: new resource wizard. */
     public static final String MODE_WIZARD = "wizard";
+
     /** Value for the dialog mode: new resource wizard with creation of index page for new folder. */
     public static final String MODE_WIZARD_CREATEINDEX = "wizardcreateindex";
+
     /** Value for the dialog mode: new resource wizard with index page created in new folder. */
     public static final String MODE_WIZARD_INDEXCREATED = "wizardindexcreated";
 
     /** Key name for the resource panel. */
     public static final String PANEL_RESOURCE = "panel.properties.resource";
+
     /** Key name for the structure panel. */
     public static final String PANEL_STRUCTURE = "panel.properties.structure";
 
     /** Request parameter name for the new property definition. */
     public static final String PARAM_DIALOGMODE = "dialogmode";
+
     /** Configuration key for the dialog handler flag. */
     public static final String PARAM_HIDEADVANCED = "hideadvanced";
 
     /** Request parameter name for the new property definition. */
     public static final String PARAM_NEWPROPERTY = "newproperty";
+
+    /** Configuration key for the upload handler class. */
+    public static final String PARAM_POSTUPLOADHANDLER = "upload-handler";
+
     /** Configuration key for the group name. */
     public static final String PARAM_SHOWGROUP = "showgroup";
+
     /** Prefix for the hidden fields. */
     public static final String PREFIX_HIDDEN = "valhidden";
+
     /** Prefix for the hidden resource value. */
     public static final String PREFIX_RESOURCE = "valresource";
+
     /** Prefix for the hidden structure value. */
     public static final String PREFIX_STRUCTURE = "valstructure";
 
     /** Prefix for the use property checkboxes. */
     public static final String PREFIX_USEPROPERTY = "useprop";
+
     /** Prefix for the input values. */
     public static final String PREFIX_VALUE = "valprop";
 
@@ -166,7 +188,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     private Map m_activeProperties;
 
     /** Parameters of this class. */
-    private CmsParameterConfiguration m_handlerParams;
+    private CmsParameterConfiguration m_handlerParams = new CmsParameterConfiguration();
 
     /** Helper object storing the current editable state of the resource. */
     private Boolean m_isEditable;
@@ -176,6 +198,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
 
     /** Helper stores the mode this dialog is in, because it can be called from "new" wizard. */
     private String m_paramDialogMode;
+
     private String m_paramIndexPageType;
 
     /** Request parameter members. */
@@ -188,6 +211,9 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
 
     /** Helper to determine if the user switched the tab views of the dialog. */
     private boolean m_tabSwitched;
+
+    /** The configured upload handler. */
+    private I_CmsPostUploadDialogHandler m_uploadHandler = new CmsDefaultUploadHandler();
 
     /**
      * Default constructor needed for dialog handler implementation.<p>
@@ -271,6 +297,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
      * 
      * @throws JspException if including an element fails
      */
+    @Override
     public void actionCloseDialog() throws JspException {
 
         if ((getAction() == ACTION_SAVE_EDIT) && MODE_WIZARD_CREATEINDEX.equals(getParamDialogmode())) {
@@ -402,6 +429,9 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
         if (PARAM_SHOWGROUP.equalsIgnoreCase(paramName)) {
             m_handlerParams.add(PARAM_SHOWGROUP, paramValue.trim());
         }
+        if (PARAM_POSTUPLOADHANDLER.equalsIgnoreCase(paramName)) {
+            m_handlerParams.add(PARAM_POSTUPLOADHANDLER, paramValue.trim());
+        }
     }
 
     /**
@@ -464,10 +494,9 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
         // check for presence of property definitions, should always be true
         if (properties.size() > 0) {
             // there are properties defined for this resource, build the form list
-            result.append("<table border=\"0\">\n");
+            result.append("<table border=\"0\" style=\"width:100%\">\n");
             result.append("<tr>\n");
-            // modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
-            result.append("\t<td class=\"textbold\" nowrap >");
+            result.append("\t<td class=\"textbold\" nowrap>");
             result.append(key(Messages.GUI_PROPERTY_0));
             result.append("</td>\n");
             result.append("\t<td class=\"textbold\">");
@@ -661,6 +690,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabParameterOrder()
      */
+    @Override
     public List getTabParameterOrder() {
 
         ArrayList orderList = new ArrayList(2);
@@ -672,6 +702,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsTabDialog#getTabs()
      */
+    @Override
     public List getTabs() {
 
         ArrayList tabList = new ArrayList(2);
@@ -697,11 +728,35 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     }
 
     /**
+     * @see org.opencms.workplace.I_CmsPostUploadDialogHandler#getUploadHook(org.opencms.file.CmsObject, java.lang.String)
+     */
+    public String getUploadHook(CmsObject cms, String uploadFolderSitePath) {
+
+        return m_uploadHandler.getUploadHook(cms, uploadFolderSitePath);
+    }
+
+    /**
      * @see org.opencms.configuration.I_CmsConfigurationParameterHandler#initConfiguration()
      */
     public void initConfiguration() {
 
-        // not yet implemented
+        String uploadHandlerName = m_handlerParams.get(PARAM_POSTUPLOADHANDLER);
+        if (CmsStringUtil.isNotEmptyOrWhitespaceOnly(uploadHandlerName)) {
+            try {
+                Class<?> uploadHandlerClass = Class.forName(uploadHandlerName);
+                if (I_CmsPostUploadDialogHandler.class.isAssignableFrom(uploadHandlerClass)) {
+                    m_uploadHandler = (I_CmsPostUploadDialogHandler)(uploadHandlerClass.newInstance());
+                } else {
+                    LOG.error("Invalid upload handler class: " + uploadHandlerName);
+                }
+            } catch (InstantiationException e) {
+                LOG.error("Could not instantiate upload handler: " + uploadHandlerName, e);
+            } catch (ClassNotFoundException e) {
+                LOG.error("Upload handler class not found: " + uploadHandlerName, e);
+            } catch (IllegalAccessException e) {
+                LOG.error(e.getLocalizedMessage(), e);
+            }
+        }
     }
 
     /**
@@ -747,6 +802,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsDialog#dialogButtonsHtml(java.lang.StringBuffer, int, java.lang.String)
      */
+    @Override
     protected void dialogButtonsHtml(StringBuffer result, int button, String attribute) {
 
         attribute = appendDelimiter(attribute);
@@ -815,6 +871,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
     /**
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
+    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         // fill the parameter values in the get/set methods
@@ -1006,7 +1063,7 @@ public class CmsPropertyAdvanced extends CmsTabDialog implements I_CmsDialogHand
             }
         }
         result.append("<tr>\n");
-        // Modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
+        // Modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         String propertyName =key("templateonedialog."+propName);
         if(CmsMessages.isUnknownKey(propertyName)){
         	propertyName=propName;

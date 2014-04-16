@@ -77,6 +77,9 @@ import org.apache.commons.logging.Log;
  */
 public class CmsExplorer extends CmsWorkplace {
 
+    /** The 'ctxmenuparams' parameter. */
+    public static final String PARAMETER_CONTEXTMENUPARAMS = "ctxmenuparams";
+
     /** The "mode" parameter. */
     public static final String PARAMETER_MODE = "mode";
 
@@ -608,7 +611,12 @@ public class CmsExplorer extends CmsWorkplace {
         content.append("top.mode=\"");
         content.append(getSettings().getExplorerMode());
         content.append("\";\n");
-
+        String additionalParams = getJsp().getRequest().getParameter(CmsExplorer.PARAMETER_CONTEXTMENUPARAMS);
+        if (additionalParams != null) {
+            content.append("document.additionalContextMenuParams = \""
+                + CmsStringUtil.escapeJavaScript(additionalParams)
+                + "\";\n");
+        }
         // the resource id of plain resources
         content.append("top.plainresid=");
         int plainId;
@@ -842,7 +850,7 @@ public class CmsExplorer extends CmsWorkplace {
         } else {
             // default is to return a list of all files in the folder
             try {
-            	//Modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
+            	//Modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
         		CmsUserSettings settings = new CmsUserSettings(getCms());
     			int treesort = settings.getExplorerTreeSort();
     			List<CmsResource> resources = getCms().getResourcesInFolder(resource,

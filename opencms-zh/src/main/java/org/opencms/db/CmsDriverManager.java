@@ -19,7 +19,7 @@
  *
  * For further information about OpenCms, please see the
  * project website: http://www.opencms.org
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -62,8 +62,12 @@ import org.opencms.file.types.CmsResourceTypeFolder;
 import org.opencms.file.types.CmsResourceTypeJsp;
 import org.opencms.file.types.I_CmsResourceType;
 import org.opencms.flex.CmsFlexRequestContextInfo;
+import org.opencms.gwt.shared.alias.CmsAliasImportResult;
+import org.opencms.gwt.shared.alias.CmsAliasImportStatus;
+import org.opencms.gwt.shared.alias.CmsAliasMode;
 import org.opencms.i18n.CmsLocaleManager;
 import org.opencms.i18n.CmsMessageContainer;
+import org.opencms.jsp.CmsJspNavBuilder;
 import org.opencms.lock.CmsLock;
 import org.opencms.lock.CmsLockException;
 import org.opencms.lock.CmsLockFilter;
@@ -136,7 +140,7 @@ import com.google.common.collect.ArrayListMultimap;
 
 /**
  * The OpenCms driver manager.<p>
- * 
+ *
  * @since 6.0.0
  */
 public final class CmsDriverManager implements I_CmsEventListener {
@@ -164,8 +168,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Enumeration class for the mode parameter in the 
-     * {@link CmsDriverManager#readChangedResourcesInsideProject(CmsDbContext, CmsUUID, CmsReadChangedProjectResourceMode)} 
+     * Enumeration class for the mode parameter in the
+     * {@link CmsDriverManager#readChangedResourcesInsideProject(CmsDbContext, CmsUUID, CmsReadChangedProjectResourceMode)}
      * method.<p>
      */
     private static class CmsReadChangedProjectResourceMode {
@@ -179,15 +183,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
         }
     }
 
+    /** Name of the configuration parameter to enable/disable logging to the CMS_LOG table. */
+    public static final String PARAM_LOG_TABLE_ENABLED = "log.table.enabled";
+
     /** Attribute login. */
     public static final String ATTRIBUTE_LOGIN = "A_LOGIN";
 
     /** Cache key for all properties. */
     public static final String CACHE_ALL_PROPERTIES = "_CAP_";
 
-    /** 
-     * Values indicating changes of a resource, 
-     * ordered according to the scope of the change. 
+    /**
+     * Values indicating changes of a resource,
+     * ordered according to the scope of the change.
      */
     /** Value to indicate a change in access control entries of a resource. */
     public static final int CHANGED_ACCESSCONTROL = 1;
@@ -197,6 +204,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /** Value to indicate a change in the lastmodified settings of a resource. */
     public static final int CHANGED_LASTMODIFIED = 4;
+
+    /** Value to indicate a project change. */
+    public static final int CHANGED_PROJECT = 32;
 
     /** Value to indicate a change in the resource data. */
     public static final int CHANGED_RESOURCE = 8;
@@ -342,6 +352,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /** the publish engine. */
     private CmsPublishEngine m_publishEngine;
 
+    /** Object used for synchronizing updates to the user publish list. */
+    private Object m_publishListUpdateLock = new Object();
+
     /** The security manager (for access checks). */
     private CmsSecurityManager m_securityManager;
 
@@ -358,7 +371,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     private I_CmsVfsDriver m_vfsDriver;
 
     /**
-     * Private constructor, initializes some required member variables.<p> 
+     * Private constructor, initializes some required member variables.<p>
      */
     private CmsDriverManager() {
 
@@ -368,7 +381,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads the required configurations from the opencms.properties file and creates
      * the various drivers to access the cms resources.<p>
-     * 
+     *
      * The initialization process of the driver manager and its drivers is split into
      * the following phases:
      * <ul>
@@ -378,12 +391,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * <li>the driver manager is passed to each driver during initialization</li>
      * <li>finally, the driver instances are passed to the driver manager during initialization</li>
      * </ul>
-     * 
+     *
      * @param configurationManager the configuration manager
      * @param securityManager the security manager
      * @param runtimeInfoFactory the initialized OpenCms runtime info factory
      * @param publishEngine the publish engine
-     * 
+     *
      * @return CmsDriverManager the instantiated driver manager
      * @throws CmsInitException if the driver manager couldn't be instantiated
      */
@@ -498,8 +511,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
         dbc = runtimeInfoFactory.getDbContext();
         try {
-            // we wrap this in a try-catch because otherwise it would fail during the update 
-            // process, since the subscription driver configuration does not exist at that point. 
+            // we wrap this in a try-catch because otherwise it would fail during the update
+            // process, since the subscription driver configuration does not exist at that point.
             driverManager.m_subscriptionDriver = (I_CmsSubscriptionDriver)driverManager.createDriver(
                 dbc,
                 configurationManager,
@@ -525,14 +538,29 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Adds a new relation to the given resource.<p>
+     * Adds an alias entry.<p>
      * 
+     * @param dbc the database context 
+     * @param project the current project 
+     * @param alias the alias to add 
+     * 
+     * @throws CmsException if something goes wrong 
+     */
+    public void addAlias(CmsDbContext dbc, CmsProject project, CmsAlias alias) throws CmsException {
+
+        I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
+        vfsDriver.insertAlias(dbc, project, alias);
+    }
+
+    /**
+     * Adds a new relation to the given resource.<p>
+     *
      * @param dbc the database context
      * @param resource the resource to add the relation to
      * @param target the target of the relation
      * @param type the type of the relation
      * @param importCase if importing relations
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void addRelationToResource(
@@ -565,13 +593,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Adds a resource to the given organizational unit.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param orgUnit the organizational unit to add the resource to
      * @param resource the resource that is to be added to the organizational unit
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#addResourceToOrgUnit(CmsObject, String, String)
      * @see org.opencms.security.CmsOrgUnitManager#addResourceToOrgUnit(CmsObject, String, String)
      */
@@ -591,8 +619,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param readRoles if reading roles or groups
      *
      * @throws CmsException if operation was not successful
-     * @throws CmsDbEntryNotFoundException if the given user or the given group was not found 
-     * 
+     * @throws CmsDbEntryNotFoundException if the given user or the given group was not found
+     *
      * @see #removeUserFromGroup(CmsDbContext, String, String, boolean)
      */
     public void addUserToGroup(CmsDbContext dbc, String username, String groupname, boolean readRoles)
@@ -633,7 +661,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             CmsRole role = CmsRole.valueOf(group);
             // a role can only be set if the user has the given role
             m_securityManager.checkRole(dbc, role);
-            // now we check if we already have the role 
+            // now we check if we already have the role
             if (m_securityManager.hasRole(dbc, user, role)) {
                 // do nothing
                 return;
@@ -680,7 +708,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         }
         m_monitor.flushCache(CmsMemoryMonitor.CacheType.USERGROUPS, CmsMemoryMonitor.CacheType.USER_LIST);
 
-        if (!dbc.getProjectId().isNullUUID()) {
+        if (!dbc.getProjectId().isNullUUID() && !CmsProject.ONLINE_PROJECT_ID.equals(dbc.getProjectId())) {
             // user modified event is not needed
             return;
         }
@@ -699,18 +727,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Changes the lock of a resource to the current user,
      * that is "steals" the lock from another user.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to change the lock for
      * @param lockType the new lock type to set
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws CmsSecurityException if something goes wrong
-     * 
-     * 
+     *
+     *
      * @see CmsObject#changeLock(String)
      * @see I_CmsResourceType#changeLock(CmsObject, CmsSecurityManager, CmsResource)
-     * 
+     *
      * @see CmsSecurityManager#hasPermissions(CmsRequestContext, CmsResource, CmsPermissionSet, boolean, CmsResourceFilter)
      */
     public void changeLock(CmsDbContext dbc, CmsResource resource, CmsLockType lockType)
@@ -774,7 +802,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns a list with all sub resources of a given folder that have set the given property, 
+     * Returns a list with all sub resources of a given folder that have set the given property,
      * matching the current property's value with the given old value and replacing it by a given new value.<p>
      *
      * @param dbc the current database context
@@ -782,11 +810,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param propertyDefinition the name of the propertydefinition to change the value
      * @param oldValue the old value of the propertydefinition
      * @param newValue the new value of the propertydefinition
-     * @param recursive if true, change the property value on the resource and recursively all property values on 
+     * @param recursive if true, change the property value on the resource and recursively all property values on
      *                     sub-resources (only for folders)
      * @return a list with the <code>{@link CmsResource}</code>'s where the property value has been changed
      *
-     * @throws CmsVfsException for now only when the search for the oldvalue failed. 
+     * @throws CmsVfsException for now only when the search for the oldvalue failed.
      * @throws CmsException if operation was not successful
      */
     public List<CmsResource> changeResourcesInFolderWithProperty(
@@ -860,17 +888,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Changes the resource flags of a resource.<p>
-     * 
+     *
      * The resource flags are used to indicate various "special" conditions
-     * for a resource. Most notably, the "internal only" setting which signals 
+     * for a resource. Most notably, the "internal only" setting which signals
      * that a resource can not be directly requested with it's URL.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to change the flags for
      * @param flags the new resource flags for this resource
      *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#chflags(String, int)
      * @see I_CmsResourceType#chflags(CmsObject, CmsSecurityManager, CmsResource, int)
      */
@@ -880,30 +908,33 @@ public final class CmsDriverManager implements I_CmsEventListener {
         CmsResource clone = (CmsResource)resource.clone();
         clone.setFlags(flags);
         // log it
-        log(dbc, new CmsLogEntry(
+        log(
             dbc,
-            resource.getStructureId(),
-            CmsLogEntryType.RESOURCE_FLAGS,
-            new String[] {resource.getRootPath()}), false);
+            new CmsLogEntry(
+                dbc,
+                resource.getStructureId(),
+                CmsLogEntryType.RESOURCE_FLAGS,
+                new String[] {resource.getRootPath()}),
+            false);
         // write it
         writeResource(dbc, clone);
     }
 
     /**
      * Changes the resource type of a resource.<p>
-     * 
+     *
      * OpenCms handles resources according to the resource type,
-     * not the file suffix. This is e.g. why a JSP in OpenCms can have the 
+     * not the file suffix. This is e.g. why a JSP in OpenCms can have the
      * suffix ".html" instead of ".jsp" only. Changing the resource type
      * makes sense e.g. if you want to make a plain text file a JSP resource,
-     * or a binary file an image, etc.<p> 
-     * 
+     * or a binary file an image, etc.<p>
+     *
      * @param dbc the current database context
      * @param resource the resource to change the type for
      * @param type the new resource type for this resource
      *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#chtype(String, int)
      * @see I_CmsResourceType#chtype(CmsObject, CmsSecurityManager, CmsResource, int)
      */
@@ -914,11 +945,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
         I_CmsResourceType newType = OpenCms.getResourceManager().getResourceType(type);
         clone.setType(newType.getTypeId());
         // log it
-        log(dbc, new CmsLogEntry(
+        log(
             dbc,
-            resource.getStructureId(),
-            CmsLogEntryType.RESOURCE_TYPE,
-            new String[] {resource.getRootPath()}), false);
+            new CmsLogEntry(
+                dbc,
+                resource.getStructureId(),
+                CmsLogEntryType.RESOURCE_TYPE,
+                new String[] {resource.getRootPath()}),
+            false);
         // write it
         writeResource(dbc, clone);
     }
@@ -966,12 +1000,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Copies the access control entries of a given resource to a destination resource.<p>
      *
      * Already existing access control entries of the destination resource are removed.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param source the resource to copy the access control entries from
      * @param destination the resource to which the access control entries are copied
      * @param updateLastModifiedInfo if true, user and date "last modified" information on the target resource will be updated
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void copyAccessControlEntries(
@@ -1027,30 +1061,30 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Copies a resource.<p>
-     * 
+     *
      * You must ensure that the destination path is an absolute, valid and
      * existing VFS path. Relative paths from the source are currently not supported.<p>
-     * 
-     * In case the target resource already exists, it is overwritten with the 
+     *
+     * In case the target resource already exists, it is overwritten with the
      * source resource.<p>
-     * 
-     * The <code>siblingMode</code> parameter controls how to handle siblings 
+     *
+     * The <code>siblingMode</code> parameter controls how to handle siblings
      * during the copy operation.
-     * Possible values for this parameter are: 
+     * Possible values for this parameter are:
      * <ul>
      * <li><code>{@link org.opencms.file.CmsResource#COPY_AS_NEW}</code></li>
      * <li><code>{@link org.opencms.file.CmsResource#COPY_AS_SIBLING}</code></li>
      * <li><code>{@link org.opencms.file.CmsResource#COPY_PRESERVE_SIBLING}</code></li>
      * </ul><p>
-     * 
+     *
      * @param dbc the current database context
      * @param source the resource to copy
      * @param destination the name of the copy destination with complete path
      * @param siblingMode indicates how to handle siblings during copy
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws CmsIllegalArgumentException if the <code>source</code> argument is <code>null</code>
-     * 
+     *
      * @see CmsObject#copyResource(String, String, CmsResource.CmsResourceCopyMode)
      * @see I_CmsResourceType#copyResource(CmsObject, CmsSecurityManager, CmsResource, String, CmsResource.CmsResourceCopyMode)
      */
@@ -1081,7 +1115,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         List<CmsProperty> properties = readPropertyObjects(dbc, source, false);
 
         if (copyAsSibling) {
-            // create a sibling of the source file at the destination  
+            // create a sibling of the source file at the destination
             createSibling(dbc, source, destination, properties);
             // after the sibling is created the copy operation is finished
             return;
@@ -1100,7 +1134,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             }
         }
 
-        // determine destination folder        
+        // determine destination folder
         String destinationFoldername = CmsResource.getParentFolder(destination);
 
         // read the destination folder (will also check read permissions)
@@ -1132,7 +1166,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             flags &= ~CmsResource.FLAG_LABELED;
         }
 
-        // create the new resource        
+        // create the new resource
         CmsResource newResource = new CmsResource(
             new CmsUUID(),
             new CmsUUID(),
@@ -1185,12 +1219,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Copies a resource to the current project of the user.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to apply this operation to
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#copyResourceToProject(String)
      * @see I_CmsResourceType#copyResourceToProject(CmsObject, CmsSecurityManager, CmsResource)
      */
@@ -1228,7 +1262,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Counts the locked resources in this project.<p>
      *
      * @param project the project to count the locked resources in
-     * 
+     *
      * @return the amount of locked resources in this project
      */
     public int countLockedResources(CmsProject project) {
@@ -1242,16 +1276,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * Only the admin can do this.
      * Only users, which are in the group "administrators" are granted.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param id the id of the new group
      * @param name the name of the new group
      * @param description the description for the new group
      * @param flags the flags for the new group
      * @param parent the name of the parent group (or <code>null</code>)
-     * 
+     *
      * @return new created group
-     * 
+     *
      * @throws CmsException if the creation of the group failed
      * @throws CmsIllegalArgumentException if the length of the given name was below 1
      */
@@ -1314,18 +1348,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Creates a new organizational unit.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param ouFqn the fully qualified name of the new organizational unit
      * @param description the description of the new organizational unit
      * @param flags the flags for the new organizational unit
      * @param resource the first associated resource
      *
-     * @return a <code>{@link CmsOrganizationalUnit}</code> object representing 
+     * @return a <code>{@link CmsOrganizationalUnit}</code> object representing
      *          the newly created organizational unit
      *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#createOrganizationalUnit(CmsObject, String, String, int, String)
      */
     public CmsOrganizationalUnit createOrganizationalUnit(
@@ -1414,10 +1448,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param groupname the project user group to be set
      * @param managergroupname the project manager group to be set
      * @param projecttype the type of the project
-     * 
+     *
      * @return the created project
-     * 
-     * @throws CmsIllegalArgumentException if the chosen <code>name</code> is already used 
+     *
+     * @throws CmsIllegalArgumentException if the chosen <code>name</code> is already used
      *         by the online project, or if the name is not valid
      * @throws CmsException if something goes wrong
      */
@@ -1450,7 +1484,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             managergroup,
             name,
             description,
-            CmsProject.PROJECT_FLAG_NONE,
+            projecttype.getDefaultFlags(),
             projecttype);
     }
 
@@ -1458,12 +1492,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Creates a property definition.<p>
      *
      * Property definitions are valid for all resource types.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param name the name of the property definition to create
-     * 
+     *
      * @return the created property definition
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsPropertyDefinition createPropertyDefinition(CmsDbContext dbc, String name) throws CmsException {
@@ -1514,10 +1548,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Creates a new publish job.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishJob the publish job to create
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void createPublishJob(CmsDbContext dbc, CmsPublishJobInfoBean publishJob) throws CmsException {
@@ -1527,29 +1561,29 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Creates a new resource with the provided content and properties.<p>
-     * 
-     * The <code>content</code> parameter may be <code>null</code> if the resource id 
-     * already exists. If so, the created resource will be a sibling of the existing 
+     *
+     * The <code>content</code> parameter may be <code>null</code> if the resource id
+     * already exists. If so, the created resource will be a sibling of the existing
      * resource, the existing content will remain unchanged.<p>
-     * 
-     * This is used during file import for import of siblings as the 
+     *
+     * This is used during file import for import of siblings as the
      * <code>manifest.xml</code> only contains one binary copy per file.<p>
-     *  
+     *
      * If the resource id exists but the <code>content</code> is not <code>null</code>,
      * the created resource will be made a sibling of the existing resource,
      * and both will share the new content.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourcePath the name of the resource to create (full path)
      * @param resource the new resource to create
      * @param content the content for the new resource
      * @param properties the properties for the new resource
-     * @param importCase if <code>true</code>, signals that this operation is done while 
-     *                      importing resource, causing different lock behavior and 
+     * @param importCase if <code>true</code>, signals that this operation is done while
+     *                      importing resource, causing different lock behavior and
      *                      potential "lost and found" usage
-     * 
+     *
      * @return the created resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public synchronized CmsResource createResource(
@@ -1600,22 +1634,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
             // check if the resource already exists by id
             try {
                 CmsResource currentResourceById = readResource(dbc, resource.getStructureId(), CmsResourceFilter.ALL);
-                // it is not allowed to import resources when there is already a resource with the same id but different path 
+                // it is not allowed to import resources when there is already a resource with the same id but different path
                 if (!currentResourceById.getRootPath().equals(resourcePath)) {
-                    // modified by Shi Yusen,shiys@langhua.cn 2010-10-12 
+                    // modified by Shi Jinghai, huaruhai@hotmail.com   2014-4-16 
     				// for data import abort "STRUCTURE_ID" question
     				if (currentResourceById.isFile()) {
-    					throw new CmsVfsResourceAlreadyExistsException(
-    							Messages
-    									.get()
-    									.container(
-    											Messages.ERR_RESOURCE_WITH_ID_ALREADY_EXISTS_3,
-    											dbc.removeSiteRoot(resourcePath),
-    											dbc
-    													.removeSiteRoot(currentResourceById
-    															.getRootPath()),
-    											currentResourceById
-    													.getStructureId()));
+    					throw new CmsVfsResourceAlreadyExistsException(Messages.get().container(
+    						Messages.ERR_RESOURCE_WITH_ID_ALREADY_EXISTS_3,
+    						dbc.removeSiteRoot(resourcePath),
+    						dbc.removeSiteRoot(currentResourceById.getRootPath()),
+    						currentResourceById.getStructureId()));
     				} else {
     					CmsUUID uuid = new CmsUUID();
     					CmsResource tryAgainResource = new CmsResource(
@@ -1656,7 +1684,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     false,
                     CmsResourceFilter.IGNORE_EXPIRATION);
             } else {
-                // resource already exists - check existing resource              
+                // resource already exists - check existing resource
                 m_securityManager.checkPermissions(
                     dbc,
                     currentResourceByName,
@@ -1675,7 +1703,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     }
                 } else {
                     if (!importCase) {
-                        // direct "overwrite" of a resource is possible only during import, 
+                        // direct "overwrite" of a resource is possible only during import,
                         // or if the resource has been deleted
                         throw new CmsVfsResourceAlreadyExistsException(org.opencms.db.generic.Messages.get().container(
                             org.opencms.db.generic.Messages.ERR_RESOURCE_WITH_NAME_ALREADY_EXISTS_1,
@@ -1685,8 +1713,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     if (!resource.isFolder()
                         && useLostAndFound
                         && (!currentResourceByName.getResourceId().equals(resource.getResourceId()))) {
-                        // semantic change: the current resource is moved to L&F and the imported resource will overwrite the old one                
-                        // will leave the resource with state deleted, 
+                        // semantic change: the current resource is moved to L&F and the imported resource will overwrite the old one
+                        // will leave the resource with state deleted,
                         // but it does not matter, since the state will be set later again
                         moveToLostAndFound(dbc, currentResourceByName, false);
                     }
@@ -1729,7 +1757,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 }
             }
 
-            // check if the target name is valid (forbidden chars etc.), 
+            // check if the target name is valid (forbidden chars etc.),
             // if not throw an exception
             // must do this here since targetName is modified in folder case (see above)
             CmsResource.checkResourceName(targetName);
@@ -1847,8 +1875,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     newResource,
                     content);
             } else {
-                // resource already exists. 
-                // probably the resource is a merged page file that gets overwritten during import, or it gets 
+                // resource already exists.
+                // probably the resource is a merged page file that gets overwritten during import, or it gets
                 // overwritten by a copy operation. if so, the structure & resource state are not modified to changed.
                 int updateStates = (overwrittenResource.getState().isNew()
                 ? CmsDriverManager.NOTHING_CHANGED
@@ -1856,7 +1884,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 getVfsDriver(dbc).writeResource(dbc, dbc.currentProject().getUuid(), newResource, updateStates);
 
                 if ((content != null) && resource.isFile()) {
-                    // also update file content if required                    
+                    // also update file content if required
                     getVfsDriver(dbc).writeContent(dbc, newResource.getResourceId(), content);
                 }
             }
@@ -1866,8 +1894,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
             // lock the created resource
             try {
-                // if it is locked by another user (copied or moved resource) this lock should be preserved and 
-                // the exception is OK: locks on created resources are a slave feature to original locks 
+                // if it is locked by another user (copied or moved resource) this lock should be preserved and
+                // the exception is OK: locks on created resources are a slave feature to original locks
                 lockResource(dbc, newResource, CmsLockType.EXCLUSIVE);
             } catch (CmsLockException cle) {
                 if (LOG.isDebugEnabled()) {
@@ -1908,21 +1936,21 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Creates a new resource of the given resource type
      * with the provided content and properties.<p>
-     * 
+     *
      * If the provided content is null and the resource is not a folder,
-     * the content will be set to an empty byte array.<p>  
-     * 
+     * the content will be set to an empty byte array.<p>
+     *
      * @param dbc the current database context
      * @param resourcename the name of the resource to create (full path)
      * @param type the type of the resource to create
      * @param content the content for the new resource
      * @param properties the properties for the new resource
-     * 
+     *
      * @return the created resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws CmsIllegalArgumentException if the <code>resourcename</code> argument is null or of length 0
-     * 
+     *
      * @see CmsObject#createResource(String, int, byte[], List)
      * @see CmsObject#createResource(String, int)
      * @see I_CmsResourceType#createResource(CmsObject, CmsSecurityManager, String, byte[], List)
@@ -1977,16 +2005,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Creates a new sibling of the source resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param source the resource to create a sibling for
      * @param destination the name of the sibling to create with complete path
      * @param properties the individual properties for the new sibling
-     * 
+     *
      * @return the new created sibling
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#createSibling(String, String, List)
      * @see I_CmsResourceType#createSibling(CmsObject, CmsSecurityManager, CmsResource, String, List)
      */
@@ -2000,7 +2028,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             throw new CmsVfsException(Messages.get().container(Messages.ERR_VFS_FOLDERS_DONT_SUPPORT_SIBLINGS_0));
         }
 
-        // determine destination folder and resource name        
+        // determine destination folder and resource name
         String destinationFoldername = CmsResource.getParentFolder(destination);
 
         // read the destination folder (will also check read permissions)
@@ -2015,7 +2043,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             flags |= CmsResource.FLAG_LABELED;
         }
 
-        // create the new resource        
+        // create the new resource
         CmsResource newResource = new CmsResource(
             new CmsUUID(),
             source.getResourceId(),
@@ -2025,7 +2053,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             flags,
             dbc.currentProject().getUuid(),
             CmsResource.STATE_KEEP,
-            source.getDateCreated(), // ensures current resource record remains untouched 
+            source.getDateCreated(), // ensures current resource record remains untouched
             source.getUserCreated(),
             source.getDateLastModified(),
             source.getUserLastModified(),
@@ -2068,9 +2096,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Creates the project for the temporary workplace files.<p>
      *
      * @param dbc the current database context
-     * 
+     *
      * @return the created project for the temporary workplace files
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsProject createTempfileProject(CmsDbContext dbc) throws CmsException {
@@ -2109,9 +2137,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param additionalInfos the additional infos for the user
      *
      * @return the created user
-     * 
+     *
      * @see CmsObject#createUser(String, String, String, Map)
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws CmsIllegalArgumentException if the name for the user is not valid
      */
@@ -2172,16 +2200,31 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Deletes all property values of a file or folder.<p>
+     * Deletes aliases indicated by a filter.<p>
      * 
+     * @param dbc the current database context 
+     * @param project the current project 
+     * @param filter the filter which describes which aliases to delete 
+     * 
+     * @throws CmsException if something goes wrong 
+     */
+    public void deleteAliases(CmsDbContext dbc, CmsProject project, CmsAliasFilter filter) throws CmsException {
+
+        I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
+        vfsDriver.deleteAliases(dbc, project, filter);
+    }
+
+    /**
+     * Deletes all property values of a file or folder.<p>
+     *
      * If there are no other siblings than the specified resource,
      * both the structure and resource property values get deleted.
      * If the specified resource has siblings, only the structure
      * property values get deleted.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourcename the name of the resource for which all properties should be deleted
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public void deleteAllProperties(CmsDbContext dbc, String resourcename) throws CmsException {
@@ -2233,10 +2276,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes all entries in the published resource table.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param linkType the type of resource deleted (0= non-paramter, 1=parameter)
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void deleteAllStaticExportPublishedResources(CmsDbContext dbc, int linkType) throws CmsException {
@@ -2247,7 +2290,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Deletes a group, where all permissions, users and children of the group
      * are transfered to a replacement group.<p>
-     * 
+     *
      * @param dbc the current request context
      * @param group the id of the group to be deleted
      * @param replacementId the id of the group to be transfered, can be <code>null</code>
@@ -2343,15 +2386,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes the versions from the history tables, keeping the given number of versions per resource.<p>
-     * 
+     *
      * if the <code>cleanUp</code> option is set, additionally versions of deleted resources will be removed.<p>
-     * 
+     *
      * @param dbc the current database context
-     * @param versionsToKeep number of versions to keep, is ignored if negative 
+     * @param versionsToKeep number of versions to keep, is ignored if negative
      * @param versionsDeleted number of versions to keep for deleted resources, is ignored if negative
      * @param timeDeleted deleted resources older than this will also be deleted, is ignored if negative
      * @param report the report for output logging
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public void deleteHistoricalVersions(
@@ -2363,9 +2406,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
         report.println(Messages.get().container(Messages.RPT_START_DELETE_VERSIONS_0), I_CmsReport.FORMAT_HEADLINE);
         if (versionsToKeep >= 0) {
-            report.println(Messages.get().container(
-                Messages.RPT_START_DELETE_ACT_VERSIONS_1,
-                new Integer(versionsToKeep)), I_CmsReport.FORMAT_HEADLINE);
+            report.println(
+                Messages.get().container(Messages.RPT_START_DELETE_ACT_VERSIONS_1, new Integer(versionsToKeep)),
+                I_CmsReport.FORMAT_HEADLINE);
 
             List<I_CmsHistoryResource> resources = getHistoryDriver(dbc).getAllNotDeletedEntries(dbc);
             if (resources.isEmpty()) {
@@ -2377,10 +2420,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
             while (itResources.hasNext()) {
                 I_CmsHistoryResource histResource = itResources.next();
 
-                report.print(org.opencms.report.Messages.get().container(
-                    org.opencms.report.Messages.RPT_SUCCESSION_2,
-                    String.valueOf(m),
-                    String.valueOf(n)), I_CmsReport.FORMAT_NOTE);
+                report.print(
+                    org.opencms.report.Messages.get().container(
+                        org.opencms.report.Messages.RPT_SUCCESSION_2,
+                        String.valueOf(m),
+                        String.valueOf(n)),
+                    I_CmsReport.FORMAT_NOTE);
                 report.print(org.opencms.report.Messages.get().container(
                     org.opencms.report.Messages.RPT_ARGUMENT_1,
                     dbc.removeSiteRoot(histResource.getRootPath())));
@@ -2415,14 +2460,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
         }
         if ((versionsDeleted >= 0) || (timeDeleted >= 0)) {
             if (timeDeleted >= 0) {
-                report.println(Messages.get().container(
-                    Messages.RPT_START_DELETE_DEL_VERSIONS_2,
-                    new Integer(versionsDeleted),
-                    new Date(timeDeleted)), I_CmsReport.FORMAT_HEADLINE);
+                report.println(
+                    Messages.get().container(
+                        Messages.RPT_START_DELETE_DEL_VERSIONS_2,
+                        new Integer(versionsDeleted),
+                        new Date(timeDeleted)),
+                    I_CmsReport.FORMAT_HEADLINE);
             } else {
-                report.println(Messages.get().container(
-                    Messages.RPT_START_DELETE_DEL_VERSIONS_1,
-                    new Integer(versionsDeleted)), I_CmsReport.FORMAT_HEADLINE);
+                report.println(
+                    Messages.get().container(Messages.RPT_START_DELETE_DEL_VERSIONS_1, new Integer(versionsDeleted)),
+                    I_CmsReport.FORMAT_HEADLINE);
             }
             List<I_CmsHistoryResource> resources = getHistoryDriver(dbc).getAllDeletedEntries(dbc);
             if (resources.isEmpty()) {
@@ -2434,10 +2481,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
             while (itResources.hasNext()) {
                 I_CmsHistoryResource histResource = itResources.next();
 
-                report.print(org.opencms.report.Messages.get().container(
-                    org.opencms.report.Messages.RPT_SUCCESSION_2,
-                    String.valueOf(m),
-                    String.valueOf(n)), I_CmsReport.FORMAT_NOTE);
+                report.print(
+                    org.opencms.report.Messages.get().container(
+                        org.opencms.report.Messages.RPT_SUCCESSION_2,
+                        String.valueOf(m),
+                        String.valueOf(n)),
+                    I_CmsReport.FORMAT_NOTE);
                 report.print(org.opencms.report.Messages.get().container(
                     org.opencms.report.Messages.RPT_ARGUMENT_1,
                     dbc.removeSiteRoot(histResource.getRootPath())));
@@ -2474,12 +2523,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes all log entries matching the given filter.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param filter the filter to use for deletion
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#deleteLogEntries(CmsRequestContext, CmsLogFilter)
      */
     public void deleteLogEntries(CmsDbContext dbc, CmsLogFilter filter) throws CmsException {
@@ -2492,17 +2541,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Deletes an organizational unit.<p>
      *
      * Only organizational units that contain no suborganizational unit can be deleted.<p>
-     * 
-     * The organizational unit can not be delete if it is used in the request context, 
+     *
+     * The organizational unit can not be delete if it is used in the request context,
      * or if the current user belongs to it.<p>
-     * 
+     *
      * All users and groups in the given organizational unit will be deleted.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param organizationalUnit the organizational unit to delete
-     * 
+     *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#deleteOrganizationalUnit(CmsObject, String)
      */
     public void deleteOrganizationalUnit(CmsDbContext dbc, CmsOrganizationalUnit organizationalUnit)
@@ -2609,7 +2658,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Deletes a project.<p>
      *
      * Only the admin or the owner of the project can do this.
-     * 
+     *
      * @param dbc the current database context
      * @param deleteProject the project to be deleted
      *
@@ -2693,7 +2742,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             }
         }
 
-        // 4. step: undo changes on all changed or deleted files 
+        // 4. step: undo changes on all changed or deleted files
         for (int i = 0; i < modifiedFiles.size(); i++) {
             CmsResource currentFile = modifiedFiles.get(i);
             if (currentFile.getState().isChanged() || currentFile.getState().isDeleted()) {
@@ -2720,7 +2769,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         m_monitor.clearAccessControlListCache();
         m_monitor.clearResourceCache();
 
-        // set project to online project if current project is the one which will be deleted 
+        // set project to online project if current project is the one which will be deleted
         if (projectId.equals(dbc.currentProject().getUuid())) {
             dbc.getRequestContext().setCurrentProject(readProject(dbc, CmsProject.ONLINE_PROJECT_ID));
         }
@@ -2741,7 +2790,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param name the name of the property definition to delete
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void deletePropertyDefinition(CmsDbContext dbc, String name) throws CmsException {
@@ -2749,7 +2798,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         CmsPropertyDefinition propertyDefinition = null;
 
         try {
-            // first read and then delete the metadefinition.            
+            // first read and then delete the metadefinition.
             propertyDefinition = readPropertyDefinition(dbc, name);
             getVfsDriver(dbc).deletePropertyDefinition(dbc, propertyDefinition);
             getHistoryDriver(dbc).deletePropertyDefinition(dbc, propertyDefinition);
@@ -2764,10 +2813,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes a publish job identified by its history id.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishHistoryId the history id identifying the publish job
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void deletePublishJob(CmsDbContext dbc, CmsUUID publishHistoryId) throws CmsException {
@@ -2777,8 +2826,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes the publish list assigned to a publish job.<p>
-     * 
-     * @param dbc the current database context 
+     *
+     * @param dbc the current database context
      * @param publishHistoryId the history id identifying the publish job
      * @throws CmsException if something goes wrong
      */
@@ -2789,13 +2838,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes all relations for the given resource matching the given filter.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param resource the resource to delete the relations for
      * @param filter the filter to use for deletion
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#deleteRelationsForResource(CmsRequestContext, CmsResource, CmsRelationFilter)
      */
     public void deleteRelationsForResource(CmsDbContext dbc, CmsResource resource, CmsRelationFilter filter)
@@ -2818,21 +2867,21 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes a resource.<p>
-     * 
-     * The <code>siblingMode</code> parameter controls how to handle siblings 
+     *
+     * The <code>siblingMode</code> parameter controls how to handle siblings
      * during the delete operation.
-     * Possible values for this parameter are: 
+     * Possible values for this parameter are:
      * <ul>
      * <li><code>{@link CmsResource#DELETE_REMOVE_SIBLINGS}</code></li>
      * <li><code>{@link CmsResource#DELETE_PRESERVE_SIBLINGS}</code></li>
      * </ul><p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the name of the resource to delete (full path)
      * @param siblingMode indicates how to handle siblings of the deleted resource
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#deleteResource(String, CmsResource.CmsResourceDeleteMode)
      * @see I_CmsResourceType#deleteResource(CmsObject, CmsSecurityManager, CmsResource, CmsResource.CmsResourceDeleteMode)
      */
@@ -2852,7 +2901,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             siblingMode = CmsResource.DELETE_PRESERVE_SIBLINGS;
         }
 
-        // if selected, add all siblings of this resource to the list of resources to be deleted    
+        // if selected, add all siblings of this resource to the list of resources to be deleted
         boolean allSiblingsRemoved;
         List<CmsResource> resources;
         if (siblingMode == CmsResource.DELETE_REMOVE_SIBLINGS) {
@@ -2953,7 +3002,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             CmsResource currentResource = resources.get(i);
 
             // try to delete/remove the resource only if the user has write access to the resource
-            // check permissions only for the sibling, the resource it self was already checked or 
+            // check permissions only for the sibling, the resource it self was already checked or
             // is to be removed without write permissions, ie. while deleting a folder
             if (!currentResource.equals(resource)
                 && (I_CmsPermissionHandler.PERM_ALLOWED != m_securityManager.hasPermissions(
@@ -2966,14 +3015,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 // no write access to sibling - must keep ACE (see below)
                 allSiblingsRemoved = false;
             } else {
-                // write access to sibling granted                 
+                // write access to sibling granted
                 boolean existsOnline = (getVfsDriver(dbc).validateStructureIdExists(
                     dbc,
                     CmsProject.ONLINE_PROJECT_ID,
                     currentResource.getStructureId()) || !(currentResource.getState().equals(CmsResource.STATE_NEW)));
                 if (!existsOnline) {
                     // the resource does not exist online => remove the resource
-                    // this means the resource is "new" (blue) in the offline project                
+                    // this means the resource is "new" (blue) in the offline project
 
                     // delete all properties of this resource
                     deleteAllProperties(dbc, currentResource.getRootPath());
@@ -2992,7 +3041,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     }
 
                     // ensure an exclusive lock is removed in the lock manager for a deleted new resource,
-                    // otherwise it would "stick" in the lock manager, preventing other users from creating 
+                    // otherwise it would "stick" in the lock manager, preventing other users from creating
                     // a file with the same name (issue with temp files in editor)
                     m_lockManager.removeDeletedResource(dbc, currentResource.getRootPath());
                     // delete relations
@@ -3005,6 +3054,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
                         dbc,
                         false,
                         CmsUrlNameMappingFilter.ALL.filterStructureId(currentResource.getStructureId()));
+                    getVfsDriver(dbc).deleteAliases(
+                        dbc,
+                        dbc.currentProject(),
+                        new CmsAliasFilter(null, null, currentResource.getStructureId()));
                 } else {
                     // the resource exists online => mark the resource as deleted
                     // structure record is removed during next publish
@@ -3057,12 +3110,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes an entry in the published resource table.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceName The name of the resource to be deleted in the static export
      * @param linkType the type of resource deleted (0= non-parameter, 1=parameter)
      * @param linkParameter the parameters of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void deleteStaticExportPublishedResource(
@@ -3079,12 +3132,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * were transfered to a replacement user, if given.<p>
      *
      * Only users, which are in the group "administrators" are granted.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param project the current project
      * @param username the name of the user to be deleted
      * @param replacementUsername the name of the user to be transfered, can be <code>null</code>
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public void deleteUser(CmsDbContext dbc, CmsProject project, String username, String replacementUsername)
@@ -3203,16 +3256,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 for (int i = 0; i < m_connectionPools.size(); i++) {
                     PoolingDriver driver = m_connectionPools.get(i);
                     String[] pools = driver.getPoolNames();
-                    for (int j = 0; j < pools.length; j++) {
+                    for (String pool : pools) {
                         try {
-                            driver.closePool(pools[j]);
+                            driver.closePool(pool);
                             if (CmsLog.INIT.isDebugEnabled()) {
-                                CmsLog.INIT.debug(Messages.get().getBundle().key(
-                                    Messages.INIT_CLOSE_CONN_POOL_1,
-                                    pools[j]));
+                                CmsLog.INIT.debug(Messages.get().getBundle().key(Messages.INIT_CLOSE_CONN_POOL_1, pool));
                             }
                         } catch (Throwable t) {
-                            LOG.error(Messages.get().getBundle().key(Messages.LOG_CLOSE_CONN_POOL_ERROR_1, pools[j]), t);
+                            LOG.error(Messages.get().getBundle().key(Messages.LOG_CLOSE_CONN_POOL_ERROR_1, pool), t);
                         }
                     }
                 }
@@ -3237,7 +3288,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Tests if a resource with the given resourceId does already exist in the Database.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceId the resource id to test for
      * @return true if a resource with the given id was found, false otherweise
@@ -3250,17 +3301,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Fills the given publish list with the the VFS resources that actually get published.<p>
-     * 
+     *
      * Please refer to the source code of this method for the rules on how to decide whether a
      * new/changed/deleted <code>{@link CmsResource}</code> object can be published or not.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishList must be initialized with basic publish information (Project or direct publish operation),
-     *                    the given publish list will be filled with all new/changed/deleted files from the current 
-     *                    (offline) project that will be actually published 
-     * 
+     *                    the given publish list will be filled with all new/changed/deleted files from the current
+     *                    (offline) project that will be actually published
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see org.opencms.db.CmsPublishList
      */
     public void fillPublishList(CmsDbContext dbc, CmsPublishList publishList) throws CmsException {
@@ -3312,8 +3363,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 // iterate all resources in the direct publish list
                 CmsResource directPublishResource = it.next();
                 if (directPublishResource.isFolder()) {
-                    // when publishing a folder directly, 
-                    // the folder and all modified resources within the tree below this folder 
+                    // when publishing a folder directly,
+                    // the folder and all modified resources within the tree below this folder
                     // and with the last change done in the current project are candidates if lockable
                     CmsLock lock = getLock(dbc, directPublishResource);
                     if (!directPublishResource.getState().isUnchanged() && lock.isLockableBy(dbc.currentUser())) {
@@ -3378,13 +3429,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the list of access control entries of a resource given its name.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to read the access control entries for
      * @param getInherited true if the result should include all access control entries inherited by parent folders
-     * 
+     *
      * @return a list of <code>{@link CmsAccessControlEntry}</code> objects defining all permissions for the given resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsAccessControlEntry> getAccessControlEntries(
@@ -3421,8 +3472,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             // sort and check if we got the 'overwrite all' ace to stop looking up
             overwriteAll = sortAceList(entries);
 
-            for (Iterator<CmsAccessControlEntry> i = entries.iterator(); i.hasNext();) {
-                CmsAccessControlEntry e = i.next();
+            for (CmsAccessControlEntry e : entries) {
                 e.setFlags(CmsAccessControlEntry.ACCESS_FLAGS_INHERITED);
             }
 
@@ -3436,12 +3486,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the full access control list of a given resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
-     * 
+     *
      * @return the access control list of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsAccessControlList getAccessControlList(CmsDbContext dbc, CmsResource resource) throws CmsException {
@@ -3452,18 +3502,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Returns the access control list of a given resource.<p>
      *
-     * If <code>inheritedOnly</code> is set, only inherited access control entries 
+     * If <code>inheritedOnly</code> is set, only inherited access control entries
      * are returned.<p>
-     * 
+     *
      * Note: For file resources, *all* permissions set at the immediate parent folder are inherited,
-     * not only these marked to inherit. 
-     * 
+     * not only these marked to inherit.
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param inheritedOnly skip non-inherited entries if set
-     * 
+     *
      * @return the access control list of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsAccessControlList getAccessControlList(CmsDbContext dbc, CmsResource resource, boolean inheritedOnly)
@@ -3472,18 +3522,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
         return getAccessControlList(dbc, resource, inheritedOnly, resource.isFolder(), 0);
     }
 
-    /** 
-     * Returns the number of active connections managed by a pool.<p> 
-     * 
-     * @param dbPoolUrl the url of a pool 
-     * @return the number of active connections 
-     * @throws CmsDbException if something goes wrong 
+    /**
+     * Returns the number of active connections managed by a pool.<p>
+     *
+     * @param dbPoolUrl the url of a pool
+     * @return the number of active connections
+     * @throws CmsDbException if something goes wrong
      */
     public int getActiveConnections(String dbPoolUrl) throws CmsDbException {
 
         try {
-            for (Iterator<PoolingDriver> i = m_connectionPools.iterator(); i.hasNext();) {
-                PoolingDriver d = i.next();
+            for (PoolingDriver d : m_connectionPools) {
                 ObjectPool p = d.getConnectionPool(dbPoolUrl);
                 return p.getNumActive();
             }
@@ -3497,15 +3546,34 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns all projects which are owned by the current user or which are 
+     * Reads all access control entries.<p>
+     * 
+     * @param dbc the current database context
+     * @return all access control entries for the current project (offline/online)
+     *  
+     * @throws CmsException if something goes wrong  
+     */
+    public List<CmsAccessControlEntry> getAllAccessControlEntries(CmsDbContext dbc) throws CmsException {
+
+        I_CmsUserDriver userDriver = getUserDriver(dbc);
+        List<CmsAccessControlEntry> ace = userDriver.readAccessControlEntries(
+            dbc,
+            dbc.currentProject(),
+            CmsAccessControlEntry.PRINCIPAL_READALL_ID,
+            false);
+        return ace;
+    }
+
+    /**
+     * Returns all projects which are owned by the current user or which are
      * accessible by the current user.<p>
      *
      * @param dbc the current database context
      * @param orgUnit the organizational unit to search project in
      * @param includeSubOus if to include sub organizational units
-     * 
+     *
      * @return a list of objects of type <code>{@link CmsProject}</code>
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsProject> getAllAccessibleProjects(
@@ -3569,7 +3637,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             }
 
             if (!accessible) {
-                // if direct user or manager of project 
+                // if direct user or manager of project
                 CmsUUID groupId = null;
                 if (userGroupIds.contains(project.getGroupId())) {
                     groupId = project.getGroupId();
@@ -3604,10 +3672,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Returns a list with all projects from history.<p>
      *
      * @param dbc the current database context
-     * 
-     * @return list of <code>{@link CmsHistoryProject}</code> objects 
+     *
+     * @return list of <code>{@link CmsHistoryProject}</code> objects
      *           with all projects from history.
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public List<CmsHistoryProject> getAllHistoricalProjects(CmsDbContext dbc) throws CmsException {
@@ -3666,9 +3734,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param orgUnit the organizational unit to search project in
      * @param includeSubOus if to include sub organizational units
-     * 
+     *
      * @return a list of objects of type <code>{@link CmsProject}</code>
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public List<CmsProject> getAllManageableProjects(
@@ -3732,7 +3800,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             }
 
             if (!manageable) {
-                // if manager of project 
+                // if manager of project
                 if (userGroupIds.contains(project.getManagerGroupId())) {
                     String oufqn = readGroup(dbc, project.getManagerGroupId()).getOuFqn();
                     manageable = manageable || (oufqn.startsWith(dbc.getRequestContext().getOuFqn()));
@@ -3762,9 +3830,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param group the group to get the child for
      * @param includeSubChildren if set also returns all sub-child groups of the given group
-     * 
+     *
      * @return a list of all child <code>{@link CmsGroup}</code> objects
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public List<CmsGroup> getChildren(CmsDbContext dbc, CmsGroup group, boolean includeSubChildren) throws CmsException {
@@ -3787,14 +3855,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the date when the resource was last visited by the user.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param user the user to check the date
      * @param resource the resource to check the date
-     * 
+     *
      * @return the date when the resource was last visited by the user
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public long getDateLastVisitedBy(CmsDbContext dbc, String poolName, CmsUser user, CmsResource resource)
@@ -3810,11 +3878,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param orgUnit the organizational unit to get the groups for
      * @param includeSubOus if all groups of sub-organizational units should be retrieved too
      * @param readRoles if to read roles or groups
-     * 
+     *
      * @return all <code>{@link CmsGroup}</code> objects in the organizational unit
      *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#getResourcesForOrganizationalUnit(CmsObject, String)
      * @see org.opencms.security.CmsOrgUnitManager#getGroups(CmsObject, String, boolean)
      */
@@ -3829,13 +3897,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the groups of an user filtered by the specified IP address.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param username the name of the user
      * @param readRoles if to read roles or groups
-     * 
+     *
      * @return the groups of the given user, as a list of {@link CmsGroup} objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsGroup> getGroupsOfUser(CmsDbContext dbc, String username, boolean readRoles) throws CmsException {
@@ -3845,17 +3913,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the groups of an user filtered by the specified IP address.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param username the name of the user
      * @param ouFqn the fully qualified name of the organizational unit to restrict the result set for
      * @param includeChildOus include groups of child organizational units
      * @param readRoles if to read roles or groups
      * @param directGroupsOnly if set only the direct assigned groups will be returned, if not also indirect groups
-     * @param remoteAddress the IP address to filter the groups in the result list 
+     * @param remoteAddress the IP address to filter the groups in the result list
      *
      * @return a list of <code>{@link CmsGroup}</code> objects
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public List<CmsGroup> getGroupsOfUser(
@@ -3900,7 +3968,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 }
             }
             if (readRoles) {
-                // for each for role 
+                // for each for role
                 for (int i = 0; i < directGroups.size(); i++) {
                     CmsGroup group = directGroups.get(i);
                     CmsRole role = CmsRole.valueOf(group);
@@ -3923,7 +3991,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                         }
                     }
                     if (includeChildOus) {
-                        // if needed include the roles of child ous 
+                        // if needed include the roles of child ous
                         Iterator<CmsOrganizationalUnit> itSubOus = getOrganizationalUnits(
                             dbc,
                             readOrganizationalUnit(dbc, group.getOuFqn()),
@@ -3968,7 +4036,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the history driver.<p>
-     * 
+     *
      * @return the history driver
      */
     public I_CmsHistoryDriver getHistoryDriver() {
@@ -3978,8 +4046,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the history driver for a given database context.<p>
-     * 
-     * @param dbc the database context 
+     *
+     * @param dbc the database context
      * @return the history driver for the database context
      */
     public I_CmsHistoryDriver getHistoryDriver(CmsDbContext dbc) {
@@ -3992,18 +4060,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     }
 
-    /** 
-     * Returns the number of idle connections managed by a pool.<p> 
-     * 
-     * @param dbPoolUrl the url of a pool 
-     * @return the number of idle connections 
-     * @throws CmsDbException if something goes wrong 
+    /**
+     * Returns the number of idle connections managed by a pool.<p>
+     *
+     * @param dbPoolUrl the url of a pool
+     * @return the number of idle connections
+     * @throws CmsDbException if something goes wrong
      */
     public int getIdleConnections(String dbPoolUrl) throws CmsDbException {
 
         try {
-            for (Iterator<PoolingDriver> i = m_connectionPools.iterator(); i.hasNext();) {
-                PoolingDriver d = i.next();
+            for (PoolingDriver d : m_connectionPools) {
                 ObjectPool p = d.getConnectionPool(dbPoolUrl);
                 return p.getNumIdle();
             }
@@ -4018,12 +4085,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the lock state of a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to return the lock state for
-     * 
+     *
      * @return the lock state of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsLock getLock(CmsDbContext dbc, CmsResource resource) throws CmsException {
@@ -4037,9 +4104,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param resource the folder to search in
      * @param filter the lock filter
-     * 
+     *
      * @return a list of locked resource paths (relative to current site)
-     * 
+     *
      * @throws CmsException if the current project is locked
      */
     public List<String> getLockedResources(CmsDbContext dbc, CmsResource resource, CmsLockFilter filter)
@@ -4062,9 +4129,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param resource the folder to search in
      * @param filter the lock filter
-     * 
+     *
      * @return a list of locked resources
-     * 
+     *
      * @throws CmsException if the current project is locked
      */
     public List<CmsResource> getLockedResourcesObjects(CmsDbContext dbc, CmsResource resource, CmsLockFilter filter)
@@ -4080,9 +4147,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param resource the folder to search in
      * @param filter the lock filter
      * @param cache the cache to use for resource lookups
-     * 
+     *
      * @return a list of locked resources
-     * 
+     *
      * @throws CmsException if the current project is locked
      */
     public List<CmsResource> getLockedResourcesObjectsWithCache(
@@ -4095,15 +4162,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns all log entries matching the given filter.<p> 
-     * 
+     * Returns all log entries matching the given filter.<p>
+     *
      * @param dbc the current db context
      * @param filter the filter to match the log entries
-     * 
+     *
      * @return all log entries matching the given filter
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#getLogEntries(CmsRequestContext, CmsLogFilter)
      */
     public List<CmsLogEntry> getLogEntries(CmsDbContext dbc, CmsLogFilter filter) throws CmsException {
@@ -4116,7 +4183,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Returns the next publish tag for the published historical resources.<p>
      *
      * @param dbc the current database context
-     * 
+     *
      * @return the next available publish tag
      */
     public int getNextPublishTag(CmsDbContext dbc) {
@@ -4125,17 +4192,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns all child organizational units of the given parent organizational unit including 
+     * Returns all child organizational units of the given parent organizational unit including
      * hierarchical deeper organization units if needed.<p>
      *
      * @param dbc the current db context
      * @param parent the parent organizational unit, or <code>null</code> for the root
      * @param includeChildren if hierarchical deeper organization units should also be returned
-     * 
+     *
      * @return a list of <code>{@link CmsOrganizationalUnit}</code> objects
-     * 
+     *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#getOrganizationalUnits(CmsObject, String, boolean)
      */
     public List<CmsOrganizationalUnit> getOrganizationalUnits(
@@ -4151,13 +4218,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns all the organizational units for which the current user has the given role.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param role the role to check
-     * @param includeSubOus if sub organizational units should be included in the search 
-     *  
+     * @param includeSubOus if sub organizational units should be included in the search
+     *
      * @return a list of {@link org.opencms.security.CmsOrganizationalUnit} objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsOrganizationalUnit> getOrgUnitsForRole(CmsDbContext dbc, CmsRole role, boolean includeSubOus)
@@ -4190,9 +4257,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param groupname the name of the group
-     * 
+     *
      * @return group the parent group or <code>null</code>
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public CmsGroup getParent(CmsDbContext dbc, String groupname) throws CmsException {
@@ -4213,13 +4280,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the set of permissions of the current user for a given resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param user the user
-     * 
+     *
      * @return bit set with allowed permissions
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsPermissionSetCustom getPermissions(CmsDbContext dbc, CmsResource resource, CmsUser user)
@@ -4241,10 +4308,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the project driver for a given DB context.<p>
-     * 
+     *
      * @param dbc the database context
-     * 
-     * @return the project driver for the database context 
+     *
+     * @return the project driver for the database context
      */
     public I_CmsProjectDriver getProjectDriver(CmsDbContext dbc) {
 
@@ -4257,11 +4324,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns either the project driver for the DB context (if it has one) or a default project driver.<p>
-     * 
+     *
      * @param dbc the DB context
-     * @param defaultDriver the driver which should be returned if there is no project driver for the DB context 
-     * 
-     * @return either the project driver for the DB context, or the default driver 
+     * @param defaultDriver the driver which should be returned if there is no project driver for the DB context
+     *
+     * @return either the project driver for the DB context, or the default driver
      */
     public I_CmsProjectDriver getProjectDriver(CmsDbContext dbc, I_CmsProjectDriver defaultDriver) {
 
@@ -4274,15 +4341,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the uuid id for the given id.<p>
-     * 
+     *
      * TODO: remove this method as soon as possible
-     * 
+     *
      * @param dbc the current database context
      * @param id the old project id
-     * 
+     *
      * @return the new uuid for the given id
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     public CmsUUID getProjectId(CmsDbContext dbc, int id) throws CmsException {
 
@@ -4307,18 +4374,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns a new publish list that contains the unpublished resources related 
-     * to all resources in the given publish list, the related resources exclude 
+     * Returns a new publish list that contains the unpublished resources related
+     * to all resources in the given publish list, the related resources exclude
      * all resources in the given publish list and also locked (by other users) resources.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishList the publish list to exclude from result
      * @param filter the relation filter to use to get the related resources
-     * 
+     *
      * @return a new publish list that contains the related resources
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see org.opencms.publish.CmsPublishManager#getRelatedResourcesToPublish(CmsObject, CmsPublishList)
      */
     public CmsPublishList getRelatedResourcesToPublish(
@@ -4419,16 +4486,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns all relations for the given resource matching the given filter.<p> 
-     * 
+     * Returns all relations for the given resource matching the given filter.<p>
+     *
      * @param dbc the current db context
      * @param resource the resource to retrieve the relations for
-     * @param filter the filter to match the relation 
-     * 
+     * @param filter the filter to match the relation
+     *
      * @return all relations for the given resource matching the given filter
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#getRelationsForResource(CmsRequestContext, CmsResource, CmsRelationFilter)
      */
     public List<CmsRelation> getRelationsForResource(CmsDbContext dbc, CmsResource resource, CmsRelationFilter filter)
@@ -4440,12 +4507,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the list of organizational units the given resource belongs to.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
-     * 
+     *
      * @return list of {@link CmsOrganizationalUnit} objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsOrganizationalUnit> getResourceOrgUnits(CmsDbContext dbc, CmsResource resource) throws CmsException {
@@ -4463,11 +4530,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current db context
      * @param orgUnit the organizational unit to get all resources for
-     * 
+     *
      * @return all <code>{@link CmsResource}</code> objects in the organizational unit
      *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#getResourcesForOrganizationalUnit(CmsObject, String)
      * @see org.opencms.security.CmsOrgUnitManager#getUsers(CmsObject, String, boolean)
      * @see org.opencms.security.CmsOrgUnitManager#getGroups(CmsObject, String, boolean)
@@ -4479,24 +4546,24 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Returns all resources associated to a given principal via an ACE with the given permissions.<p> 
-     * 
-     * If the <code>includeAttr</code> flag is set it returns also all resources associated to 
-     * a given principal through some of following attributes.<p> 
-     * 
+     * Returns all resources associated to a given principal via an ACE with the given permissions.<p>
+     *
+     * If the <code>includeAttr</code> flag is set it returns also all resources associated to
+     * a given principal through some of following attributes.<p>
+     *
      * <ul>
      *    <li>User Created</li>
      *    <li>User Last Modified</li>
      * </ul><p>
-     * 
+     *
      * @param dbc the current database context
      * @param project the to read the entries from
      * @param principalId the id of the principal
      * @param permissions a set of permissions to match, can be <code>null</code> for all ACEs
      * @param includeAttr a flag to include resources associated by attributes
-     * 
+     *
      * @return a set of <code>{@link CmsResource}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public Set<CmsResource> getResourcesForPrincipal(
@@ -4527,14 +4594,29 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Collects the groups which constitute a given role.<p>
-     *   
-     * @param dbc the database context 
-     * @param roleGroupName the group related to the role 
-     * @param directUsersOnly if true, only the group belonging to the entry itself wil
+     * Gets the rewrite aliases matching a given filter.<p>
      * 
-     * @return the set of groups which constitute the role
+     * @param dbc the current database context 
+     * @param filter the filter used for filtering rewrite aliases
      *  
+     * @return the rewrite aliases matching the given filter 
+     * 
+     * @throws CmsException if something goes wrong 
+     */
+    public List<CmsRewriteAlias> getRewriteAliases(CmsDbContext dbc, CmsRewriteAliasFilter filter) throws CmsException {
+
+        return getVfsDriver(dbc).readRewriteAliases(dbc, filter);
+    }
+
+    /**
+     * Collects the groups which constitute a given role.<p>
+     *
+     * @param dbc the database context
+     * @param roleGroupName the group related to the role
+     * @param directUsersOnly if true, only the group belonging to the entry itself wil
+     *
+     * @return the set of groups which constitute the role
+     *
      * @throws CmsException
      */
     public Set<CmsGroup> getRoleGroups(CmsDbContext dbc, String roleGroupName, boolean directUsersOnly)
@@ -4545,14 +4627,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Collects the groups which constitute a given role.<p>
-     *   
-     * @param dbc the database context 
-     * @param roleGroupName the group related to the role 
+     *
+     * @param dbc the database context
+     * @param roleGroupName the group related to the role
      * @param directUsersOnly if true, only the group belonging to the entry itself wil
-     * @param accumulator a map for memoizing return values of recursive calls  
-     * 
+     * @param accumulator a map for memoizing return values of recursive calls
+     *
      * @return the set of groups which constitute the role
-     *  
+     *
      * @throws CmsException
      */
     public Set<CmsGroup> getRoleGroupsImpl(
@@ -4596,14 +4678,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns all roles the given user has for the given resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param user the user to check
-     * @param resource the resource to check the roles for 
-     * 
+     * @param resource the resource to check the roles for
+     *
      * @return a list of {@link CmsRole} objects
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     public List<CmsRole> getRolesForResource(CmsDbContext dbc, CmsUser user, CmsResource resource) throws CmsException {
 
@@ -4653,13 +4735,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns all roles the given user has independent of the resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param user the user to check
-     * 
+     *
      * @return a list of {@link CmsRole} objects
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     public List<CmsRole> getRolesForUser(CmsDbContext dbc, CmsUser user) throws CmsException {
 
@@ -4703,7 +4785,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the security manager this driver manager belongs to.<p>
-     * 
+     *
      * @return the security manager this driver manager belongs to
      */
     public CmsSecurityManager getSecurityManager() {
@@ -4713,7 +4795,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns an instance of the common sql manager.<p>
-     * 
+     *
      * @return an instance of the common sql manager
      */
     public CmsSqlManager getSqlManager() {
@@ -4723,8 +4805,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the subscription driver of this driver manager.<p>
-     * 
-     * @return a subscription driver 
+     *
+     * @return a subscription driver
      */
     public I_CmsSubscriptionDriver getSubscriptionDriver() {
 
@@ -4734,7 +4816,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Returns the user driver.<p>
      *
-     * @return the user driver 
+     * @return the user driver
      */
     public I_CmsUserDriver getUserDriver() {
 
@@ -4743,10 +4825,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the user driver for a given database context.<p>
-     * 
+     *
      * @param dbc the database context
-     * 
-     * @return the user driver for the database context 
+     *
+     * @return the user driver for the database context
      */
     public I_CmsUserDriver getUserDriver(CmsDbContext dbc) {
 
@@ -4760,11 +4842,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns either the user driver for the given DB context (if it has one) or a default value instead.<p>
-     * 
+     *
      * @param dbc the DB context
      * @param defaultDriver the driver that should be returned if no driver for the DB context was found
-     * 
-     * @return either the user driver for the DB context, or <code>defaultDriver</code> if none were found 
+     *
+     * @return either the user driver for the DB context, or <code>defaultDriver</code> if none were found
      */
     public I_CmsUserDriver getUserDriver(CmsDbContext dbc, I_CmsUserDriver defaultDriver) {
 
@@ -4781,11 +4863,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current db context
      * @param orgUnit the organizational unit to get all users for
      * @param recursive if all groups of sub-organizational units should be retrieved too
-     * 
+     *
      * @return all <code>{@link CmsUser}</code> objects in the organizational unit
      *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#getResourcesForOrganizationalUnit(CmsObject, String)
      * @see org.opencms.security.CmsOrgUnitManager#getUsers(CmsObject, String, boolean)
      */
@@ -4801,13 +4883,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param groupname the name of the group to list users from
      * @param includeOtherOuUsers include users of other organizational units
-     * @param directUsersOnly if set only the direct assigned users will be returned, 
-     *                        if not also indirect users, ie. members of parent roles, 
+     * @param directUsersOnly if set only the direct assigned users will be returned,
+     *                        if not also indirect users, ie. members of parent roles,
      *                        this parameter only works with roles
      * @param readRoles if to read roles or groups
-     * 
+     *
      * @return all <code>{@link CmsUser}</code> objects in the group
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public List<CmsUser> getUsersOfGroup(
@@ -4828,18 +4910,20 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the given user's publish list.<p>
-     * 
+     *
      * @param dbc the database context
      * @param userId the user's id
-     * 
+     *
      * @return the given user's publish list
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public List<CmsResource> getUsersPubList(CmsDbContext dbc, CmsUUID userId) throws CmsDataAccessException {
 
-        updateLog(dbc);
-        return m_projectDriver.getUsersPubList(dbc, userId);
+        synchronized (m_publishListUpdateLock) {
+            updateLog(dbc);
+            return m_projectDriver.getUsersPubList(dbc, userId);
+        }
     }
 
     /**
@@ -4848,11 +4932,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current db context
      * @param orgUnit the organizational unit to get all users for
      * @param recursive if all groups of sub-organizational units should be retrieved too
-     * 
+     *
      * @return all <code>{@link CmsUser}</code> objects in the organizational unit
      *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#getResourcesForOrganizationalUnit(CmsObject, String)
      * @see org.opencms.security.CmsOrgUnitManager#getUsers(CmsObject, String, boolean)
      */
@@ -4866,7 +4950,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the VFS driver.<p>
-     * 
+     *
      * @return the VFS driver
      */
     public I_CmsVfsDriver getVfsDriver() {
@@ -4876,10 +4960,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the VFS driver for the given database context.<p>
-     * 
+     *
      * @param dbc the database context
-     *  
-     * @return a VFS driver  
+     *
+     * @return a VFS driver
      */
     public I_CmsVfsDriver getVfsDriver(CmsDbContext dbc) {
 
@@ -4893,17 +4977,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes a vector of access control entries as new access control entries of a given resource.<p>
-     * 
+     *
      * Already existing access control entries of this resource are removed before.
      * Access is granted, if:<p>
      * <ul>
      * <li>the current user has control permission on the resource</li>
      * </ul>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param acEntries a list of <code>{@link CmsAccessControlEntry}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void importAccessControlEntries(CmsDbContext dbc, CmsResource resource, List<CmsAccessControlEntry> acEntries)
@@ -4920,8 +5004,54 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Creates a new user by import.<p>
+     * Imports a rewrite alias.<p>
      * 
+     * @param dbc the database context 
+     * @param siteRoot the site root of the alias 
+     * @param source the source of the alias 
+     * @param target the target of the alias 
+     * @param mode the alias mode 
+     * 
+     * @return the import result 
+     * 
+     * @throws CmsException if something goes wrong 
+     */
+    public CmsAliasImportResult importRewriteAlias(
+        CmsDbContext dbc,
+        String siteRoot,
+        String source,
+        String target,
+        CmsAliasMode mode) throws CmsException {
+
+        I_CmsVfsDriver vfs = getVfsDriver(dbc);
+        List<CmsRewriteAlias> existingAliases = vfs.readRewriteAliases(
+            dbc,
+            new CmsRewriteAliasFilter().setSiteRoot(siteRoot));
+        CmsUUID idToDelete = null;
+        for (CmsRewriteAlias alias : existingAliases) {
+            if (alias.getPatternString().equals(source)) {
+                idToDelete = alias.getId();
+            }
+        }
+        if (idToDelete != null) {
+            vfs.deleteRewriteAliases(dbc, new CmsRewriteAliasFilter().setId(idToDelete));
+        }
+        CmsRewriteAlias alias = new CmsRewriteAlias(new CmsUUID(), siteRoot, source, target, mode);
+        List<CmsRewriteAlias> aliases = new ArrayList<CmsRewriteAlias>();
+        aliases.add(alias);
+        getVfsDriver(dbc).insertRewriteAliases(dbc, aliases);
+        CmsAliasImportResult result = new CmsAliasImportResult(
+            CmsAliasImportStatus.aliasNew,
+            "OK",
+            source,
+            target,
+            mode);
+        return result;
+    }
+
+    /**
+     * Creates a new user by import.<p>
+     *
      * @param dbc the current database context
      * @param id the id of the user
      * @param name the new name for the user
@@ -4932,7 +5062,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param flags the flags for a user (for example <code>{@link I_CmsPrincipal#FLAG_ENABLED}</code>)
      * @param dateCreated the creation date
      * @param additionalInfos the additional user infos
-     * 
+     *
      * @return the imported user
      *
      * @throws CmsException if something goes wrong
@@ -4980,14 +5110,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Increments a counter and returns its value before incrementing.<p> 
-     * 
-     * @param dbc the current database context 
-     * @param name the name of the counter which should be incremented  
-     * 
+     * Increments a counter and returns its value before incrementing.<p>
+     *
+     * @param dbc the current database context
+     * @param name the name of the counter which should be incremented
+     *
      * @return the value of the counter
-     *  
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     public int incrementCounter(CmsDbContext dbc, String name) throws CmsException {
 
@@ -4996,10 +5126,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Initializes the driver and sets up all required modules and connections.<p>
-     * 
+     *
      * @param configurationManager the configuration manager
      * @param dbContextFactory the db context factory
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws Exception if something goes wrong
      */
@@ -5049,14 +5179,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Checks if the specified resource is inside the current project.<p>
-     * 
-     * The project "view" is determined by a set of path prefixes. 
-     * If the resource starts with any one of this prefixes, it is considered to 
+     *
+     * The project "view" is determined by a set of path prefixes.
+     * If the resource starts with any one of this prefixes, it is considered to
      * be "inside" the project.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourcename the specified resource name (full path)
-     * 
+     *
      * @return <code>true</code>, if the specified resource is inside the current project
      */
     public boolean isInsideCurrentProject(CmsDbContext dbc, String resourcename) {
@@ -5066,10 +5196,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
             projectResources = readProjectResources(dbc, dbc.currentProject());
         } catch (CmsException e) {
             if (LOG.isErrorEnabled()) {
-                LOG.error(Messages.get().getBundle().key(
-                    Messages.LOG_CHECK_RESOURCE_INSIDE_CURRENT_PROJECT_2,
-                    resourcename,
-                    dbc.currentProject().getName()), e);
+                LOG.error(
+                    Messages.get().getBundle().key(
+                        Messages.LOG_CHECK_RESOURCE_INSIDE_CURRENT_PROJECT_2,
+                        resourcename,
+                        dbc.currentProject().getName()),
+                    e);
             }
             return false;
         }
@@ -5078,8 +5210,8 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Checks whether the subscription driver is available.<p>
-     * 
-     * @return true if the subscription driver is available 
+     *
+     * @return true if the subscription driver is available
      */
     public boolean isSubscriptionDriverAvailable() {
 
@@ -5097,20 +5229,20 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Checks if one of the resources (except the resource itself) 
+     * Checks if one of the resources (except the resource itself)
      * is a sibling in a "labeled" site folder.<p>
-     * 
-     * This method is used when creating a new sibling 
-     * (use the <code>newResource</code> parameter & <code>action = 1</code>) 
-     * or deleting/importing a resource (call with <code>action = 2</code>).<p> 
-     *   
+     *
+     * This method is used when creating a new sibling
+     * (use the <code>newResource</code> parameter & <code>action = 1</code>)
+     * or deleting/importing a resource (call with <code>action = 2</code>).<p>
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param newResource absolute path for a resource sibling which will be created
      * @param action the action which has to be performed (1: create VFS link, 2: all other actions)
-     * 
+     *
      * @return <code>true</code> if the flag should be set for the resource, otherwise <code>false</code>
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public boolean labelResource(CmsDbContext dbc, CmsResource resource, String newResource, int action)
@@ -5120,7 +5252,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         List<String> labeledSites = OpenCms.getWorkplaceManager().getLabelSiteFolders();
 
         if (labeledSites.size() == 0) {
-            // no labeled sites defined, just return false 
+            // no labeled sites defined, just return false
             return false;
         }
 
@@ -5233,13 +5365,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * <li><code>{@link org.opencms.lock.CmsLockType#TEMPORARY}</code></li>
      * <li><code>{@link org.opencms.lock.CmsLockType#PUBLISH}</code></li>
      * </ul><p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to lock
      * @param type type of the lock
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#lockResource(String)
      * @see CmsObject#lockResourceTemporary(String)
      * @see org.opencms.file.types.I_CmsResourceType#lockResource(CmsObject, CmsSecurityManager, CmsResource, CmsLockType)
@@ -5253,10 +5385,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
         // add the resource to the lock dispatcher
         m_lockManager.addResource(dbc, resource, dbc.currentUser(), project, type);
-
+        boolean changedProjectLastModified = false;
         if (!resource.getState().isUnchanged() && !resource.getState().isKeep()) {
             // update the project flag of a modified resource as "last modified inside the current project"
             getVfsDriver(dbc).writeLastModifiedProjectId(dbc, project, project.getUuid(), resource);
+            changedProjectLastModified = true;
         }
 
         // we must also clear the permission cache
@@ -5265,19 +5398,21 @@ public final class CmsDriverManager implements I_CmsEventListener {
         // fire resource modification event
         Map<String, Object> data = new HashMap<String, Object>(2);
         data.put(I_CmsEventListener.KEY_RESOURCE, resource);
-        data.put(I_CmsEventListener.KEY_CHANGE, new Integer(NOTHING_CHANGED));
+        data.put(I_CmsEventListener.KEY_CHANGE, new Integer(changedProjectLastModified
+        ? CHANGED_PROJECT
+        : NOTHING_CHANGED));
         OpenCms.fireCmsEvent(new CmsEvent(I_CmsEventListener.EVENT_RESOURCE_MODIFIED, data));
     }
 
     /**
      * Adds the given log entry to the current user's log.<p>
-     * 
-     * This operation works only on memory, to get the log entries actually 
+     *
+     * This operation works only on memory, to get the log entries actually
      * written to DB you have to call the {@link #updateLog(CmsDbContext)} method.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param logEntry the log entry to create
-     * @param force forces the log entry to be counted, 
+     * @param force forces the log entry to be counted,
      *              if not only the first log entry in a transaction will be taken into account
      */
     public void log(CmsDbContext dbc, CmsLogEntry logEntry, boolean force) {
@@ -5308,12 +5443,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Attempts to authenticate a user into OpenCms with the given password.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param userName the name of the user to be logged in
      * @param password the password of the user
      * @param remoteAddress the ip address of the request
-     * 
+     *
      * @return the logged in user
      *
      * @throws CmsAuthentificationException if the login was not successful
@@ -5334,7 +5469,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             // this indicates that the username / password combination does not exist
             // any other exception indicates database issues, these are not catched here
 
-            // check if a user with this name exists at all 
+            // check if a user with this name exists at all
             CmsUser user = null;
             try {
                 user = readUser(dbc, userName);
@@ -5397,6 +5532,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
         newUser.setLastlogin(System.currentTimeMillis());
         dbc.setAttribute(ATTRIBUTE_LOGIN, newUser.getName());
         // write the changed user object back to the user driver
+        Map<String, Object> additionalInfosForRepositories = OpenCms.getRepositoryManager().getAdditionalInfoForLogin(
+            newUser.getName(),
+            password);
+        newUser.getAdditionalInfo().putAll(additionalInfosForRepositories);
         getUserDriver(dbc).writeUser(dbc, newUser);
 
         // update cache
@@ -5425,10 +5564,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Lookup and read the user or group with the given UUID.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param principalId the UUID of the principal to lookup
-     * 
+     *
      * @return the principal (group or user) if found, otherwise <code>null</code>
      */
     public I_CmsPrincipal lookupPrincipal(CmsDbContext dbc, CmsUUID principalId) {
@@ -5439,7 +5578,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 return group;
             }
         } catch (Exception e) {
-            // ignore this exception 
+            // ignore this exception
         }
 
         try {
@@ -5456,10 +5595,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Lookup and read the user or group with the given name.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param principalName the name of the principal to lookup
-     * 
+     *
      * @return the principal (group or user) if found, otherwise <code>null</code>
      */
     public I_CmsPrincipal lookupPrincipal(CmsDbContext dbc, String principalName) {
@@ -5487,12 +5626,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Mark the given resource as visited by the user.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param resource the resource to mark as visited
      * @param user the user that visited the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void markResourceAsVisitedBy(CmsDbContext dbc, String poolName, CmsResource resource, CmsUser user)
@@ -5503,23 +5642,23 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Moves a resource.<p>
-     * 
+     *
      * You must ensure that the parent of the destination path is an absolute, valid and
      * existing VFS path. Relative paths from the source are not supported.<p>
-     * 
+     *
      * The moved resource will always be locked to the current user
      * after the move operation.<p>
-     * 
-     * In case the target resource already exists, it will be overwritten with the 
+     *
+     * In case the target resource already exists, it will be overwritten with the
      * source resource if possible.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param source the resource to move
      * @param destination the name of the move destination with complete path
      * @param internal if set nothing more than the path is modified
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#moveResource(CmsRequestContext, CmsResource, String)
      */
     public void moveResource(CmsDbContext dbc, CmsResource source, String destination, boolean internal)
@@ -5554,13 +5693,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 CmsDriverManager.UPDATE_STRUCTURE_STATE,
                 false);
             // log it
-            log(dbc, new CmsLogEntry(dbc, source.getStructureId(), CmsLogEntryType.RESOURCE_MOVED, new String[] {
-                source.getRootPath(),
-                destination}), false);
+            log(
+                dbc,
+                new CmsLogEntry(dbc, source.getStructureId(), CmsLogEntryType.RESOURCE_MOVED, new String[] {
+                    source.getRootPath(),
+                    destination}),
+                false);
         }
 
         CmsResource destRes = readResource(dbc, destination, CmsResourceFilter.ALL);
-        // move lock 
+        // move lock
         m_lockManager.moveResource(source.getRootPath(), destRes.getRootPath());
 
         // flush all relevant caches
@@ -5592,22 +5734,22 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Moves a resource to the "lost and found" folder.<p>
-     * 
+     *
      * The method can also be used to check get the name of a resource
      * in the "lost and found" folder only without actually moving the
      * the resource. To do this, the <code>returnNameOnly</code> flag
      * must be set to <code>true</code>.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to apply this operation to
-     * @param returnNameOnly if <code>true</code>, only the name of the resource in the "lost and found" 
+     * @param returnNameOnly if <code>true</code>, only the name of the resource in the "lost and found"
      *        folder is returned, the move operation is not really performed
-     * 
+     *
      * @return the name of the resource inside the "lost and found" folder
-     * 
+     *
      * @throws CmsException if something goes wrong
      * @throws CmsIllegalArgumentException if the <code>resourcename</code> argument is null or of length 0
-     * 
+     *
      * @see CmsObject#moveToLostAndFound(String)
      * @see CmsObject#getLostAndFoundName(String)
      */
@@ -5633,7 +5775,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     readFolder(dbc, folderPath, CmsResourceFilter.IGNORE_EXPIRATION);
                 } catch (Exception e1) {
                     if (returnNameOnly) {
-                        // we can use the original name without risk, and we do not need to recreate the parent folders 
+                        // we can use the original name without risk, and we do not need to recreate the parent folders
                         break;
                     }
                     // the folder is not existing, so create it
@@ -5672,7 +5814,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     }
                     postfix++;
                 } catch (CmsException e3) {
-                    // the file does not exist, so we can use this filename                               
+                    // the file does not exist, so we can use this filename
                     found = false;
                 }
             }
@@ -5694,12 +5836,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Gets a new driver instance.<p>
-     * 
+     *
      * @param dbc the database context
      * @param configurationManager the configuration manager
      * @param driverName the driver name
      * @param successiveDrivers the list of successive drivers
-     * 
+     *
      * @return the driver object
      * @throws CmsInitException if the selected driver could not be initialized
      */
@@ -5744,7 +5886,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Method to create a new instance of a driver.<p>
-     * 
+     *
      * @param configuration the configurations from the propertyfile
      * @param driverName the class name of the driver
      * @param driverPoolUrl the pool url for the driver
@@ -5794,10 +5936,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Method to create a new instance of a pool.<p>
-     * 
+     *
      * @param configuration the configurations from the propertyfile
      * @param poolName the configuration name of the pool
-     * 
+     *
      * @throws CmsInitException if the pools could not be initialized
      */
     public void newPoolInstance(CmsParameterConfiguration configuration, String poolName) throws CmsInitException {
@@ -5820,12 +5962,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Publishes the given publish job.<p>
-     * 
+     *
      * @param cms the cms context
      * @param dbc the db context
      * @param publishList the list of resources to publish
      * @param report the report to write to
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void publishJob(CmsObject cms, CmsDbContext dbc, CmsPublishList publishList, I_CmsReport report)
@@ -5912,9 +6054,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param publishList a publish list
      * @param report an instance of <code>{@link I_CmsReport}</code> to print messages
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see #fillPublishList(CmsDbContext, CmsPublishList)
      */
     public synchronized void publishProject(
@@ -5974,9 +6116,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
             lock = m_lockManager.getLock(dbc, resource, false);
             if (!lock.getSystemLock().isPublish()) {
                 if (report != null) {
-                    report.println(Messages.get().container(
-                        Messages.RPT_PUBLISH_REMOVED_RESOURCE_1,
-                        dbc.removeSiteRoot(resource.getRootPath())), I_CmsReport.FORMAT_WARNING);
+                    report.println(
+                        Messages.get().container(
+                            Messages.RPT_PUBLISH_REMOVED_RESOURCE_1,
+                            dbc.removeSiteRoot(resource.getRootPath())),
+                        I_CmsReport.FORMAT_WARNING);
                 }
                 if (LOG.isWarnEnabled()) {
                     LOG.warn(Messages.get().getBundle().key(
@@ -6017,23 +6161,23 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Transfers the new URL name mappings (if any) for a given resource to the online project.<p>
-     * 
-     * @param dbc the current database context 
+     *
+     * @param dbc the current database context
      * @param res the resource whose new URL name mappings should be transferred to the online project
-     *  
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public void publishUrlNameMapping(CmsDbContext dbc, CmsResource res) throws CmsDataAccessException {
 
         I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
 
         if (res.getState().isDeleted()) {
-            // remove both offline and online mappings 
+            // remove both offline and online mappings
             CmsUrlNameMappingFilter idFilter = CmsUrlNameMappingFilter.ALL.filterStructureId(res.getStructureId());
             vfsDriver.deleteUrlNameMappingEntries(dbc, true, idFilter);
             vfsDriver.deleteUrlNameMappingEntries(dbc, false, idFilter);
         } else {
-            // copy the new entries to the online table  
+            // copy the new entries to the online table
             List<CmsUrlNameMappingEntry> entries = vfsDriver.readUrlNameMappingEntries(
                 dbc,
                 false,
@@ -6060,9 +6204,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads an access control entry from the cms.<p>
-     * 
+     *
      * The access control entries of a resource are readable by everyone.
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param principal the id of a group or a user any other entity
@@ -6076,8 +6220,67 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Reads all versions of the given resource.<br>
+     * Finds the alias with a given path.<p>
+     *
+     * If no alias is found, null is returned.<p>
+     *
+     * @param dbc the current database context
+     * @param project the current project
+     * @param siteRoot the site root
+     * @param path the path of the alias
+     *
+     * @return the alias with the given path
+     *
+     * @throws CmsException if something goes wrong
+     */
+
+    public CmsAlias readAliasByPath(CmsDbContext dbc, CmsProject project, String siteRoot, String path)
+    throws CmsException {
+
+        List<CmsAlias> aliases = getVfsDriver(dbc).readAliases(dbc, project, new CmsAliasFilter(siteRoot, path, null));
+        if (aliases.isEmpty()) {
+            return null;
+        } else {
+            return aliases.get(0);
+        }
+    }
+
+    /**
+     * Reads the aliases for a given site root.<p>
      * 
+     * @param dbc the current database context 
+     * @param currentProject the current project 
+     * @param siteRoot the site root 
+     * 
+     * @return the list of aliases for the given site root 
+     * 
+     * @throws CmsException if something goes wrong 
+     */
+    public List<CmsAlias> readAliasesBySite(CmsDbContext dbc, CmsProject currentProject, String siteRoot)
+    throws CmsException {
+
+        return getVfsDriver(dbc).readAliases(dbc, currentProject, new CmsAliasFilter(siteRoot, null, null));
+    }
+
+    /**
+     * Reads the aliases which point to a given structure id.<p>
+     *
+     * @param dbc the current database context
+     * @param project the current project
+     * @param structureId the structure id for which we want to read the aliases
+     *
+     * @return the list of aliases pointing to the structure id
+     * @throws CmsException if something goes wrong
+     */
+    public List<CmsAlias> readAliasesByStructureId(CmsDbContext dbc, CmsProject project, CmsUUID structureId)
+    throws CmsException {
+
+        return getVfsDriver(dbc).readAliases(dbc, project, new CmsAliasFilter(null, null, structureId));
+    }
+
+    /**
+     * Reads all versions of the given resource.<br>
+     *
      * This method returns a list with the history of the given resource, i.e.
      * the historical resource entries, independent of the project they were attached to.<br>
      *
@@ -6085,9 +6288,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param resource the resource to read the history for
-     * 
+     *
      * @return a list of file headers, as <code>{@link I_CmsHistoryResource}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<I_CmsHistoryResource> readAllAvailableVersions(CmsDbContext dbc, CmsResource resource)
@@ -6108,9 +6311,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Reads all property definitions for the given mapping type.<p>
      *
      * @param dbc the current database context
-     * 
+     *
      * @return a list with the <code>{@link CmsPropertyDefinition}</code> objects (may be empty)
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsPropertyDefinition> readAllPropertyDefinitions(CmsDbContext dbc) throws CmsException {
@@ -6124,13 +6327,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns all resources subscribed by the given user or group.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param principal the principal to read the subscribed resources
-     * 
+     *
      * @return all resources subscribed by the given user or group
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readAllSubscribedResources(CmsDbContext dbc, String poolName, CmsPrincipal principal)
@@ -6143,15 +6346,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Selects the best url name for a given resource and locale.<p>
-     * 
-     * @param dbc the database context 
-     * @param id the resource's structure id 
-     * @param locale the requested locale 
-     * @param defaultLocales the default locales to use if the locale isn't available 
-     * 
-     * @return the URL name which was found 
-     * 
-     * @throws CmsDataAccessException if the database operation failed 
+     *
+     * @param dbc the database context
+     * @param id the resource's structure id
+     * @param locale the requested locale
+     * @param defaultLocales the default locales to use if the locale isn't available
+     *
+     * @return the URL name which was found
+     *
+     * @throws CmsDataAccessException if the database operation failed
      */
     public String readBestUrlName(CmsDbContext dbc, CmsUUID id, Locale locale, List<Locale> defaultLocales)
     throws CmsDataAccessException {
@@ -6171,7 +6374,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         List<CmsUrlNameMappingEntry> lastEntries = new ArrayList<CmsUrlNameMappingEntry>();
         Comparator<CmsUrlNameMappingEntry> dateChangedComparator = new UrlNameMappingComparator();
         for (String localeKey : entriesByLocale.keySet()) {
-            // for each locale select the latest mapping entry 
+            // for each locale select the latest mapping entry
             CmsUrlNameMappingEntry latestEntryForLocale = Collections.max(
                 entriesByLocale.get(localeKey),
                 dateChangedComparator);
@@ -6180,7 +6383,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         CmsLocaleManager localeManager = OpenCms.getLocaleManager();
         List<Locale> availableLocales = new ArrayList<Locale>();
         for (CmsUrlNameMappingEntry entry : lastEntries) {
-            availableLocales.add(new Locale(entry.getLocale()));
+            availableLocales.add(CmsLocaleManager.getLocale(entry.getLocale()));
         }
         Locale bestLocale = localeManager.getBestMatchingLocale(locale, defaultLocales, availableLocales);
         String bestLocaleStr = bestLocale.getLanguage();
@@ -6195,22 +6398,22 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Returns the child resources of a resource, that is the resources
      * contained in a folder.<p>
-     * 
+     *
      * With the parameters <code>getFolders</code> and <code>getFiles</code>
      * you can control what type of resources you want in the result list:
      * files, folders, or both.<p>
-     * 
-     * This method is mainly used by the workplace explorer.<p> 
-     * 
+     *
+     * This method is mainly used by the workplace explorer.<p>
+     *
      * @param dbc the current database context
      * @param resource the resource to return the child resources for
      * @param filter the resource filter to use
      * @param getFolders if true the child folders are included in the result
      * @param getFiles if true the child files are included in the result
      * @param checkPermissions if the resources should be filtered with the current user permissions
-     * 
+     *
      * @return a list of all child resources
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readChildResources(
@@ -6233,14 +6436,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 }
             }
             // try to get the sub resources from the cache
-            cacheKey = getCacheKey(new String[] {
-                dbc.currentUser().getName(),
-                getFolders
-                ? (getFiles ? CmsCacheKey.CACHE_KEY_SUBALL : CmsCacheKey.CACHE_KEY_SUBFOLDERS)
-                : CmsCacheKey.CACHE_KEY_SUBFILES,
-                checkPermissions ? "+" + time : "-",
-                filter.getCacheId(),
-                resource.getRootPath()}, dbc);
+            cacheKey = getCacheKey(
+                new String[] {
+                    dbc.currentUser().getName(),
+                    getFolders
+                    ? (getFiles ? CmsCacheKey.CACHE_KEY_SUBALL : CmsCacheKey.CACHE_KEY_SUBFOLDERS)
+                    : CmsCacheKey.CACHE_KEY_SUBFILES,
+                    checkPermissions ? "+" + time : "-",
+                    filter.getCacheId(),
+                    resource.getRootPath()},
+                dbc);
 
             resourceList = m_monitor.getCachedResourceList(cacheKey);
         }
@@ -6269,27 +6474,25 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the default file for the given folder.<p>
-     * 
+     *
      * If the given resource is a file, then this file is returned.<p>
-     * 
-     * Otherwise, in case of a folder:<br> 
+     *
+     * Otherwise, in case of a folder:<br>
      * <ol>
      *   <li>the {@link CmsPropertyDefinition#PROPERTY_DEFAULT_FILE} is checked, and
-     *   <li>if still no file could be found, the configured default files in the 
-     *       <code>opencms-vfs.xml</code> configuration are iterated until a match is 
+     *   <li>if still no file could be found, the configured default files in the
+     *       <code>opencms-vfs.xml</code> configuration are iterated until a match is
      *       found, and
      *   <li>if still no file could be found, <code>null</code> is retuned
      * </ol>
-     * 
+     *
      * @param dbc the database context
      * @param resource the folder to get the default file for
-     * 
+     * @param resourceFilter the resource filter
+     *
      * @return the default file for the given folder
-     * 
-     * @see CmsObject#readDefaultFile(String)
-     * @see CmsDriverManager#readDefaultFile(CmsDbContext, CmsResource)
      */
-    public CmsResource readDefaultFile(CmsDbContext dbc, CmsResource resource) {
+    public CmsResource readDefaultFile(CmsDbContext dbc, CmsResource resource, CmsResourceFilter resourceFilter) {
 
         // resource exists, lets check if we have a file or a folder
         if (resource.isFolder()) {
@@ -6300,13 +6503,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     resource,
                     CmsPropertyDefinition.PROPERTY_DEFAULT_FILE,
                     false).getValue();
-                if (defaultFileName != null) {
+                // check if the default file property does not match the navigation level folder marker value
+                if ((defaultFileName != null) && !CmsJspNavBuilder.NAVIGATION_LEVEL_FOLDER.equals(defaultFileName)) {
                     // property was set, so look up this file first
                     String folderName = CmsResource.getFolderPath(resource.getRootPath());
-                    resource = readResource(
-                        dbc,
-                        folderName + defaultFileName,
-                        CmsResourceFilter.DEFAULT.addRequireFile());
+                    resource = readResource(dbc, folderName + defaultFileName, resourceFilter.addRequireFile());
                 }
             } catch (CmsException e) {
                 // ignore all other exceptions and continue the lookup process
@@ -6321,9 +6522,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 while (it.hasNext()) {
                     String tmpResourceName = folderName + it.next();
                     try {
-                        resource = readResource(dbc, tmpResourceName, CmsResourceFilter.DEFAULT.addRequireFile());
+                        resource = readResource(dbc, tmpResourceName, resourceFilter.addRequireFile());
                         // no exception? So we have found the default file
-                        // stop looking for default files   
+                        // stop looking for default files
                         break;
                     } catch (CmsException e) {
                         // ignore all other exceptions and continue the lookup process
@@ -6342,18 +6543,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Reads all deleted (historical) resources below the given path, 
+     * Reads all deleted (historical) resources below the given path,
      * including the full tree below the path, if required.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param resource the parent resource to read the resources from
      * @param readTree <code>true</code> to read all subresources
      * @param isVfsManager <code>true</code> if the current user has the vfs manager role
-     * 
+     *
      * @return a list of <code>{@link I_CmsHistoryResource}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#readResource(CmsUUID, int)
      * @see CmsObject#readResources(String, CmsResourceFilter, boolean)
      * @see CmsObject#readDeletedResources(String, boolean)
@@ -6495,16 +6696,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads a file resource (including it's binary content) from the VFS,
      * using the specified resource filter.<p>
-     * 
-     * In case you do not need the file content, 
+     *
+     * In case you do not need the file content,
      * use <code>{@link #readResource(CmsDbContext, String, CmsResourceFilter)}</code> instead.<p>
-     * 
-     * The specified filter controls what kind of resources should be "found" 
-     * during the read operation. This will depend on the application. For example, 
+     *
+     * The specified filter controls what kind of resources should be "found"
+     * during the read operation. This will depend on the application. For example,
      * using <code>{@link CmsResourceFilter#DEFAULT}</code> will only return currently
      * "valid" resources, while using <code>{@link CmsResourceFilter#IGNORE_EXPIRATION}</code>
      * will ignore the date release / date expired information of the resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the base file resource (without content)
      * @return the file read from the VFS
@@ -6536,7 +6737,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads a folder from the VFS,
      * using the specified resource filter.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourcename the name of the folder to read (full path)
      * @param filter the resource filter to use while reading
@@ -6562,7 +6763,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param project the project to read from
-     * 
+     *
      * @return the group of a resource
      */
     public CmsGroup readGroup(CmsDbContext dbc, CmsProject project) {
@@ -6584,9 +6785,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param groupId the id of the group that is to be read
-     * 
+     *
      * @return the requested group
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public CmsGroup readGroup(CmsDbContext dbc, CmsUUID groupId) throws CmsException {
@@ -6603,12 +6804,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a group based on its name.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param groupname the name of the group that is to be read
      *
      * @return the requested group
-     * 
+     *
      * @throws CmsDataAccessException if operation was not successful
      */
     public CmsGroup readGroup(CmsDbContext dbc, String groupname) throws CmsDataAccessException {
@@ -6625,14 +6826,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a principal (an user or group) from the historical archive based on its ID.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param principalId the id of the principal to read
-     * 
+     *
      * @return the historical principal entry with the given id
-     * 
+     *
      * @throws CmsException if something goes wrong, ie. {@link CmsDbEntryNotFoundException}
-     * 
+     *
      * @see CmsObject#readUser(CmsUUID)
      * @see CmsObject#readGroup(CmsUUID)
      * @see CmsObject#readHistoryPrincipal(CmsUUID)
@@ -6647,9 +6848,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param projectId the project id
-     * 
+     *
      * @return the requested historical project entry
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsHistoryProject readHistoryProject(CmsDbContext dbc, CmsUUID projectId) throws CmsException {
@@ -6662,9 +6863,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param publishTag the publish tag of the project
-     * 
+     *
      * @return the requested historical project entry
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsHistoryProject readHistoryProject(CmsDbContext dbc, int publishTag) throws CmsException {
@@ -6674,12 +6875,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the list of all <code>{@link CmsProperty}</code> objects that belongs to the given historical resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param historyResource the historical resource to read the properties for
-     * 
+     *
      * @return the list of <code>{@link CmsProperty}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsProperty> readHistoryPropertyObjects(CmsDbContext dbc, I_CmsHistoryResource historyResource)
@@ -6690,13 +6891,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the structure id which is mapped to a given URL name.<p>
-     * 
-     * @param dbc the current database context 
+     *
+     * @param dbc the current database context
      * @param name the name for which the mapped structure id should be looked up
-     *  
-     * @return the structure id which is mapped to the given name, or null if there is no such id 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @return the structure id which is mapped to the given name, or null if there is no such id
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public CmsUUID readIdForUrlName(CmsDbContext dbc, String name) throws CmsDataAccessException {
 
@@ -6712,9 +6913,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the locks that were saved to the database in the previous run of OpenCms.<p>
-     * 
+     *
      * @param dbc the current database context
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void readLocks(CmsDbContext dbc) throws CmsException {
@@ -6727,7 +6928,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param project the project to read from
-     * 
+     *
      * @return the group of a resource
      */
     public CmsGroup readManagerGroup(CmsDbContext dbc, CmsProject project) {
@@ -6748,12 +6949,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads the URL name which has been most recently mapped to the given structure id, or null
      * if no URL name is mapped to the id.<p>
-     * 
-     * @param dbc the current database context 
-     * @param id a structure id 
-     * @return the name which has been most recently mapped to the given structure id 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @param dbc the current database context
+     * @param id a structure id
+     * @return the name which has been most recently mapped to the given structure id
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public String readNewestUrlNameForId(CmsDbContext dbc, CmsUUID id) throws CmsDataAccessException {
 
@@ -6775,9 +6976,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current db context
      * @param ouFqn the fully qualified name of the organizational Unit to be read
-     * 
+     *
      * @return the organizational Unit that with the provided fully qualified name
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsOrganizationalUnit readOrganizationalUnit(CmsDbContext dbc, String ouFqn) throws CmsException {
@@ -6797,7 +6998,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param project the project to get the owner from
-     * 
+     *
      * @return the owner of a resource
      * @throws CmsException if something goes wrong
      */
@@ -6808,12 +7009,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the parent folder to a given structure id.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param structureId the structure id of the child
-     * 
+     *
      * @return the parent folder resource
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public CmsResource readParentFolder(CmsDbContext dbc, CmsUUID structureId) throws CmsDataAccessException {
@@ -6823,13 +7024,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Builds a list of resources for a given path.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param path the requested path
      * @param filter a filter object (only "includeDeleted" information is used!)
-     * 
+     *
      * @return list of <code>{@link CmsResource}</code>s
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readPath(CmsDbContext dbc, String path, CmsResourceFilter filter) throws CmsException {
@@ -6906,7 +7107,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         // read the (optional) last file resource in the path /x.html
         if (lastResourceIsFile) {
             if (it.hasNext()) {
-                // this will only be false if a resource in the 
+                // this will only be false if a resource in the
                 // top level root folder (e.g. "/index.html") was requested
                 currentResourceName = it.next();
             }
@@ -6934,9 +7135,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param id the id of the project
-     * 
+     *
      * @return the project read
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public CmsProject readProject(CmsDbContext dbc, CmsUUID id) throws CmsDataAccessException {
@@ -6953,16 +7154,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads a project.<p>
      *
-     * Important: Since a project name can be used multiple times, this is NOT the most efficient 
+     * Important: Since a project name can be used multiple times, this is NOT the most efficient
      * way to read the project. This is only a convenience for front end developing.
-     * Reading a project by name will return the first project with that name. 
+     * Reading a project by name will return the first project with that name.
      * All core classes must use the id version {@link #readProject(CmsDbContext, CmsUUID)} to ensure the right project is read.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param name the name of the project
-     * 
+     *
      * @return the project read
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsProject readProject(CmsDbContext dbc, String name) throws CmsException {
@@ -6981,10 +7182,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param project the project to get the project resources for
-     * 
-     * @return the list of all resources, as <code>{@link String}</code> objects 
+     *
+     * @return the list of all resources, as <code>{@link String}</code> objects
      *              that define the "view" of the given project.
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<String> readProjectResources(CmsDbContext dbc, CmsProject project) throws CmsException {
@@ -6994,7 +7195,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads all resources of a project that match a given state from the VFS.<p>
-     * 
+     *
      * Possible values for the <code>state</code> parameter are:<br>
      * <ul>
      * <li><code>{@link CmsResource#STATE_CHANGED}</code>: Read all "changed" resources in the project</li>
@@ -7002,15 +7203,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * <li><code>{@link CmsResource#STATE_DELETED}</code>: Read all "deleted" resources in the project</li>
      * <li><code>{@link CmsResource#STATE_KEEP}</code>: Read all resources either "changed", "new" or "deleted" in the project</li>
      * </ul><p>
-     * 
+     *
      * @param dbc the current database context
      * @param projectId the id of the project to read the file resources for
-     * @param state the resource state to match 
+     * @param state the resource state to match
      *
      * @return a list of <code>{@link CmsResource}</code> objects matching the filter criteria
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#readProjectView(CmsUUID, CmsResourceState)
      */
     public List<CmsResource> readProjectView(CmsDbContext dbc, CmsUUID projectId, CmsResourceState state)
@@ -7040,14 +7241,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Reads a property definition.<p>
      *
-     * If no property definition with the given name is found, 
+     * If no property definition with the given name is found,
      * <code>null</code> is returned.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param name the name of the property definition to read
      *
      * @return the property definition that was read
-     * 
+     *
      * @throws CmsException a CmsDbEntryNotFoundException is thrown if the property definition does not exist
      */
     public CmsPropertyDefinition readPropertyDefinition(CmsDbContext dbc, String name) throws CmsException {
@@ -7057,17 +7258,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a property object from a resource specified by a property name.<p>
-     * 
+     *
      * Returns <code>{@link CmsProperty#getNullProperty()}</code> if the property is not found.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource where the property is read from
      * @param key the property key name
-     * @param search if <code>true</code>, the property is searched on all parent folders of the resource. 
+     * @param search if <code>true</code>, the property is searched on all parent folders of the resource.
      *      if it's not found attached directly to the resource.
-     * 
+     *
      * @return the required property, or <code>{@link CmsProperty#getNullProperty()}</code> if the property was not found
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsProperty readPropertyObject(CmsDbContext dbc, CmsResource resource, String key, boolean search)
@@ -7091,19 +7292,19 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads all property objects mapped to a specified resource from the database.<p>
-     * 
+     *
      * All properties in the result List will be in frozen (read only) state, so you can't change the values.<p>
-     * 
+     *
      * Returns an empty list if no properties are found at all.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource where the properties are read from
      * @param search true, if the properties should be searched on all parent folders  if not found on the resource
-     * 
+     *
      * @return a list of CmsProperty objects containing the structure and/or resource value
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#readPropertyObjects(String, boolean)
      */
     public List<CmsProperty> readPropertyObjects(CmsDbContext dbc, CmsResource resource, boolean search)
@@ -7135,11 +7336,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
                         cont = resource.getRootPath().length() > 1;
                     } catch (CmsSecurityException se) {
-                        // a security exception (probably no read permission) we return the current result                      
+                        // a security exception (probably no read permission) we return the current result
                         cont = false;
                     }
                     if (cont) {
-                        // no permission check on parent folder is required since we must have "read" 
+                        // no permission check on parent folder is required since we must have "read"
                         // permissions to read the child resource anyway
                         resource = readResource(
                             dbc,
@@ -7167,12 +7368,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the resources that were published in a publish task for a given publish history ID.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishHistoryId unique int ID to identify each publish task in the publish history
-     * 
+     *
      * @return a list of <code>{@link org.opencms.db.CmsPublishedResource}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsPublishedResource> readPublishedResources(CmsDbContext dbc, CmsUUID publishHistoryId)
@@ -7192,11 +7393,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a single publish job identified by its publish history id.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishHistoryId unique id to identify the publish job in the publish history
-     * @return an object of type <code>{@link CmsPublishJobInfoBean}</code> 
-     * 
+     * @return an object of type <code>{@link CmsPublishJobInfoBean}</code>
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsPublishJobInfoBean readPublishJob(CmsDbContext dbc, CmsUUID publishHistoryId) throws CmsException {
@@ -7206,12 +7407,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads all available publish jobs.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param startTime the start of the time range for finish time
      * @param endTime the end of the time range for finish time
      * @return a list of objects of type <code>{@link CmsPublishJobInfoBean}</code>
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsPublishJobInfoBean> readPublishJobs(CmsDbContext dbc, long startTime, long endTime)
@@ -7222,7 +7423,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the publish list assigned to a publish job.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishHistoryId the history id identifying the publish job
      * @return the assigned publish list
@@ -7235,9 +7436,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads the publish report assigned to a publish job.<p>
-     * 
+     *
      * @param dbc the current database context
-     * @param publishHistoryId the history id identifying the publish job  
+     * @param publishHistoryId the history id identifying the publish job
      * @return the content of the assigned publish report
      * @throws CmsException if something goes wrong
      */
@@ -7256,7 +7457,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @return the resource that was read
      *
      * @throws CmsException if the resource could not be read for any reason
-     * 
+     *
      * @see CmsObject#restoreResourceVersion(CmsUUID, int)
      * @see CmsObject#readResource(CmsUUID, int)
      */
@@ -7278,7 +7479,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a resource from the VFS, using the specified resource filter.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param structureID the structure id of the resource to read
      * @param filter the resource filter to use while reading
@@ -7286,7 +7487,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @return the resource that was read
      *
      * @throws CmsDataAccessException if something goes wrong
-     * 
+     *
      * @see CmsObject#readResource(CmsUUID, CmsResourceFilter)
      * @see CmsObject#readResource(CmsUUID)
      */
@@ -7306,7 +7507,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads a resource from the VFS, using the specified resource filter.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourcePath the name of the resource to read (full path)
      * @param filter the resource filter to use while reading
@@ -7314,7 +7515,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @return the resource that was read
      *
      * @throws CmsDataAccessException if something goes wrong
-     * 
+     *
      * @see CmsObject#readResource(String, CmsResourceFilter)
      * @see CmsObject#readResource(String)
      * @see CmsObject#readFile(CmsResource)
@@ -7326,7 +7527,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         // please note: the filter will be applied in the security manager later
         CmsResource resource = getVfsDriver(dbc).readResource(dbc, projectId, resourcePath, filter.includeDeleted());
 
-        // context dates need to be updated 
+        // context dates need to be updated
         updateContextDates(dbc, resource);
 
         // return the resource
@@ -7335,18 +7536,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads all resources below the given path matching the filter criteria,
-     * including the full tree below the path only in case the <code>readTree</code> 
+     * including the full tree below the path only in case the <code>readTree</code>
      * parameter is <code>true</code>.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param parent the parent path to read the resources from
      * @param filter the filter
      * @param readTree <code>true</code> to read all subresources
-     * 
+     *
      * @return a list of <code>{@link CmsResource}</code> objects matching the filter criteria
-     *  
+     *
      * @throws CmsDataAccessException if the bare reading of the resources fails
-     * @throws CmsException if security and permission checks for the resources read fail 
+     * @throws CmsException if security and permission checks for the resources read fail
      */
     public List<CmsResource> readResources(
         CmsDbContext dbc,
@@ -7399,13 +7600,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the resources that were visited by a user set in the filter.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param filter the filter that is used to get the visited resources
-     * 
+     *
      * @return the resources that were visited by a user set in the filter
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readResourcesVisitedBy(CmsDbContext dbc, String poolName, CmsVisitedByFilter filter)
@@ -7417,23 +7618,23 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Reads all resources that have a value (containing the given value string) set 
+     * Reads all resources that have a value (containing the given value string) set
      * for the specified property (definition) in the given path.<p>
-     * 
+     *
      * Both individual and shared properties of a resource are checked.<p>
      *
      * If the <code>value</code> parameter is <code>null</code>, all resources having the
      * given property set are returned.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param folder the folder to get the resources with the property from
      * @param propertyDefinition the name of the property (definition) to check for
      * @param value the string to search in the value of the property
      * @param filter the resource filter to apply to the result set
-     * 
-     * @return a list of all <code>{@link CmsResource}</code> objects 
+     *
+     * @return a list of all <code>{@link CmsResource}</code> objects
      *          that have a value set for the specified property.
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readResourcesWithProperty(
@@ -7482,12 +7683,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the set of users that are responsible for a specific resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to get the responsible users from
-     * 
+     *
      * @return the set of users that are responsible for a specific resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public Set<I_CmsPrincipal> readResponsiblePrincipals(CmsDbContext dbc, CmsResource resource) throws CmsException {
@@ -7508,12 +7709,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the set of users that are responsible for a specific resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to get the responsible users from
-     * 
+     *
      * @return the set of users that are responsible for a specific resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public Set<CmsUser> readResponsibleUsers(CmsDbContext dbc, CmsResource resource) throws CmsException {
@@ -7540,17 +7741,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Returns a List of all siblings of the specified resource,
      * the specified resource being always part of the result set.<p>
-     * 
+     *
      * The result is a list of <code>{@link CmsResource}</code> objects.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to read the siblings for
      * @param filter a filter object
-     * 
-     * @return a list of <code>{@link CmsResource}</code> Objects that 
-     *          are siblings to the specified resource, 
+     *
+     * @return a list of <code>{@link CmsResource}</code> Objects that
+     *          are siblings to the specified resource,
      *          including the specified resource itself
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readSiblings(CmsDbContext dbc, CmsResource resource, CmsResourceFilter filter)
@@ -7574,9 +7775,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param rfsName the rfs name of the resource
-     * 
+     *
      * @return the parameter string of the requested resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public String readStaticExportPublishedResourceParameters(CmsDbContext dbc, String rfsName) throws CmsException {
@@ -7586,13 +7787,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns a list of all template resources which must be processed during a static export.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param parameterResources flag for reading resources with parameters (1) or without (0)
      * @param timestamp for reading the data from the db
-     * 
+     *
      * @return a list of template resources as <code>{@link String}</code> objects
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<String> readStaticExportResources(CmsDbContext dbc, int parameterResources, long timestamp)
@@ -7603,17 +7804,17 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the subscribed history resources that were deleted.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param user the user that subscribed to the resource
      * @param groups the groups to check subscribed resources for
      * @param parent the parent resource (folder) of the deleted resources, if <code>null</code> all deleted resources will be returned
      * @param includeSubFolders indicates if the sub folders of the specified folder path should be considered, too
-     * @param deletedFrom the time stamp from which the resources should have been deleted 
-     * 
+     * @param deletedFrom the time stamp from which the resources should have been deleted
+     *
      * @return the subscribed history resources that were deleted
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<I_CmsHistoryResource> readSubscribedDeletedResources(
@@ -7639,13 +7840,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the resources that were subscribed by a user or group set in the filter.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param filter the filter that is used to get the subscribed resources
-     * 
+     *
      * @return the resources that were subscribed by a user or group set in the filter
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public List<CmsResource> readSubscribedResources(CmsDbContext dbc, String poolName, CmsSubscriptionFilter filter)
@@ -7659,14 +7860,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads URL name mapping entries which match the given filter.<p>
-     * 
+     *
      * @param dbc the database context
-     * @param online if true, read online URL name mappings, else offline ones 
+     * @param online if true, read online URL name mappings, else offline ones
      * @param filter the filter for matching the URL name entries
-     * 
+     *
      * @return the list of URL name mapping entries which match the given filter
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public List<CmsUrlNameMappingEntry> readUrlNameMappingEntries(
         CmsDbContext dbc,
@@ -7678,14 +7879,33 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Reads the newest URL names of a resource for all locales.<p>
-     *  
-     * @param dbc the database context 
-     * @param id the resource's structure id
-     *  
-     * @return the url names for the locales 
+     * Reads the URL name mappings matching the given filter.<p>
      * 
-     * @throws CmsDataAccessException if the database operation failed 
+     * @param dbc the DB context to use 
+     * @param filter the filter used to select the mapping entries 
+     * @return the entries matching the given filter 
+     * 
+     * @throws CmsDataAccessException if something goes wrong 
+     */
+    public List<CmsUrlNameMappingEntry> readUrlNameMappings(CmsDbContext dbc, CmsUrlNameMappingFilter filter)
+    throws CmsDataAccessException {
+
+        List<CmsUrlNameMappingEntry> entries = getVfsDriver(dbc).readUrlNameMappingEntries(
+            dbc,
+            dbc.currentProject().isOnlineProject(),
+            filter);
+        return entries;
+    }
+
+    /**
+     * Reads the newest URL names of a resource for all locales.<p>
+     *
+     * @param dbc the database context
+     * @param id the resource's structure id
+     *
+     * @return the url names for the locales
+     *
+     * @throws CmsDataAccessException if the database operation failed
      */
     public List<String> readUrlNamesForAllLocales(CmsDbContext dbc, CmsUUID id) throws CmsDataAccessException {
 
@@ -7715,7 +7935,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param id the id of the user to read
      *
      * @return the user read
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public CmsUser readUser(CmsDbContext dbc, CmsUUID id) throws CmsException {
@@ -7735,7 +7955,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param username the name of the user that is to be read
      *
      * @return user read
-     * 
+     *
      * @throws CmsDataAccessException if operation was not successful
      */
     public CmsUser readUser(CmsDbContext dbc, String username) throws CmsDataAccessException {
@@ -7756,9 +7976,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param username the username of the user that is to be read
      * @param password the password of the user that is to be read
-     * 
+     *
      * @return user read
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public CmsUser readUser(CmsDbContext dbc, String username, String password) throws CmsException {
@@ -7771,11 +7991,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Removes an access control entry for a given resource and principal.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param principal the id of the principal to remove the the access control entry for
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void removeAccessControlEntry(CmsDbContext dbc, CmsResource resource, CmsUUID principal) throws CmsException {
@@ -7805,13 +8025,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Removes a resource from the given organizational unit.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param orgUnit the organizational unit to remove the resource from
      * @param resource the resource that is to be removed from the organizational unit
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#addResourceToOrgUnit(CmsObject, String, String)
      * @see org.opencms.security.CmsOrgUnitManager#addResourceToOrgUnit(CmsObject, String, String)
      */
@@ -7824,12 +8044,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Removes a resource from the current project of the user.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to apply this operation to
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#copyResourceToProject(String)
      * @see I_CmsResourceType#copyResourceToProject(CmsObject, CmsSecurityManager, CmsResource)
      */
@@ -7865,11 +8085,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Removes the given resource to the given user's publish list.<p>
-     * 
+     *
      * @param dbc the database context
      * @param userId the user's id
      * @param structureIds the collection of structure IDs to remove
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public void removeResourceFromUsersPubList(CmsDbContext dbc, CmsUUID userId, Collection<CmsUUID> structureIds)
@@ -7896,9 +8116,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @throws CmsException if operation was not successful
      * @throws CmsIllegalArgumentException if the given user was not member in the given group
-     * @throws CmsDbEntryNotFoundException if the given group was not found 
+     * @throws CmsDbEntryNotFoundException if the given group was not found
      * @throws CmsSecurityException if the given user was <b>read as 'null' from the database</b>
-     * 
+     *
      * @see #addUserToGroup(CmsDbContext, String, String, boolean)
      */
     public void removeUserFromGroup(CmsDbContext dbc, String username, String groupname, boolean readRoles)
@@ -7995,11 +8215,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Repairs broken categories.<p>
-     * 
+     *
      * @param dbc the database context
      * @param projectId the project id
      * @param resource the resource to repair the categories for
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void repairCategories(CmsDbContext dbc, CmsUUID projectId, CmsResource resource) throws CmsException {
@@ -8012,15 +8232,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Replaces the content, type and properties of a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the name of the resource to apply this operation to
      * @param type the new type of the resource
      * @param content the new content of the resource
      * @param properties the new properties of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#replaceResource(String, int, byte[], List)
      * @see I_CmsResourceType#replaceResource(CmsObject, CmsSecurityManager, CmsResource, int, byte[], List)
      */
@@ -8083,7 +8303,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param username the name of the user
      * @param oldPassword the old password
      * @param newPassword the new password
-     * 
+     *
      * @throws CmsException if the user data could not be read from the database
      * @throws CmsSecurityException if the specified username and old password could not be verified
      */
@@ -8130,12 +8350,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Restores a deleted resource identified by its structure id from the historical archive.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param structureId the structure id of the resource to restore
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#restoreDeletedResource(CmsUUID)
      */
     public void restoreDeletedResource(CmsDbContext dbc, CmsUUID structureId) throws CmsException {
@@ -8261,13 +8481,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Restores a resource in the current project with a version from the historical archive.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to restore from the archive
      * @param version the version number to restore from the archive
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#restoreResourceVersion(CmsUUID, int)
      * @see I_CmsResourceType#restoreResource(CmsObject, CmsSecurityManager, CmsResource, int)
      */
@@ -8285,7 +8505,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         CmsResource newResource = null;
         // is the resource a file?
         if (historyResource instanceof CmsFile) {
-            // get the historical up flags 
+            // get the historical up flags
             int flags = historyResource.getFlags();
             if (resource.isLabeled()) {
                 // set the flag for labeled links on the restored file
@@ -8364,14 +8584,60 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
+     * Saves a list of aliases for the same structure id, replacing any aliases for the same structure id.<p>
+     *
+     * @param dbc the current database context
+     * @param project the current project
+     * @param structureId the structure id for which the aliases should be saved
+     * @param aliases the list of aliases to save
+     *
+     * @throws CmsException if something goes wrong
+     */
+    public void saveAliases(CmsDbContext dbc, CmsProject project, CmsUUID structureId, List<CmsAlias> aliases)
+    throws CmsException {
+
+        for (CmsAlias alias : aliases) {
+            if (!structureId.equals(alias.getStructureId())) {
+                throw new IllegalArgumentException("Aliases to replace must have the same structure id!");
+            }
+        }
+        I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
+        vfsDriver.deleteAliases(dbc, project, new CmsAliasFilter(null, null, structureId));
+        for (CmsAlias alias : aliases) {
+            String aliasPath = alias.getAliasPath();
+            if (CmsAlias.ALIAS_PATTERN.matcher(aliasPath).matches()) {
+                vfsDriver.insertAlias(dbc, project, alias);
+            } else {
+                LOG.error("Invalid alias path: " + aliasPath);
+            }
+        }
+    }
+
+    /**
+     * Replaces the complete list of rewrite aliases for a given site root.<p>
+     * 
+     * @param dbc the current database context 
+     * @param siteRoot the site root for which the rewrite aliases should be replaced 
+     * @param newAliases the new aliases for the given site root 
+     * @throws CmsException if something goes wrong 
+     */
+    public void saveRewriteAliases(CmsDbContext dbc, String siteRoot, List<CmsRewriteAlias> newAliases)
+    throws CmsException {
+
+        CmsRewriteAliasFilter filter = new CmsRewriteAliasFilter().setSiteRoot(siteRoot);
+        getVfsDriver(dbc).deleteRewriteAliases(dbc, filter);
+        getVfsDriver(dbc).insertRewriteAliases(dbc, newAliases);
+    }
+
+    /**
      * Searches for users which fit the given criteria.<p>
-     * 
-     * @param dbc the database context 
+     *
+     * @param dbc the database context
      * @param searchParams the search criteria
-     *  
-     * @return the users which fit the search criteria 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @return the users which fit the search criteria
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public List<CmsUser> searchUsers(CmsDbContext dbc, CmsUserSearchParameters searchParams
 
@@ -8382,13 +8648,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Changes the "expire" date of a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to touch
      * @param dateExpired the new expire date of the resource
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
-     * 
+     *
      * @see CmsObject#setDateExpired(String, long, boolean)
      * @see I_CmsResourceType#setDateExpired(CmsObject, CmsSecurityManager, CmsResource, long, boolean)
      */
@@ -8421,13 +8687,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Changes the "last modified" timestamp of a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to touch
      * @param dateLastModified the new last modified date of the resource
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
-     * 
+     *
      * @see CmsObject#setDateLastModified(String, long, boolean)
      * @see I_CmsResourceType#setDateLastModified(CmsObject, CmsSecurityManager, CmsResource, long, boolean)
      */
@@ -8463,13 +8729,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Changes the "release" date of a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to touch
      * @param dateReleased the new release date of the resource
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
-     * 
+     *
      * @see CmsObject#setDateReleased(String, long, boolean)
      * @see I_CmsResourceType#setDateReleased(CmsObject, CmsSecurityManager, CmsResource, long, boolean)
      */
@@ -8507,7 +8773,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      *
      * @param dbc the current database context
      * @param groupName the name of the group that should be written
-     * @param parentGroupName the name of the parent group to set, 
+     * @param parentGroupName the name of the parent group to set,
      *                      or <code>null</code> if the parent
      *                      group should be deleted.
      *
@@ -8537,7 +8803,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param dbc the current database context
      * @param username the name of the user
      * @param newPassword the new password
-     * 
+     *
      * @throws CmsException if operation was not successful
      * @throws CmsIllegalArgumentException if the user with the <code>username</code> was not found
      */
@@ -8554,11 +8820,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Marks a subscribed resource as deleted.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param resource the subscribed resource to mark as deleted
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void setSubscribedResourceAsDeleted(CmsDbContext dbc, String poolName, CmsResource resource)
@@ -8569,13 +8835,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Moves an user to the given organizational unit.<p>
-     * 
+     *
      * @param dbc the current db context
      * @param orgUnit the organizational unit to add the resource to
      * @param user the user that is to be moved to the organizational unit
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#setUsersOrganizationalUnit(CmsObject, String, String)
      */
     public void setUsersOrganizationalUnit(CmsDbContext dbc, CmsOrganizationalUnit orgUnit, CmsUser user)
@@ -8607,12 +8873,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Subscribes the user or group to the resource.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param principal the principal that subscribes to the resource
      * @param resource the resource to subscribe to
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void subscribeResourceFor(CmsDbContext dbc, String poolName, CmsPrincipal principal, CmsResource resource)
@@ -8623,12 +8889,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Undelete the resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the name of the resource to apply this operation to
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#undeleteResource(String, boolean)
      * @see I_CmsResourceType#undelete(CmsObject, CmsSecurityManager, CmsResource, boolean)
      */
@@ -8661,16 +8927,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Undos all changes in the resource by restoring the version from the 
+     * Undos all changes in the resource by restoring the version from the
      * online project to the current offline project.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the name of the resource to apply this operation to
-     * @param mode the undo mode, one of the <code>{@link org.opencms.file.CmsResource.CmsResourceUndoMode}#UNDO_XXX</code> constants 
+     * @param mode the undo mode, one of the <code>{@link org.opencms.file.CmsResource.CmsResourceUndoMode}#UNDO_XXX</code> constants
      *      please note that the recursive flag is ignored at this level
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#undoChanges(String, CmsResource.CmsResourceUndoMode)
      * @see I_CmsResourceType#undoChanges(CmsObject, CmsSecurityManager, CmsResource, CmsResource.CmsResourceUndoMode)
      */
@@ -8726,7 +8992,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         undoContentChanges(dbc, onlineProject, resource, onlineResource, newState, moved && mode.isUndoMove());
         // because undoContentChanges deletes the offline resource internally, we have
         // to write an entry to the log table to prevent the resource from appearing in the
-        // user's publish list. 
+        // user's publish list.
         log(dbc, new CmsLogEntry(
             dbc,
             resource.getStructureId(),
@@ -8737,7 +9003,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unlocks all resources in the given project.<p>
-     * 
+     *
      * @param project the project to unlock the resources in
      */
     public void unlockProject(CmsProject project) {
@@ -8750,14 +9016,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unlocks a resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to unlock
      * @param force <code>true</code>, if a resource is forced to get unlocked, no matter by which user and in which project the resource is currently locked
      * @param removeSystemLock <code>true</code>, if you also want to remove system locks
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#unlockResource(String)
      * @see I_CmsResourceType#unlockResource(CmsObject, CmsSecurityManager, CmsResource)
      */
@@ -8782,11 +9048,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unsubscribes all deleted resources that were deleted before the specified time stamp.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param deletedTo the time stamp to which the resources have been deleted
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void unsubscribeAllDeletedResources(CmsDbContext dbc, String poolName, long deletedTo) throws CmsException {
@@ -8796,11 +9062,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unsubscribes the principal from all resources.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param principal the principal that unsubscribes from all resources
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void unsubscribeAllResourcesFor(CmsDbContext dbc, String poolName, CmsPrincipal principal)
@@ -8812,13 +9078,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unsubscribes the principal from the resource.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param principal the principal that unsubscribes from the resource
      * @param resource the resource to unsubscribe from
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     public void unsubscribeResourceFor(CmsDbContext dbc, String poolName, CmsPrincipal principal, CmsResource resource)
     throws CmsException {
@@ -8828,11 +9094,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Unsubscribes all groups and users from the resource.<p>
-     * 
+     *
      * @param dbc the database context
      * @param poolName the name of the database pool to use
      * @param resource the resource to unsubscribe all groups and users from
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void unsubscribeResourceForAll(CmsDbContext dbc, String poolName, CmsResource resource) throws CmsException {
@@ -8842,15 +9108,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Update the export points.<p>
-     * 
+     *
      * All files and folders "inside" an export point are written.<p>
-     * 
+     *
      * @param dbc the current database context
      */
     public void updateExportPoints(CmsDbContext dbc) {
 
         try {
-            // read the export points and return immediately if there are no export points at all         
+            // read the export points and return immediately if there are no export points at all
             Set<CmsExportPoint> exportPoints = new HashSet<CmsExportPoint>();
             exportPoints.addAll(OpenCms.getExportPoints());
             exportPoints.addAll(OpenCms.getModuleManager().getExportPoints());
@@ -8898,7 +9164,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                         CmsResource currentResource = j.next();
 
                         if (currentResource.isFolder()) {
-                            // export the folder                        
+                            // export the folder
                             exportPointDriver.createFolder(currentResource.getRootPath(), currentExportPoint);
                         } else {
                             // try to create the exportpoint folder
@@ -8933,30 +9199,43 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Logs everything that has not been written to DB jet.<p>
-     * 
+     *
      * @param dbc the current db context
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     public void updateLog(CmsDbContext dbc) throws CmsDataAccessException {
 
-        if (m_log.isEmpty()) {
-            return;
+        synchronized (m_publishListUpdateLock) {
+
+            if (m_log.isEmpty()) {
+                return;
+            }
+
+            List<CmsLogEntry> log = new ArrayList<CmsLogEntry>(m_log);
+            m_log.clear();
+            String logTableEnabledStr = (String)OpenCms.getRuntimeProperty(PARAM_LOG_TABLE_ENABLED);
+            if (Boolean.parseBoolean(logTableEnabledStr)) { // defaults to 'false' if value not set 
+                m_projectDriver.log(dbc, log);
+            }
+            CmsLogToPublishListChangeConverter converter = new CmsLogToPublishListChangeConverter();
+            for (CmsLogEntry entry : log) {
+                converter.add(entry);
+            }
+            m_projectDriver.deleteUserPublishListEntries(dbc, converter.getPublishListDeletions());
+            m_projectDriver.writeUserPublishListEntries(dbc, converter.getPublishListAdditions());
         }
-        List<CmsLogEntry> log = new ArrayList<CmsLogEntry>(m_log);
-        m_log.clear();
-        m_projectDriver.log(dbc, log);
     }
 
     /**
      * Updates/Creates the given relations for the given resource.<p>
-     * 
+     *
      * @param dbc the db context
      * @param resource the resource to update the relations for
      * @param links the links to consider for updating
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsSecurityManager#updateRelationsForResource(CmsRequestContext, CmsResource, List)
      */
     public void updateRelationsForResource(CmsDbContext dbc, CmsResource resource, List<CmsLink> links)
@@ -8987,7 +9266,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 if (targetId != null) {
                     // the link target may not be a VFS path even if the link id is a structure id,
                     // so if possible, we read the resource for the id and set the relation target to its
-                    // real root path. 
+                    // real root path.
                     try {
                         CmsResource destRes = readResource(dbc, targetId, CmsResourceFilter.ALL);
                         destPath = destRes.getRootPath();
@@ -9010,7 +9289,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 writtenRelations.add(originalRelation);
 
                 // TODO: it would be good to have the link locale to make the relation just to the right sibling
-                // create the relations in content for all siblings 
+                // create the relations in content for all siblings
                 Iterator<CmsResource> itSiblings = readSiblings(dbc, resource, CmsResourceFilter.ALL).iterator();
                 while (itSiblings.hasNext()) {
                     CmsResource sibling = itSiblings.next();
@@ -9028,14 +9307,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns <code>true</code> if a user is member of the given group.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param username the name of the user to check
      * @param groupname the name of the group to check
      * @param readRoles if to read roles or groups
      *
      * @return <code>true</code>, if the user is in the group, <code>false</code> otherwise
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public boolean userInGroup(CmsDbContext dbc, String username, String groupname, boolean readRoles)
@@ -9053,14 +9332,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * This method checks if a new password follows the rules for
-     * new passwords, which are defined by a Class implementing the 
-     * <code>{@link org.opencms.security.I_CmsPasswordHandler}</code> 
+     * new passwords, which are defined by a Class implementing the
+     * <code>{@link org.opencms.security.I_CmsPasswordHandler}</code>
      * interface and configured in the opencms.properties file.<p>
-     * 
+     *
      * If this method throws no exception the password is valid.<p>
      *
      * @param password the new password that has to be checked
-     * 
+     *
      * @throws CmsSecurityException if the password is not valid
      */
     public void validatePassword(String password) throws CmsSecurityException {
@@ -9070,15 +9349,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Validates the relations for the given resources.<p>
-     * 
+     *
      * @param dbc the database context
-     * @param publishList the resources to validate during publishing 
+     * @param publishList the resources to validate during publishing
      * @param report a report to write the messages to
-     * 
-     * @return a map with lists of invalid links 
-     *          (<code>{@link org.opencms.relations.CmsRelation}}</code> objects) 
+     *
+     * @return a map with lists of invalid links
+     *          (<code>{@link org.opencms.relations.CmsRelation}}</code> objects)
      *          keyed by root paths
-     * 
+     *
      * @throws Exception if something goes wrong
      */
     public Map<String, List<CmsRelation>> validateRelations(
@@ -9091,11 +9370,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes an access control entries to a given resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param ace the entry to write
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void writeAccessControlEntry(CmsDbContext dbc, CmsResource resource, CmsAccessControlEntry ace)
@@ -9125,9 +9404,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Writes all export points into the file system for the publish task 
+     * Writes all export points into the file system for the publish task
      * specified by trhe given publish history ID.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param report an I_CmsReport instance to print output message, or null to write messages to the log file
      * @param publishHistoryId ID to identify the publish task in the publish history
@@ -9141,9 +9420,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
             publishedResources = getProjectDriver(dbc).readPublishedResources(dbc, publishHistoryId);
         } catch (CmsException e) {
             if (LOG.isErrorEnabled()) {
-                LOG.error(Messages.get().getBundle().key(
-                    Messages.ERR_READ_PUBLISHED_RESOURCES_FOR_ID_1,
-                    publishHistoryId), e);
+                LOG.error(
+                    Messages.get().getBundle().key(Messages.ERR_READ_PUBLISHED_RESOURCES_FOR_ID_1, publishHistoryId),
+                    e);
             }
         }
         if ((publishedResources == null) || publishedResources.isEmpty()) {
@@ -9153,7 +9432,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             return;
         }
 
-        // read the export points and return immediately if there are no export points at all         
+        // read the export points and return immediately if there are no export points at all
         Set<CmsExportPoint> exportPoints = new HashSet<CmsExportPoint>();
         exportPoints.addAll(OpenCms.getExportPoints());
         exportPoints.addAll(OpenCms.getModuleManager().getExportPoints());
@@ -9203,7 +9482,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                 report.print(org.opencms.report.Messages.get().container(org.opencms.report.Messages.RPT_DOTS_0));
 
                 if (currentPublishedResource.isFolder()) {
-                    // export the folder                        
+                    // export the folder
                     if (currentPublishedResource.getState().isDeleted()) {
                         exportPointDriver.deleteResource(currentPublishedResource.getRootPath(), currentExportPoint);
                     } else {
@@ -9213,7 +9492,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
                         org.opencms.report.Messages.get().container(org.opencms.report.Messages.RPT_OK_0),
                         I_CmsReport.FORMAT_OK);
                 } else {
-                    // export the file            
+                    // export the file
                     try {
                         if (currentPublishedResource.getState().isDeleted()) {
                             exportPointDriver.deleteResource(currentPublishedResource.getRootPath(), currentExportPoint);
@@ -9233,12 +9512,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
                             I_CmsReport.FORMAT_OK);
                     } catch (CmsException e) {
                         if (LOG.isErrorEnabled()) {
-                            LOG.error(Messages.get().getBundle().key(
-                                Messages.LOG_WRITE_EXPORT_POINT_ERROR_1,
-                                currentPublishedResource.getRootPath()), e);
+                            LOG.error(
+                                Messages.get().getBundle().key(
+                                    Messages.LOG_WRITE_EXPORT_POINT_ERROR_1,
+                                    currentPublishedResource.getRootPath()),
+                                e);
                         }
-                        report.println(org.opencms.report.Messages.get().container(
-                            org.opencms.report.Messages.RPT_FAILED_0), I_CmsReport.FORMAT_ERROR);
+                        report.println(
+                            org.opencms.report.Messages.get().container(org.opencms.report.Messages.RPT_FAILED_0),
+                            I_CmsReport.FORMAT_ERROR);
                     }
                 }
             }
@@ -9252,21 +9534,21 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes a resource to the OpenCms VFS, including it's content.<p>
-     * 
+     *
      * Applies only to resources of type <code>{@link CmsFile}</code>
      * i.e. resources that have a binary content attached.<p>
-     * 
-     * Certain resource types might apply content validation or transformation rules 
+     *
+     * Certain resource types might apply content validation or transformation rules
      * before the resource is actually written to the VFS. The returned result
      * might therefore be a modified version from the provided original.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to apply this operation to
-     * 
+     *
      * @return the written resource (may have been modified)
      *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#writeFile(CmsFile)
      * @see I_CmsResourceType#writeFile(CmsObject, CmsSecurityManager, CmsFile)
      */
@@ -9307,13 +9589,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Writes an already existing group.<p>
      *
      * The group id has to be a valid OpenCms group id.<br>
-     * 
+     *
      * The group with the given id will be completely overridden
      * by the given data.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param group the group that should be written
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public void writeGroup(CmsDbContext dbc, CmsGroup group) throws CmsException {
@@ -9337,7 +9619,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Creates an historical entry of the current project.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishTag the version
      * @param publishDate the date of publishing
@@ -9350,14 +9632,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Writes the locks that are currently stored in-memory to the database to allow restoring them  
-     * in future server startups.<p> 
-     * 
+     * Writes the locks that are currently stored in-memory to the database to allow restoring them
+     * in future server startups.<p>
+     *
      * This overwrites the locks previously stored in the underlying database table.<p>
-     * 
-     * @param dbc the current database context 
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @param dbc the current database context
+     *
+     * @throws CmsException if something goes wrong
      */
     public void writeLocks(CmsDbContext dbc) throws CmsException {
 
@@ -9368,15 +9650,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Writes an already existing organizational unit.<p>
      *
      * The organizational unit id has to be a valid OpenCms organizational unit id.<br>
-     * 
+     *
      * The organizational unit with the given id will be completely overridden
      * by the given data.<p>
      *
      * @param dbc the current db context
      * @param organizationalUnit the organizational unit that should be written
-     * 
+     *
      * @throws CmsException if operation was not successful
-     * 
+     *
      * @see org.opencms.security.CmsOrgUnitManager#writeOrganizationalUnit(CmsObject, CmsOrganizationalUnit)
      */
     public void writeOrganizationalUnit(CmsDbContext dbc, CmsOrganizationalUnit organizationalUnit) throws CmsException {
@@ -9409,13 +9691,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Writes an already existing project.<p>
      *
      * The project id has to be a valid OpenCms project id.<br>
-     * 
+     *
      * The project with the given id will be completely overridden
      * by the given data.<p>
      *
      * @param dbc the current database context
      * @param project the project that should be written
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     public void writeProject(CmsDbContext dbc, CmsProject project) throws CmsException {
@@ -9426,14 +9708,30 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
+     * Writes a new project into the PROJECT_LASTMODIFIED field of a resource record.<p>
+     *
+     * @param dbc the current database context
+     * @param resource the resource which should be modified
+     * @param projectId the project id to write
+     *
+     * @throws CmsDataAccessException if the database access fails
+     */
+    public void writeProjectLastModified(CmsDbContext dbc, CmsResource resource, CmsUUID projectId)
+    throws CmsDataAccessException {
+
+        I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
+        vfsDriver.writeLastModifiedProjectId(dbc, dbc.currentProject(), projectId, resource);
+    }
+
+    /**
      * Writes a property for a specified resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to write the property for
      * @param property the property to write
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#writePropertyObject(String, CmsProperty)
      * @see I_CmsResourceType#writePropertyObject(CmsObject, CmsSecurityManager, CmsResource, CmsProperty)
      */
@@ -9477,18 +9775,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes a list of properties for a specified resource.<p>
-     * 
-     * Code calling this method has to ensure that the no properties 
-     * <code>a, b</code> are contained in the specified list so that <code>a.equals(b)</code>, 
+     *
+     * Code calling this method has to ensure that the no properties
+     * <code>a, b</code> are contained in the specified list so that <code>a.equals(b)</code>,
      * otherwise an exception is thrown.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to write the properties for
      * @param properties the list of properties to write
      * @param updateState if <code>true</code> the state of the resource will be updated
-     * 
+     *
      * @throws CmsException if something goes wrong
-     * 
+     *
      * @see CmsObject#writePropertyObjects(String, List)
      * @see I_CmsResourceType#writePropertyObjects(CmsObject, CmsSecurityManager, CmsResource, List)
      */
@@ -9557,10 +9855,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Updates a publish job.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishJob the publish job to update
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void writePublishJob(CmsDbContext dbc, CmsPublishJobInfoBean publishJob) throws CmsException {
@@ -9570,9 +9868,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes the publish report for a publish job.<p>
-     * 
+     *
      * @param dbc the current database context
-     * @param publishJob the publish job 
+     * @param publishJob the publish job
      * @throws CmsException if something goes wrong
      */
     public void writePublishReport(CmsDbContext dbc, CmsPublishJobInfoBean publishJob) throws CmsException {
@@ -9586,7 +9884,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Writes a resource to the OpenCms VFS.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to write
      *
@@ -9622,15 +9920,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Inserts an entry in the published resource table.<p>
-     * 
+     *
      * This is done during static export.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceName The name of the resource to be added to the static export
      * @param linkType the type of resource exported (0= non-parameter, 1=parameter)
      * @param linkParameter the parameters added to the resource
      * @param timestamp a time stamp for writing the data into the db
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     public void writeStaticExportPublishedResource(
@@ -9645,19 +9943,19 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Adds a new url name mapping for a structure id.<p>
-     * 
-     * Instead of taking the name directly, this method takes an iterator of strings 
+     *
+     * Instead of taking the name directly, this method takes an iterator of strings
      * which generates candidate URL names on-the-fly. The first generated name which is
      * not already mapped to another structure id will be chosen for the new URL name mapping.
-     * 
+     *
      * @param dbc the current database context
-     * @param nameSeq the sequence of URL name candidates  
-     * @param structureId the structure id to which the url name should be mapped 
-     * @param locale the locale for which the mapping should be written 
-     * 
-     * @return the actual name which was mapped to the structure id 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     * @param nameSeq the sequence of URL name candidates
+     * @param structureId the structure id to which the url name should be mapped
+     * @param locale the locale for which the mapping should be written
+     *
+     * @return the actual name which was mapped to the structure id
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     public String writeUrlNameMapping(CmsDbContext dbc, Iterator<String> nameSeq, CmsUUID structureId, String locale)
     throws CmsDataAccessException {
@@ -9669,9 +9967,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Updates the user information. <p>
-     * 
+     *
      * The user id has to be a valid OpenCms user id.<br>
-     * 
+     *
      * The user with the given id will be completely overridden
      * by the given data.<p>
      *
@@ -9701,13 +9999,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Adds or replaces a new url name mapping in the offline project.<p>
-     * 
-     * @param dbc the current database context 
-     * @param name the URL name of the mapping 
-     * @param structureId the structure id of the mapping 
-     * @param locale the locale of the mapping 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @param dbc the current database context
+     * @param name the URL name of the mapping
+     * @param structureId the structure id of the mapping
+     * @param locale the locale of the mapping
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     protected void addOrReplaceUrlNameMapping(CmsDbContext dbc, String name, CmsUUID structureId, String locale)
     throws CmsDataAccessException {
@@ -9728,10 +10026,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Converts a resource to a folder (if possible).<p>
-     * 
+     *
      * @param resource the resource to convert
-     * @return the converted resource 
-     * 
+     * @return the converted resource
+     *
      * @throws CmsVfsResourceNotFoundException if the resource is not a folder
      */
     protected CmsFolder convertResourceToFolder(CmsResource resource) throws CmsVfsResourceNotFoundException {
@@ -9747,14 +10045,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Helper method for creating a driver from configuration data.<p>
-     * 
+     *
      * @param dbc the db context
-     * @param configManager the configuration manager 
+     * @param configManager the configuration manager
      * @param config the configuration
-     * @param driverChainKey the configuration key under which the driver chain is stored  
+     * @param driverChainKey the configuration key under which the driver chain is stored
      * @param suffix the suffix to append to a driver chain entry to get the key for the driver class
-     *  
-     * @return the newly created driver 
+     *
+     * @return the newly created driver
      */
     protected Object createDriver(
         CmsDbContext dbc,
@@ -9763,7 +10061,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
         String driverChainKey,
         String suffix) {
 
-        // read the vfs driver class properties and initialize a new instance 
+        // read the vfs driver class properties and initialize a new instance
         List<String> drivers = config.getList(driverChainKey);
         String driverKey = drivers.get(0) + suffix;
         String driverName = config.get(driverKey);
@@ -9776,11 +10074,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Deletes all relations for the given resource and all its siblings.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to delete the resource for
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     protected void deleteRelationsWithSiblings(CmsDbContext dbc, CmsResource resource) throws CmsException {
 
@@ -9792,7 +10090,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             siblings = new ArrayList<CmsResource>();
             siblings.add(resource);
         }
-        // clean the relations in content for all siblings 
+        // clean the relations in content for all siblings
         I_CmsVfsDriver vfsDriver = getVfsDriver(dbc);
         Iterator<CmsResource> it = siblings.iterator();
         while (it.hasNext()) {
@@ -9807,13 +10105,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Tries to add sub-resources of moved folders to the publish list and throws an exception if the publish list still does 
+     * Tries to add sub-resources of moved folders to the publish list and throws an exception if the publish list still does
      * not contain some  sub-resources of the moved folders.<p>
-     *  
-     * @param cms the current CMS context 
-     * @param dbc the current database context 
-     * @param pubList the publish list 
-     * @throws CmsException if something goes wrong 
+     *
+     * @param cms the current CMS context
+     * @param dbc the current database context
+     * @param pubList the publish list
+     * @throws CmsException if something goes wrong
      */
     protected void ensureSubResourcesOfMovedFoldersPublished(CmsObject cms, CmsDbContext dbc, CmsPublishList pubList)
     throws CmsException {
@@ -9824,26 +10122,34 @@ public final class CmsDriverManager implements I_CmsEventListener {
             CmsResource folder = folderIt.next();
             addSubResources(dbc, pubList, folder);
         }
-        CmsResource checkRes = pubList.checkContainsSubResources(cms, topMovedFolders);
-        if (checkRes != null) {
-            throw new CmsVfsException(Messages.get().container(
-                Messages.RPT_CHILDREN_OF_MOVED_FOLDER_NOT_PUBLISHED_1,
-                checkRes.getRootPath()));
+        List<CmsResource> missingSubResources = pubList.getMissingSubResources(cms, topMovedFolders);
+        if (missingSubResources.isEmpty()) {
+            return;
         }
+
+        StringBuffer pathBuffer = new StringBuffer();
+
+        for (CmsResource missing : missingSubResources) {
+            pathBuffer.append(missing.getRootPath());
+            pathBuffer.append(" ");
+        }
+        throw new CmsVfsException(Messages.get().container(
+            Messages.RPT_CHILDREN_OF_MOVED_FOLDER_NOT_PUBLISHED_1,
+            pathBuffer.toString()));
 
     }
 
     /**
      * Tries to find the best name for an URL name mapping for the given structure id.<p>
-     * 
-     * @param dbc the database context 
-     * @param nameSeq the sequence of name candidates 
+     *
+     * @param dbc the database context
+     * @param nameSeq the sequence of name candidates
      * @param structureId the structure id to which an URL name should be mapped
-     * @param locale the locale for which the URL name should be mapped 
-     *  
-     * @return the selected URL name candidate 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     * @param locale the locale for which the URL name should be mapped
+     *
+     * @return the selected URL name candidate
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     protected String findBestNameForUrlNameMapping(
         CmsDbContext dbc,
@@ -9875,18 +10181,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Helper method for finding the 'best' URL name to use for a new URL name mapping.<p>  
-     * 
+     * Helper method for finding the 'best' URL name to use for a new URL name mapping.<p>
+     *
      * Since the name given as a parameter may be already used, this method will try to append numeric suffixes
      * to the name to find a mapping name which is not used.<p>
-     * 
-     * @param dbc the current database context 
-     * @param name the name of the mapping 
+     *
+     * @param dbc the current database context
+     * @param name the name of the mapping
      * @param structureId the structure id to which the name is mapped
-     *  
-     * @return the best name which was found for the new mapping 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @return the best name which was found for the new mapping
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     protected String findBestNameForUrlNameMapping(CmsDbContext dbc, String name, CmsUUID structureId)
     throws CmsDataAccessException {
@@ -9910,7 +10216,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the lock manager instance.<p>
-     * 
+     *
      * @return the lock manager instance
      */
     protected CmsLockManager getLockManager() {
@@ -9920,11 +10226,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Adds a numeric suffix to the end of a string, unless the number passed as a parameter is 0.<p>
-     *  
-     * @param name the base name 
-     * @param number the number from which to form the suffix 
-     * 
-     * @return the concatenation of the base name and possibly the numeric suffix 
+     *
+     * @param name the base name
+     * @param number the number from which to form the suffix
+     *
+     * @return the concatenation of the base name and possibly the numeric suffix
      */
     protected String getNumberedName(String name, int number) {
 
@@ -9937,19 +10243,28 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Counts the total number of users which fit the given criteria.<p>
-     * 
-     * @param dbc the database context 
-     * @param searchParams the user search criteria 
-     * 
-     * @return the total number of users matching the criteria 
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @param dbc the database context
+     * @param searchParams the user search criteria
+     *
+     * @return the total number of users matching the criteria
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     long countUsers(CmsDbContext dbc, CmsUserSearchParameters searchParams) throws CmsDataAccessException {
 
         return getUserDriver(dbc).countUsers(dbc, searchParams);
     }
 
+    /**
+     * Adds all sub-resources of the given resource to the publish list.<p>
+     *
+     * @param dbc the database context
+     * @param publishList the publish list
+     * @param directPublishResource the resource to get the sub-resources for
+     *
+     * @throws CmsDataAccessException if something goes wrong accessing the database
+     */
     private void addSubResources(CmsDbContext dbc, CmsPublishList publishList, CmsResource directPublishResource)
     throws CmsDataAccessException {
 
@@ -9994,12 +10309,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Checks the parent of a resource during publishing.<p> 
-     * 
+     * Checks the parent of a resource during publishing.<p>
+     *
      * @param dbc the current database context
      * @param deletedFolders a list of deleted folders
      * @param res a resource to check the parent for
-     * 
+     *
      * @return <code>true</code> if the parent resource will be deleted during publishing
      */
     private boolean checkDeletedParentFolder(CmsDbContext dbc, List<CmsResource> deletedFolders, CmsResource res) {
@@ -10036,11 +10351,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Checks that no one of the resources to be published has a 'new' parent (that has not been published yet).<p> 
-     * 
+     * Checks that no one of the resources to be published has a 'new' parent (that has not been published yet).<p>
+     *
      * @param dbc the db context
      * @param publishList the publish list to check
-     * 
+     *
      * @throws CmsVfsException if there is a resource to be published with a 'new' parent
      */
     private void checkParentFolders(CmsDbContext dbc, CmsPublishList publishList) throws CmsVfsException {
@@ -10078,12 +10393,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
     }
 
     /**
-     * Checks the parent of a resource during publishing.<p> 
-     * 
+     * Checks the parent of a resource during publishing.<p>
+     *
      * @param dbc the current database context
      * @param folderList a list of folders
      * @param res a resource to check the parent for
-     * 
+     *
      * @return true if the resource should be published
      */
     private boolean checkParentResource(CmsDbContext dbc, List<CmsResource> folderList, CmsResource res) {
@@ -10121,11 +10436,11 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Copies all relations from the source resource to the target resource.<p>
-     * 
+     *
      * @param dbc the database context
      * @param source the source
      * @param target the target
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     private void copyRelations(CmsDbContext dbc, CmsResource source, CmsResource target) throws CmsException {
@@ -10155,13 +10470,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
     /**
      * Filters the given list of resources, removes all resources where the current user
      * does not have READ permissions, plus the filter is applied.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceList a list of CmsResources
      * @param filter the resource filter to use
-     * 
+     *
      * @return the filtered list of resources
-     * 
+     *
      * @throws CmsException in case errors testing the permissions
      */
     private List<CmsResource> filterPermissions(
@@ -10188,13 +10503,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns a filtered list of resources for publishing.<p>
-     * Contains all resources, which are not locked 
+     * Contains all resources, which are not locked
      * and which have a parent folder that is already published or will be published, too.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param publishList the filling publish list
      * @param resourceList the list of resources to filter
-     * 
+     *
      * @return a filtered list of resources
      */
     private List<CmsResource> filterResources(
@@ -10260,14 +10575,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns a filtered list of sibling resources for publishing.<p>
-     * 
+     *
      * Contains all siblings of the given resources, which are not locked
      * and which have a parent folder that is already published or will be published, too.<p>
-     * 
-     * @param dbc the current database context 
+     *
+     * @param dbc the current database context
      * @param publishList the unfinished publish list
      * @param resourceList the list of siblings to filter
-     * 
+     *
      * @return a filtered list of sibling resources for publishing
      */
     private List<CmsResource> filterSiblings(
@@ -10279,8 +10594,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
         // removed internal extendible folder list, since iterated (sibling) resources are files in any case, never folders
 
-        for (Iterator<CmsResource> i = resourceList.iterator(); i.hasNext();) {
-            CmsResource res = i.next();
+        for (CmsResource res : resourceList) {
             try {
                 CmsLock lock = getLock(dbc, res);
                 if (lock.isPublish()) {
@@ -10327,15 +10641,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the access control list of a given resource.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource
      * @param forFolder should be true if resource is a folder
      * @param depth the depth to include non-inherited access entries, also
      * @param inheritedOnly flag indicates to collect inherited permissions only
-     * 
+     *
      * @return the access control list of the resource
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     private CmsAccessControlList getAccessControlList(
@@ -10345,11 +10659,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
         boolean forFolder,
         int depth) throws CmsException {
 
-        String cacheKey = getCacheKey(new String[] {
-            inheritedOnly ? "+" : "-",
-            forFolder ? "+" : "-",
-            Integer.toString(depth),
-            resource.getStructureId().toString()}, dbc);
+        String cacheKey = getCacheKey(
+            new String[] {
+                inheritedOnly ? "+" : "-",
+                forFolder ? "+" : "-",
+                Integer.toString(depth),
+                resource.getStructureId().toString()},
+            dbc);
 
         CmsAccessControlList acl = m_monitor.getCachedACL(cacheKey);
 
@@ -10422,12 +10738,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Return a cache key build from the provided information.<p>
-     * 
+     *
      * @param prefix a prefix for the key
      * @param flag a boolean flag for the key (only used if prefix is not null)
      * @param projectId the project for which to generate the key
      * @param resource the resource for which to generate the key
-     * 
+     *
      * @return String a cache key build from the provided information
      */
     private String getCacheKey(String prefix, boolean flag, CmsUUID projectId, String resource) {
@@ -10443,7 +10759,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Return a cache key build from the provided information.<p>
-     * 
+     *
      * @param keys an array of keys to generate the cache key from
      * @param dbc the database context for which to generate the key
      *
@@ -10472,9 +10788,9 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns the correct project id.<p>
-     * 
+     *
      * @param dbc the database context
-     * 
+     *
      * @return the correct project id
      */
     private CmsUUID getProjectIdForContext(CmsDbContext dbc) {
@@ -10488,13 +10804,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns if and what state needs to be updated.<p>
-     * 
+     *
      * @param dbc the db context
      * @param resource the resource
      * @param properties the properties to check
-     * 
+     *
      * @return 0: none, 1: structure, 2: resource
-     * 
+     *
      * @throws CmsDataAccessException if something goes wrong
      */
     private int getUpdateState(CmsDbContext dbc, CmsResource resource, List<CmsProperty> properties)
@@ -10553,13 +10869,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Returns all groups that are virtualizing the given role in the given ou.<p>
-     * 
+     *
      * @param dbc the database context
      * @param role the role
-     * 
+     *
      * @return all groups that are virtualizing the given role (or a child of it)
-     * 
-     * @throws CmsException if something goes wrong 
+     *
+     * @throws CmsException if something goes wrong
      */
     private List<CmsGroup> getVirtualGroupsForRole(CmsDbContext dbc, CmsRole role) throws CmsException {
 
@@ -10593,16 +10909,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Returns a list of users in a group.<p>
      *
      * @param dbc the current database context
-     * @param ouFqn the organizational unit to get the users from 
+     * @param ouFqn the organizational unit to get the users from
      * @param groupname the name of the group to list users from
      * @param includeOtherOuUsers include users of other organizational units
-     * @param directUsersOnly if set only the direct assigned users will be returned, 
-     *                        if not also indirect users, ie. members of parent roles, 
+     * @param directUsersOnly if set only the direct assigned users will be returned,
+     *                        if not also indirect users, ie. members of parent roles,
      *                        this parameter only works with roles
      * @param readRoles if to read roles or groups
-     * 
+     *
      * @return all <code>{@link CmsUser}</code> objects in the group
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     private List<CmsUser> internalUsersOfGroup(
@@ -10700,13 +11016,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Reads all resources that are inside and changed in a specified project.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param projectId the ID of the project
      * @param mode one of the {@link CmsReadChangedProjectResourceMode} constants
-     * 
+     *
      * @return a List with all resources inside the specified project
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     private List<CmsResource> readChangedResourcesInsideProject(
@@ -10753,7 +11069,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             if (!currentResource.getState().isUnchanged()) {
                 if ((currentLock.isNullLock() && (currentResource.getProjectLastModified().equals(projectId)))
                     || (currentLock.isOwnedBy(dbc.currentUser()) && (currentLock.getProjectId().equals(projectId)))) {
-                    // add only resources that are 
+                    // add only resources that are
                     // - inside the project,
                     // - changed in the project,
                     // - either unlocked, or locked for the current user in the project
@@ -10775,16 +11091,16 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Sorts the given list of {@link CmsAccessControlEntry} objects.<p>
-     * 
+     *
      * The the 'all others' ace in first place, the 'overwrite all' ace in second.<p>
-     * 
+     *
      * @param aces the list of ACEs to sort
-     * 
+     *
      * @return <code>true</code> if the list contains the 'overwrite all' ace
      */
     private boolean sortAceList(List<CmsAccessControlEntry> aces) {
 
-        // sort the list of entries 
+        // sort the list of entries
         Collections.sort(aces, CmsAccessControlEntry.COMPARATOR_ACE);
         // after sorting just the first 2 positions come in question
         for (int i = 0; i < Math.min(aces.size(), 2); i++) {
@@ -10805,7 +11121,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * @param principalId the id of the principal to be replaced
      * @param replacementId the user to be transfered
      * @param withACEs flag to signal if the ACEs should also be transfered or just deleted
-     * 
+     *
      * @throws CmsException if operation was not successful
      */
     private void transferPrincipalResources(
@@ -10879,14 +11195,14 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Undoes all content changes of a resource.<p>
-     * 
+     *
      * @param dbc the database context
      * @param onlineProject the online project
      * @param offlineResource the offline resource, or <code>null</code> if deleted
      * @param onlineResource the online resource
      * @param newState the new resource state
      * @param moveUndone is a move operation on the same resource has been made
-     * 
+     *
      * @throws CmsException if something goes wrong
      */
     private void undoContentChanges(
@@ -10991,7 +11307,7 @@ public final class CmsDriverManager implements I_CmsEventListener {
             List<CmsProperty> properties = vfsDriver.readPropertyObjects(dbc, onlineProject, onlineResource);
 
             if (offlineResource != null) {
-                // bug fix 1020: delete all properties (included shared), 
+                // bug fix 1020: delete all properties (included shared),
                 // shared properties will be recreated by the next call of #createResource(...)
                 vfsDriver.deletePropertyObjects(
                     dbc,
@@ -10999,10 +11315,10 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     onlineResource,
                     CmsProperty.DELETE_OPTION_DELETE_STRUCTURE_AND_RESOURCE_VALUES);
 
-                // implementation notes: 
-                // undo changes can become complex e.g. if a resource was deleted, and then 
+                // implementation notes:
+                // undo changes can become complex e.g. if a resource was deleted, and then
                 // another resource was copied over the deleted file as a sibling
-                // therefore we must "clean" delete the offline resource, and then create 
+                // therefore we must "clean" delete the offline resource, and then create
                 // an new resource with the create method
                 // note that this does NOT apply to folders, since a folder cannot be replaced
                 // like a resource anyway
@@ -11038,9 +11354,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
                     ace.getFlags());
             }
 
-            vfsDriver.deleteUrlNameMappingEntries(dbc, false, CmsUrlNameMappingFilter.ALL.filterStructureId(
-                res.getStructureId()).filterState(CmsUrlNameMappingEntry.MAPPING_STATUS_NEW));
-            // restore the state to unchanged 
+            vfsDriver.deleteUrlNameMappingEntries(
+                dbc,
+                false,
+                CmsUrlNameMappingFilter.ALL.filterStructureId(res.getStructureId()).filterState(
+                    CmsUrlNameMappingEntry.MAPPING_STATUS_NEW));
+            // restore the state to unchanged
             res.setState(newState);
             m_vfsDriver.writeResourceState(dbc, dbc.currentProject(), res, UPDATE_ALL, false);
         }
@@ -11092,18 +11411,18 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Updates the current users context dates with the given resource.<p>
-     * 
+     *
      * This checks the date information of the resource based on
-     * {@link CmsResource#getDateLastModified()} as well as 
+     * {@link CmsResource#getDateLastModified()} as well as
      * {@link CmsResource#getDateReleased()} and {@link CmsResource#getDateExpired()}.
      * The current users request context is updated with the the "latest" dates found.<p>
-     * 
+     *
      * This is required in order to ensure proper setting of <code>"last-modified"</code> http headers
      * and also for expiration of cached elements in the Flex cache.
-     * Consider the following use case: Page A is generated from resources x, y and z. 
-     * If either x, y or z has an expiration / release date set, then page A must expire at a certain point 
+     * Consider the following use case: Page A is generated from resources x, y and z.
+     * If either x, y or z has an expiration / release date set, then page A must expire at a certain point
      * in time. This is ensured by the context date check here.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resource the resource to get the date information from
      */
@@ -11117,15 +11436,15 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Updates the current users context dates with each {@link CmsResource} object in the given list.<p>
-     * 
+     *
      * The given input list is returned unmodified.<p>
-     * 
+     *
      * Please see {@link #updateContextDates(CmsDbContext, CmsResource)} for an explanation of what this method does.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceList a list of {@link CmsResource} objects
-     * 
-     * @return the original list of CmsResources with the full resource name set 
+     *
+     * @return the original list of CmsResources with the full resource name set
      */
     private List<CmsResource> updateContextDates(CmsDbContext dbc, List<CmsResource> resourceList) {
 
@@ -11143,13 +11462,13 @@ public final class CmsDriverManager implements I_CmsEventListener {
      * Returns a List of {@link CmsResource} objects generated when applying the given filter to the given list,
      * also updates the current users context dates with each {@link CmsResource} object in the given list,
      * also applies the selected resource filter to all resources in the list and returns the remaining resources.<p>
-     * 
+     *
      * Please see {@link #updateContextDates(CmsDbContext, CmsResource)} for an explanation of what this method does.<p>
-     * 
+     *
      * @param dbc the current database context
      * @param resourceList a list of {@link CmsResource} objects
      * @param filter the resource filter to use
-     * 
+     *
      * @return a List of {@link CmsResource} objects generated when applying the given filter to the given list
      */
     private List<CmsResource> updateContextDates(
@@ -11180,12 +11499,12 @@ public final class CmsDriverManager implements I_CmsEventListener {
 
     /**
      * Updates the state of a resource, depending on the <code>resourceState</code> parameter.<p>
-     * 
+     *
      * @param dbc the db context
      * @param resource the resource
      * @param resourceState if <code>true</code> the resource state will be updated, if not just the structure state.
-     * 
-     * @throws CmsDataAccessException if something goes wrong 
+     *
+     * @throws CmsDataAccessException if something goes wrong
      */
     private void updateState(CmsDbContext dbc, CmsResource resource, boolean resourceState)
     throws CmsDataAccessException {

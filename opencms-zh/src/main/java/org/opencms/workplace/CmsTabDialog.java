@@ -205,9 +205,9 @@ public abstract class CmsTabDialog extends CmsDialog {
                 }
                 result.append(">");
                 result.append("<span class=\"tabactive\" unselectable=\"on\"");
-                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
-                result.append(" style=\"width: " + (curTab.length() * 12 + addDelta) + "px;\"");
-                // result.append(" style=\"width: " + (curTab.length() * 8 + addDelta) + "px;\"");
+                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2014-4-16
+                result.append(" style=\"width: " + ((curTab.length() * 12) + addDelta) + "px;\"");
+                // result.append(" style=\"width: " + ((curTab.length() * 8) + addDelta) + "px;\"");
                 result.append(">");
                 result.append(curTab);
                 result.append("</span></td>\n");
@@ -216,7 +216,7 @@ public abstract class CmsTabDialog extends CmsDialog {
                 // create an inactive tab
                 result.append("\t<td class=\"dialogtab\" unselectable=\"on\">");
                 result.append("<a class=\"tab\" href=\"" + curTabLink + "\"");
-                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
+                // modyfied by Shi Jinghai, huaruhai@hotmail.com  2014-4-16
                 result.append(" style=\"width: " + (curTab.length() * 12) + "px;\"");
                 // result.append(" style=\"width: " + (curTab.length() * 8) + "px;\"");
                 result.append(">");

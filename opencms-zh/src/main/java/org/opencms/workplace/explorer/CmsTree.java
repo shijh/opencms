@@ -92,6 +92,9 @@ public class CmsTree extends CmsWorkplace {
     /** Request parameter name for the showsiteselector parameter. */
     public static final String PARAM_SHOWSITESELECTOR = "showsiteselector";
 
+    /** Request parameter name for the integrator parameter. */
+    public static final String PARAM_INTEGRATOR = "integrator";
+
     /** Request parameter name for the treesite parameter. */
     public static final String PARAM_TREESITE = "treesite";
 
@@ -442,7 +445,7 @@ public class CmsTree extends CmsWorkplace {
                 }
             }
 
-			// Modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-14
+			// Modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
 			CmsUserSettings settings = new CmsUserSettings(getCms());
 			int treelabel = settings.getExplorerTreeLabel();
 			String title = null;
@@ -737,7 +740,7 @@ public class CmsTree extends CmsWorkplace {
      *
      * @return the output for a tree node
      * 
-	 * Modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
+	 * Modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
      */
     private String getNode(String path, String name, String title, int type, boolean folder, CmsResourceState state, boolean grey) {
 
@@ -801,7 +804,7 @@ public class CmsTree extends CmsWorkplace {
             } else {
                 title = titleProperty.getValue();
             }
-			// modified by Shi Jinghai, huaruhai@hotmail.com 2012-1-8
+			// modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-16
 			return getNode(resource.getRootPath(), resource.getRootPath(), title, resource.getTypeId(), true, resource.getState(), false);
             // return getNode(resource.getRootPath(), title, resource.getTypeId(), true, resource.getState(), false);
         } catch (CmsException e) {

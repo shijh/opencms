@@ -34,6 +34,7 @@ import org.opencms.main.OpenCms;
 import org.opencms.search.CmsSearch;
 import org.opencms.search.CmsSearchIndex;
 import org.opencms.search.CmsSearchParameters;
+import org.opencms.search.fields.CmsLuceneField;
 import org.opencms.search.fields.CmsSearchField;
 import org.opencms.util.CmsStringUtil;
 import org.opencms.widgets.CmsCalendarWidget;
@@ -126,6 +127,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#actionToggleElement()
      */
+    @Override
     public void actionToggleElement() {
 
         super.actionToggleElement();
@@ -140,6 +142,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return the standard javascript for submitting the dialog
      */
+    @Override
     public String dialogScriptSubmit() {
 
         StringBuffer html = new StringBuffer(512);
@@ -231,13 +234,13 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return the list of searchable fields used in the workplace search index
      */
-    public List getSearchFields() {
+    public List<CmsSearchField> getSearchFields() {
 
         CmsSearchIndex index = OpenCms.getSearchManager().getIndex(getParamIndexName());
-        List result = new ArrayList();
-        Iterator i = index.getFieldConfiguration().getFields().iterator();
+        List<CmsSearchField> result = new ArrayList<CmsSearchField>();
+        Iterator<CmsSearchField> i = index.getFieldConfiguration().getFields().iterator();
         while (i.hasNext()) {
-            CmsSearchField field = (CmsSearchField)i.next();
+            CmsLuceneField field = (CmsLuceneField)i.next();
             if (field.isIndexed() && field.isDisplayed()) {
                 // only include indexed (ie. searchable) fields
                 result.add(field);
@@ -325,6 +328,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#closeDialogOnCommit()
      */
+    @Override
     protected boolean closeDialogOnCommit() {
 
         return false;
@@ -333,6 +337,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
     /**
      * @see org.opencms.workplace.CmsWidgetDialog#createDialogHtml(java.lang.String)
      */
+    @Override
     protected String createDialogHtml(String dialog) {
 
         StringBuffer result = new StringBuffer(1024);
@@ -379,6 +384,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return html code
      */
+    @Override
     protected String defaultActionHtmlContent() {
 
         StringBuffer result = new StringBuffer(2048);
@@ -418,6 +424,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWidgetDialog#defineWidgets()
      */
+    @Override
     protected void defineWidgets() {
 
         // initialization -> initUserObject
@@ -462,6 +469,8 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.tools.searchindex.A_CmsEditSearchIndexDialog#initUserObject()
      */
+    @SuppressWarnings("rawtypes")
+    @Override
     protected void initUserObject() {
 
         super.initUserObject();
@@ -483,7 +492,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
                 m_search = new CmsSearch();
             }
         }
-        m_searchParams.setSearchIndex(m_index);
+        m_searchParams.setSearchIndex(getSearchIndexIndex());
     }
 
     /**
@@ -491,6 +500,8 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @see org.opencms.workplace.CmsWorkplace#initWorkplaceRequestValues(org.opencms.workplace.CmsWorkplaceSettings, javax.servlet.http.HttpServletRequest)
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     protected void initWorkplaceRequestValues(CmsWorkplaceSettings settings, HttpServletRequest request) {
 
         super.initWorkplaceRequestValues(settings, request);
@@ -499,7 +510,6 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
             dialogMap.put(PARAM_SEARCH_PARAMS, m_searchParams);
             dialogMap.put(PARAM_SEARCH_OBJECT, m_search);
         }
-
     }
 
     /**
@@ -517,7 +527,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
         if (m_searchParams.isCalculateCategories()) {
             // trigger calculation of categories, even if we don't need search results 
             // this is cached unless more set operation on CmsSearch are performed
-            Map categoryMap = m_search.getSearchResultCategories();
+            Map<String, Integer> categoryMap = m_search.getSearchResultCategories();
             if (categoryMap != null) {
                 result.append(dialogContentStart(null));
                 result.append(result.append(createWidgetTableStart()));
@@ -529,10 +539,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
 
                 // categories:
                 result.append("\n<p>\n");
-                Map.Entry entry;
-                Iterator it = categoryMap.entrySet().iterator();
-                while (it.hasNext()) {
-                    entry = (Map.Entry)it.next();
+                for (Map.Entry<String, Integer> entry : categoryMap.entrySet()) {
                     result.append("  ").append("<a class=\"searchcategory\" href=\"#\" onClick=\"filterCategory('");
                     result.append(entry.getKey()).append("')\")>");
                     result.append(entry.getKey());
@@ -550,11 +557,16 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
         return result.toString();
     }
 
+    /**
+     * Returns the HTML for the search results.<p>
+     * 
+     * @return the HTML for the search results
+     */
     private String createSearchResults() {
 
         String query = m_searchParams.getQuery();
         StringBuffer result = new StringBuffer();
-        // for CJK language, min length can be 0; others, 3. Add by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
+        // for CJK language, min length can be 0; others, 3. Add by Shi Jinghai, huaruhai@hotmail.com  2014-4-16
         int minLength = 3;
         for (int i=0; i<query.length(); i++) {
         	int c = query.charAt(i);
@@ -571,7 +583,7 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
             // proprietary workplace admin link for pagelinks of search: 
             resultView.setSearchRessourceUrl(getJsp().link(
                 "/system/workplace/views/admin/admin-main.jsp?path=/searchindex/singleindex/search&indexname="
-                    + m_index.getName()));
+                    + getSearchIndexIndex().getName()));
             m_search.init(getCms());
 
             // custom parameters (non-widget controlled) 
@@ -598,6 +610,11 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
         return result.toString();
     }
 
+    /**
+     * Generates the JavaScript to filter categories.<p>
+     * 
+     * @return the JavaScript
+     */
     private String filterCategoryJS() {
 
         StringBuffer result = new StringBuffer();
@@ -635,13 +652,13 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return a list of <code>{@link CmsSelectWidgetOption}</code> objects
      */
-    private List getFieldList() {
+    private List<CmsSelectWidgetOption> getFieldList() {
 
-        List retVal = new ArrayList();
+        List<CmsSelectWidgetOption> retVal = new ArrayList<CmsSelectWidgetOption>();
         try {
-            Iterator i = getSearchFields().iterator();
+            Iterator<CmsSearchField> i = getSearchFields().iterator();
             while (i.hasNext()) {
-                CmsSearchField field = (CmsSearchField)i.next();
+                CmsLuceneField field = (CmsLuceneField)i.next();
                 retVal.add(new CmsSelectWidgetOption(field.getName(), true, getMacroResolver().resolveMacros(
                     field.getDisplayName())));
             }
@@ -656,9 +673,9 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
      * 
      * @return the different select options for sort search result criteria 
      */
-    private List getSortWidgetConfiguration() {
+    private List<CmsSelectWidgetOption> getSortWidgetConfiguration() {
 
-        List result = new LinkedList();
+        List<CmsSelectWidgetOption> result = new LinkedList<CmsSelectWidgetOption>();
         CmsMessages messages = Messages.get().getBundle(getLocale());
         result.add(new CmsSelectWidgetOption(
             CmsSearchParameters.SORT_NAMES[0],
@@ -679,6 +696,11 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
         return result;
     }
 
+    /**
+     * Normalizes the JavaScript for the previous search query.<p>
+     * 
+     * @return the normalized JavaScript
+     */
     private String normalizePreviousQueryJS() {
 
         StringBuffer result = new StringBuffer();
@@ -695,6 +717,11 @@ public class CmsSearchWidgetDialog extends A_CmsEditSearchIndexDialog {
         return result.toString();
     }
 
+    /**
+     * Returns the JavaScript for submitting the search form.<p>
+     *  
+     * @return the JavaScript for submitting the search form
+     */
     private String submitJS() {
 
         StringBuffer result = new StringBuffer();
