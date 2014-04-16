@@ -37,6 +37,7 @@ import org.opencms.configuration.CmsSearchConfiguration;
 import org.opencms.configuration.CmsSystemConfiguration;
 import org.opencms.configuration.CmsVfsConfiguration;
 import org.opencms.configuration.CmsWorkplaceConfiguration;
+import org.opencms.db.CmsAliasManager;
 import org.opencms.db.CmsDbEntryNotFoundException;
 import org.opencms.db.CmsDefaultUsers;
 import org.opencms.db.CmsExportPoint;
@@ -62,9 +63,11 @@ import org.opencms.i18n.CmsEncoder;
 import org.opencms.i18n.CmsI18nInfo;
 import org.opencms.i18n.CmsLocaleManager;
 import org.opencms.i18n.CmsMessageContainer;
+import org.opencms.i18n.CmsVfsBundleManager;
 import org.opencms.importexport.CmsImportExportManager;
 import org.opencms.jsp.util.CmsErrorBean;
 import org.opencms.loader.CmsResourceManager;
+import org.opencms.loader.CmsTemplateContextManager;
 import org.opencms.loader.I_CmsFlexCacheEnabledLoader;
 import org.opencms.loader.I_CmsResourceLoader;
 import org.opencms.lock.CmsLockManager;
@@ -82,6 +85,7 @@ import org.opencms.security.CmsRoleManager;
 import org.opencms.security.CmsRoleViolationException;
 import org.opencms.security.CmsSecurityException;
 import org.opencms.security.I_CmsAuthorizationHandler;
+import org.opencms.security.I_CmsCredentialsResolver;
 import org.opencms.security.I_CmsPasswordHandler;
 import org.opencms.security.I_CmsValidationHandler;
 import org.opencms.site.CmsSite;
@@ -92,12 +96,15 @@ import org.opencms.staticexport.CmsStaticExportManager;
 import org.opencms.util.CmsRequestUtil;
 import org.opencms.util.CmsStringUtil;
 import org.opencms.util.CmsUUID;
+import org.opencms.workflow.CmsDefaultWorkflowManager;
+import org.opencms.workflow.I_CmsWorkflowManager;
 import org.opencms.workplace.CmsWorkplace;
 import org.opencms.workplace.CmsWorkplaceManager;
 import org.opencms.xml.CmsXmlContentTypeManager;
 import org.opencms.xml.containerpage.CmsFormatterConfiguration;
 
 import java.io.IOException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -109,6 +116,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -118,6 +126,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
+
+import cryptix.jce.provider.CryptixCrypto;
 
 /**
  * The internal implementation of the core OpenCms "operating system" functions.<p>
@@ -156,11 +166,20 @@ public final class OpenCmsCore {
     /** One instance to rule them all, one instance to find them... */
     private static OpenCmsCore m_instance;
 
+    /** The ADE manager instance. */
+    private CmsADEManager m_adeManager;
+
+    /** The manager for page aliases. */
+    private CmsAliasManager m_aliasManager;
+
     /** The configured authorization handler. */
     private I_CmsAuthorizationHandler m_authorizationHandler;
 
     /** The configuration manager that contains the information from the XML configuration. */
     private CmsConfigurationManager m_configurationManager;
+
+    /** The object used for resolving database user credentials. */
+    private I_CmsCredentialsResolver m_credentialsResolver;
 
     /** List of configured directory default file names. */
     private List<String> m_defaultFiles;
@@ -170,6 +189,9 @@ public final class OpenCmsCore {
 
     /** The event manager for the event handling. */
     private CmsEventManager m_eventManager;
+
+    /** The thread pool executor. */
+    private ScheduledThreadPoolExecutor m_executor;
 
     /** The set of configured export points. */
     private Set<CmsExportPoint> m_exportPoints;
@@ -252,19 +274,23 @@ public final class OpenCmsCore {
     /** The system information container for "read only" system settings. */
     private CmsSystemInfo m_systemInfo;
 
+    /** The template context manager. */
+    private CmsTemplateContextManager m_templateContextManager;
+
     /** The thread store. */
     private CmsThreadStore m_threadStore;
 
     /** The runtime validation handler. */
     private I_CmsValidationHandler m_validationHandler;
 
+    /** The workflow manager instance. */
+    private I_CmsWorkflowManager m_workflowManager;
+
     /** The workplace manager contains information about the global workplace settings. */
     private CmsWorkplaceManager m_workplaceManager;
 
     /** The XML content type manager that contains the initialized XML content types. */
     private CmsXmlContentTypeManager m_xmlContentTypeManager;
-
-    private CmsADEManager m_adeManager;
 
     /**
      * Protected constructor that will initialize the singleton OpenCms instance 
@@ -374,6 +400,16 @@ public final class OpenCmsCore {
     }
 
     /**
+     * Returns the alias manager.<p>
+     * 
+     * @return the alias manager
+     */
+    protected CmsAliasManager getAliasManager() {
+
+        return m_aliasManager;
+    }
+
+    /**
      * Returns the configured authorization handler.<p>
      *
      * @return the configured authorization handler
@@ -391,6 +427,16 @@ public final class OpenCmsCore {
     protected CmsConfigurationManager getConfigurationManager() {
 
         return m_configurationManager;
+    }
+
+    /** 
+     * Gets the configured credentials resolver instance.<p>
+     * 
+     * @return the credentials resolver 
+     */
+    protected I_CmsCredentialsResolver getCredentialsResolver() {
+
+        return m_credentialsResolver;
     }
 
     /**
@@ -421,6 +467,16 @@ public final class OpenCmsCore {
     protected CmsEventManager getEventManager() {
 
         return m_eventManager;
+    }
+
+    /** 
+     * Gets the thread pool executor.<p>
+     * 
+     * @return the thread pool executor 
+     */
+    protected ScheduledThreadPoolExecutor getExecutor() {
+
+        return m_executor;
     }
 
     /**
@@ -735,6 +791,17 @@ public final class OpenCmsCore {
     }
 
     /**
+     * Gets the template context manager instance.<p>
+     * 
+     * @return the template context manager instance 
+     */
+    protected CmsTemplateContextManager getTemplateContextManager() {
+
+        return m_templateContextManager;
+
+    }
+
+    /**
      * Returns the OpenCms Thread store.<p>
      * 
      * @return the OpenCms Thread store
@@ -752,6 +819,16 @@ public final class OpenCmsCore {
     protected I_CmsValidationHandler getValidationHandler() {
 
         return m_validationHandler;
+    }
+
+    /**
+     * Returns the workflow manager instance.<p>
+     * 
+     * @return the workflow manager
+     */
+    protected I_CmsWorkflowManager getWorkflowManager() {
+
+        return m_workflowManager;
     }
 
     /**
@@ -958,12 +1035,13 @@ public final class OpenCmsCore {
         } catch (SecurityException se) {
             // security manager is active, but we will try other options before giving up
         }
+        Security.addProvider(new CryptixCrypto());
         if (CmsLog.INIT.isInfoEnabled()) {
             CmsLog.INIT.info(Messages.get().getBundle().key(Messages.INIT_FILE_ENCODING_1, systemEncoding));
         }
 
         // read server ethernet address (MAC) and init UUID generator
-        String ethernetAddress = configuration.getString("server.ethernet.address", CmsUUID.getDummyEthernetAddress());
+        String ethernetAddress = configuration.getString("server.ethernet.address", CmsStringUtil.getEthernetAddress());
         if (CmsLog.INIT.isInfoEnabled()) {
             CmsLog.INIT.info(Messages.get().getBundle().key(Messages.INIT_ETHERNET_ADDRESS_1, ethernetAddress));
         }
@@ -1054,6 +1132,7 @@ public final class OpenCmsCore {
         getSystemInfo().setNotificationProject(systemConfiguration.getNotificationProject());
         // set the scheduler manager
         m_scheduleManager = systemConfiguration.getScheduleManager();
+        m_executor = new ScheduledThreadPoolExecutor(2);
         // set resource init classes
         m_resourceInitHandlers = systemConfiguration.getResourceInitHandlers();
         // register request handler classes
@@ -1094,6 +1173,7 @@ public final class OpenCmsCore {
             }
             // get the flex cache configuration from the SystemConfiguration
             CmsFlexCacheConfiguration flexCacheConfiguration = systemConfiguration.getCmsFlexCacheConfiguration();
+            getSystemInfo().setDeviceSelector(flexCacheConfiguration.getDeviceSelector());
             // pass configuration to flex cache for initialization
             flexCache = new CmsFlexCache(flexCacheConfiguration);
             if (CmsLog.INIT.isInfoEnabled()) {
@@ -1152,6 +1232,9 @@ public final class OpenCmsCore {
         // initialize the publish engine
         m_publishEngine = new CmsPublishEngine(systemConfiguration.getRuntimeInfoFactory());
 
+        // Credentials resolver - needs to be set before the driver manager is initialized 
+        m_credentialsResolver = systemConfiguration.getCredentialsResolver();
+
         // init the OpenCms security manager
         m_securityManager = CmsSecurityManager.newInstance(
             m_configurationManager,
@@ -1176,6 +1259,8 @@ public final class OpenCmsCore {
         // initialize the link manager
         m_linkManager = new CmsLinkManager(m_staticExportManager.getLinkSubstitutionHandler());
 
+        m_aliasManager = new CmsAliasManager(m_securityManager);
+
         // store the runtime properties
         m_runtimeProperties.putAll(systemConfiguration.getRuntimeProperties());
 
@@ -1190,6 +1275,7 @@ public final class OpenCmsCore {
             throw new CmsInitException(Messages.get().container(Messages.ERR_CRITICAL_INIT_ADMINCMS_0), e);
         }
 
+        m_repositoryManager.initializeCms(adminCms);
         // now initialize the other managers
         try {
             // initialize the scheduler
@@ -1222,11 +1308,15 @@ public final class OpenCmsCore {
             // initialize the search manager
             m_searchManager.initialize(initCmsObject(adminCms));
 
+            CmsVfsBundleManager vfsBundleManager = new CmsVfsBundleManager(adminCms);
+            vfsBundleManager.reload(true);
+
             // initialize the workplace manager
             m_workplaceManager.initialize(initCmsObject(adminCms));
 
             // initialize the session manager
             m_sessionManager.initialize(sessionStorageProvider);
+            m_sessionManager.setUserSessionMode(systemConfiguration.getUserSessionMode(true));
 
             // initialize the subscription manager
             m_subscriptionManager.setSecurityManager(m_securityManager);
@@ -1237,6 +1327,13 @@ public final class OpenCmsCore {
             CmsFormatterConfiguration.initialize(adminCms);
             //m_adeManager = new CmsADEManager(initCmsObject(adminCms), m_memoryMonitor, systemConfiguration);
             m_adeManager = new CmsADEManager(adminCms, m_memoryMonitor, systemConfiguration);
+            m_templateContextManager = new CmsTemplateContextManager(adminCms);
+            m_workflowManager = systemConfiguration.getWorkflowManager();
+            if (m_workflowManager == null) {
+                m_workflowManager = new CmsDefaultWorkflowManager();
+                m_workflowManager.setParameters(new HashMap<String, String>());
+            }
+            m_workflowManager.initialize(adminCms);
         } catch (CmsException e) {
             throw new CmsInitException(Messages.get().container(Messages.ERR_CRITICAL_INIT_MANAGERS_0), e);
         }
@@ -1423,14 +1520,17 @@ public final class OpenCmsCore {
                     try {
                         secureUrl = site.getSecureUrl();
                     } catch (Exception e) {
-                        LOG.error(Messages.get().getBundle().key(
-                            Messages.ERR_SECURE_SITE_NOT_CONFIGURED_1,
-                            resourceName), e);
+                        LOG.error(
+                            Messages.get().getBundle().key(Messages.ERR_SECURE_SITE_NOT_CONFIGURED_1, resourceName),
+                            e);
                         throw new CmsException(Messages.get().container(
                             Messages.ERR_SECURE_SITE_NOT_CONFIGURED_1,
                             resourceName), e);
                     }
-                    boolean usingSec = req.getRequestURL().toString().toUpperCase().startsWith(secureUrl.toUpperCase());
+                    boolean usingSec = true;
+                    if (req != null) {
+                        usingSec = req.getRequestURL().toString().toUpperCase().startsWith(secureUrl.toUpperCase());
+                    }
                     if (site.isExclusiveUrl() && !usingSec) {
                         resource = null;
                         // secure resource without secure protocol, check error config
@@ -1454,13 +1554,17 @@ public final class OpenCmsCore {
             }
         }
 
+        boolean clearErrors = false;
         // test if this file has to be checked or modified
-        Iterator<I_CmsResourceInit> i = m_resourceInitHandlers.iterator();
-        while (i.hasNext()) {
+        for (I_CmsResourceInit handler : m_resourceInitHandlers) {
             try {
-                resource = i.next().initResource(resource, cms, req, res);
+                resource = handler.initResource(resource, cms, req, res);
                 // the loop has to be interrupted when the exception is thrown!
             } catch (CmsResourceInitException e) {
+                if (e.isClearErrors()) {
+                    tmpException = null;
+                    clearErrors = true;
+                }
                 break;
             } catch (CmsSecurityException e) {
                 tmpException = e;
@@ -1469,8 +1573,14 @@ public final class OpenCmsCore {
         }
 
         // file is still null and not found exception was thrown, so throw original exception
-        if ((resource == null) && (tmpException != null)) {
-            throw tmpException;
+        if (resource == null) {
+            if (tmpException != null) {
+                throw tmpException;
+            } else if (!clearErrors) {
+                throw new CmsVfsResourceNotFoundException(org.opencms.main.Messages.get().container(
+                    org.opencms.main.Messages.ERR_PATH_NOT_FOUND_1,
+                    resourceName));
+            }
         }
 
         // return the resource read from the VFS
@@ -1528,17 +1638,26 @@ public final class OpenCmsCore {
             rpcService.checkPermissions(cms);
             // set runtime variables
             rpcService.setCms(cms);
+            Object lock = req.getSession();
+            if (lock == null) {
+                lock = new Object();
+            }
+            synchronized (lock) {
+                rpcService.service(req, res);
+            }
+            // update the session info
+            m_sessionManager.updateSessionInfo(cms, req);
+        } catch (CmsRoleViolationException rv) {
+            // don't log these into the error channel
+            LOG.debug(rv.getLocalizedMessage(), rv);
+            // error code not set - set "internal server error" (500)
+            int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            res.setStatus(status);
             try {
-                Object lock = req.getSession();
-                if (lock == null) {
-                    lock = new Object();
-                }
-                synchronized (lock) {
-                    rpcService.service(req, res);
-                }
-            } finally {
-                // be sure to clear the cms context
-                rpcService.setCms(null);
+                res.sendError(status, rv.toString());
+            } catch (IOException e) {
+                // can be ignored
+                LOG.error(e.getLocalizedMessage(), e);
             }
         } catch (Throwable t) {
             // error code not set - set "internal server error" (500)
@@ -1583,6 +1702,8 @@ public final class OpenCmsCore {
             if (cms.getRequestContext().getCurrentProject().isOnlineProject()) {
                 String uri = cms.getRequestContext().getUri();
                 if (OpenCms.getStaticExportManager().isExportLink(cms, uri)) {
+                    // if we used the request's query string for getRfsName, clients could cause an unlimited number 
+                    // of files to be exported just by varying the request parameters! 
                     String url = OpenCms.getStaticExportManager().getRfsName(cms, uri);
                     String siteRoot = cms.getRequestContext().getSiteRoot();
                     url = OpenCms.getSiteManager().getSiteForSiteRoot(siteRoot).getUrl() + url;
@@ -1642,9 +1763,9 @@ public final class OpenCmsCore {
                     // the first thing we have to do is to wait until the current publish process finishes
                     m_publishEngine.shutDown();
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_PUBLISH_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_PUBLISH_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     // search manager must be shut down early since there may be background indexing still ongoing
@@ -1652,91 +1773,111 @@ public final class OpenCmsCore {
                         m_searchManager.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_SEARCH_MANAGER_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_SEARCH_MANAGER_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_staticExportManager != null) {
                         m_staticExportManager.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_EXPORT_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_EXPORT_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_moduleManager != null) {
                         m_moduleManager.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_MODULE_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_MODULE_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
+
+                try {
+                    if (m_executor != null) {
+                        m_executor.shutdownNow();
+                    }
+                } catch (Throwable e) {
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_MODULE_SHUTDOWN_1, e.getMessage()),
+                        e);
+                }
+
                 try {
                     if (m_scheduleManager != null) {
                         m_scheduleManager.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_SCHEDULE_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_SCHEDULE_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_resourceManager != null) {
                         m_resourceManager.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_RESOURCE_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_RESOURCE_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
+
+                try {
+                    if (m_repositoryManager != null) {
+                        m_repositoryManager.shutDown();
+                    }
+                } catch (Throwable e) {
+                    CmsLog.INIT.error(e.getLocalizedMessage(), e);
+                }
+
                 try {
                     // has to be stopped before the security manager, since this thread uses it
                     if (m_threadStore != null) {
                         m_threadStore.shutDown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_THREAD_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_THREAD_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_securityManager != null) {
                         m_securityManager.destroy();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_SECURITY_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_SECURITY_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_sessionManager != null) {
                         m_sessionManager.shutdown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_SESSION_MANAGER_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_SESSION_MANAGER_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_memoryMonitor != null) {
                         m_memoryMonitor.shutdown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_MEMORY_MONITOR_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_MEMORY_MONITOR_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 try {
                     if (m_adeManager != null) {
                         m_adeManager.shutdown();
                     }
                 } catch (Throwable e) {
-                    CmsLog.INIT.error(Messages.get().getBundle().key(
-                        Messages.LOG_ERROR_ADE_MANAGER_SHUTDOWN_1,
-                        e.getMessage()), e);
+                    CmsLog.INIT.error(
+                        Messages.get().getBundle().key(Messages.LOG_ERROR_ADE_MANAGER_SHUTDOWN_1, e.getMessage()),
+                        e);
                 }
                 String runtime = CmsStringUtil.formatRuntime(getSystemInfo().getRuntime());
                 if (CmsLog.INIT.isInfoEnabled()) {
@@ -1774,12 +1915,19 @@ public final class OpenCmsCore {
     protected CmsObject updateContext(HttpServletRequest request, CmsObject cms) throws CmsException {
 
         // get the right site for the request
-        CmsSite site = OpenCms.getSiteManager().matchRequest(request);
-
+        String siteRoot = null;
+        if (cms.getRequestContext().getUri().startsWith("/system/workplace/")
+            && getRoleManager().hasRole(cms, CmsRole.WORKPLACE_USER)) {
+            // keep the site root for workplace requests
+            siteRoot = cms.getRequestContext().getSiteRoot();
+        } else {
+            CmsSite site = OpenCms.getSiteManager().matchRequest(request);
+            siteRoot = site.getSiteRoot();
+        }
         return initCmsObject(
             request,
             cms.getRequestContext().getCurrentUser(),
-            site.getSiteRoot(),
+            siteRoot,
             cms.getRequestContext().getCurrentProject().getUuid(),
             cms.getRequestContext().getOuFqn());
     }
@@ -1988,9 +2136,12 @@ public final class OpenCmsCore {
             if (t.getCause() != null) {
                 t = t.getCause();
             }
-            LOG.error(t.getLocalizedMessage(), t);
+            LOG.error(t.getLocalizedMessage() + " rendering URL " + req.getRequestURL(), t);
+        } else if (t.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+            // only log to debug channel any exceptions caused by a client abort - this is tomcat specific 
+            LOG.debug(t.getLocalizedMessage() + " rendering URL " + req.getRequestURL(), t);
         } else {
-            LOG.error(t.getLocalizedMessage(), t);
+            LOG.error(t.getLocalizedMessage() + " rendering URL " + req.getRequestURL(), t);
         }
 
         if (status < 1) {
@@ -2013,7 +2164,7 @@ public final class OpenCmsCore {
 
         if (canWrite) {
             res.setContentType("text/html");
-            // added by Shi Jinghai, huaruhai@hotmail.com  2011-1-12
+            // added by Shi Jinghai, huaruhai@hotmail.com  2014-4-16
             res.setCharacterEncoding("utf-8");
             
             CmsRequestUtil.setNoCacheHeaders(res);
@@ -2092,10 +2243,12 @@ public final class OpenCmsCore {
             propertyLoginForm = adminCms.readPropertyObject(path, CmsPropertyDefinition.PROPERTY_LOGIN_FORM, true);
         } catch (Throwable t) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn(Messages.get().getBundle().key(
-                    Messages.LOG_ERROR_READING_AUTH_PROP_2,
-                    CmsPropertyDefinition.PROPERTY_LOGIN_FORM,
-                    path), t);
+                LOG.warn(
+                    Messages.get().getBundle().key(
+                        Messages.LOG_ERROR_READING_AUTH_PROP_2,
+                        CmsPropertyDefinition.PROPERTY_LOGIN_FORM,
+                        path),
+                    t);
             }
         }
 
@@ -2163,6 +2316,7 @@ public final class OpenCmsCore {
             m_resourceManager.getFolderTranslator(),
             m_resourceManager.getFileTranslator(),
             contextInfo.getOuFqn());
+        context.setDetailResource(contextInfo.getDetailResource());
 
         // now initialize and return the CmsObject
         return new CmsObject(m_securityManager, context);
@@ -2338,6 +2492,8 @@ public final class OpenCmsCore {
                         && getRoleManager().hasRole(newCms, CmsRole.WORKPLACE_USER)) {
                         // set the default project of the user for workplace users
                         CmsUserSettings settings = new CmsUserSettings(newCms);
+                        // set the configured start site
+                        newCms.getRequestContext().setSiteRoot(settings.getStartSite());
                         try {
                             CmsProject project = newCms.readProject(settings.getStartProject());
                             if (getOrgUnitManager().getAllAccessibleProjects(newCms, project.getOuFqn(), false).contains(
@@ -2349,7 +2505,10 @@ public final class OpenCmsCore {
                             // unable to set the startup project, bad but not critical
                         }
                     }
-
+                    // fire the login user event
+                    OpenCms.fireCmsEvent(
+                        I_CmsEventListener.EVENT_LOGIN_USER,
+                        Collections.<String, Object> singletonMap("data", user));
                     return newCms;
                 } finally {
                     m_adminCms = null;

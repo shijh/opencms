@@ -74,10 +74,10 @@ public class CmsMessages {
     /** The resource bundle this message object was initialized with. */
     private ResourceBundle m_resourceBundle;
     
-    /** The indicator whether a message string should be transfered from iso-8859-1 to utf-8. Added by Shi Jinghai, huaruhai@hotmail.com  2011-12-27 **/
+    /** The indicator whether a message string should be transfered from iso-8859-1 to utf-8. Added by Shi Jinghai, huaruhai@hotmail.com  2014-4-15 **/
     private boolean m_encodeTransfer = false;
     
-    /** The locale list needs encode transfer. Added by Shi Jinghai, huaruhai@hotmail.com  2012-1-5 **/
+    /** The locale list needs encode transfer. Added by Shi Jinghai, huaruhai@hotmail.com  2014-4-15 **/
     private static final Locale[] LOCALES_NEED_TRANSFER = new Locale[] { new Locale("zh"), new Locale("zh_CN"), new Locale("zh_TW")};
     
     public static final List<Locale> LOCALE_LIST_NEED_TRANSFER = Arrays.asList(LOCALES_NEED_TRANSFER);
@@ -94,6 +94,7 @@ public class CmsMessages {
             m_locale = locale;
             m_bundleName = bundleName;
             m_resourceBundle = CmsResourceBundleLoader.getBundle(bundleName, m_locale);
+            /** Added by Shi Jinghai, huaruhai@hotmail.com  2014-4-15 **/
             if (LOCALE_LIST_NEED_TRANSFER.contains(m_locale)) {
             	m_encodeTransfer = true;
             }
@@ -337,7 +338,7 @@ public class CmsMessages {
 
         if (m_resourceBundle != null) {
             try {
-				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
+				// modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-15
 				String value = m_resourceBundle.getString(keyName);
 				try {
 					if (m_encodeTransfer) {
@@ -381,6 +382,16 @@ public class CmsMessages {
         return (m_resourceBundle != null);
     }
 
+    /** 
+     * Indicates that users of this CmsMessages instance should not cache message from it.<p>
+     *  
+     * @return true if messages from this CmsMessages instance should not be cached 
+     */
+    public boolean isUncacheable() {
+
+        return (m_resourceBundle instanceof CmsVfsResourceBundle);
+    }
+
     /**
      * Returns the localized resource string for a given message key.<p>
      * 
@@ -415,7 +426,7 @@ public class CmsMessages {
 
         try {
             if (m_resourceBundle != null) {
-				// modified by Shi Jinghai, huaruhai@hotmail.com 2011-12-13
+				// modified by Shi Jinghai, huaruhai@hotmail.com 2014-4-15
 				String value = m_resourceBundle.getString(keyName);
 				try {
 					if (m_encodeTransfer) {
