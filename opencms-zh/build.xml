@@ -69,11 +69,18 @@
 				<include name="resources/commons/tree.js" />
 			</fileset>
 		</copy>
-		
+		<!-- no longer exists since 9.0.1
 		<copy file="${opencms-core-basedir}/modules/org.opencms.editors.fckeditor/resources/system/workplace/resources/editors/fckeditor/editor/lang/zh-cn.js"
 		      tofile="${src.main.module.workplace}/resources/editors/fckeditor/editor/lang/zh.js"
 		      overwrite="${overwrite.sourcecode}" />
-		
+
+		<copy todir="${src.main.module.workplace}/editors/fckeditor/plugins" overwrite="${overwrite.sourcecode}">
+			<fileset dir="${opencms-core-basedir}/modules/org.opencms.editors.fckeditor/resources/system/workplace/editors/fckeditor/plugins">
+				<include name="downloadgallery/fckplugin.js" />
+				<include name="imagegallery/fckplugin.js" />
+			</fileset>
+		</copy>
+		-->
 		<copy todir="${src.main.module.workplace}/locales/zh" overwrite="${overwrite.sourcecode}">
 			<fileset dir="${opencms-core-basedir}/modules/org.opencms.workplace.help.en/resources/system/workplace/locales/en">
 				<include name="**/*.html" />
@@ -85,12 +92,6 @@
 		      tofile="${src.main.module.classes}/org/opencms/workplace/help/mappings_zh.properties"
 		      overwrite="${overwrite.sourcecode}" />
 
-		<copy todir="${src.main.module.workplace}/editors/fckeditor/plugins" overwrite="${overwrite.sourcecode}">
-			<fileset dir="${opencms-core-basedir}/modules/org.opencms.editors.fckeditor/resources/system/workplace/editors/fckeditor/plugins">
-				<include name="downloadgallery/fckplugin.js" />
-				<include name="imagegallery/fckplugin.js" />
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="copy.webapp" description="Copy the necessary webapp files to this project">
