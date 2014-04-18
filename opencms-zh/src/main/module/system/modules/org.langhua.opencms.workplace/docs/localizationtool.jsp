@@ -119,11 +119,14 @@
 	public static List<String> collectClientMessages() {
         String[] clientBundles = new String[] {
                 "org.opencms.ade.containerpage.clientmessages",
+                "org.opencms.ade.contenteditor.clientmessages",
                 "org.opencms.ade.galleries.clientmessages",
+                "org.opencms.ade.postupload.clientmessages",
                 "org.opencms.ade.publish.clientmessages",
                 "org.opencms.ade.sitemap.clientmessages",
                 "org.opencms.ade.upload.clientmessages",
-                "org.opencms.gwt.clientmessages"
+                "org.opencms.gwt.clientmessages",
+                "org.opencms.gwt.seo.clientmessages"
         };
 		Locale locale = new Locale("en");
 		// create a new list and add the base bundle
