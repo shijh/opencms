@@ -63,7 +63,9 @@
 		
 		<copy todir="${src.main.module.workplace}" overwrite="${overwrite.sourcecode}">
 			<fileset dir="${opencms-core-basedir}/modules/org.opencms.workplace.explorer/resources/system/workplace">
+			    <!-- Unnecessary since 9.0.1
 				<include name="commons/chnav.jsp" />
+				-->
 				<include name="commons/preferences.jsp" />
 				<include name="resources/commons/explorer.js" />
 				<include name="resources/commons/tree.js" />
