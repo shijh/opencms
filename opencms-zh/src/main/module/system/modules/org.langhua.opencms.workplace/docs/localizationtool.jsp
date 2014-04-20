@@ -28,7 +28,30 @@
 		cms.getRequestContext().setSiteRoot(siteRoot);
 	}
 
-	public static List<String> collectAlkaconModuleMessages() {
+	public static List<String> collectI18nXmlMessages(CmsObject cms, JspWriter out) {
+		Locale locale = new Locale("en");
+		// create a new list and add the base bundle
+		ArrayList<String> result = new ArrayList<String>();
+
+        try {
+            int xmlType = OpenCms.getResourceManager().getResourceType(CmsVfsBundleManager.TYPE_XML_BUNDLE).getTypeId();
+            List<CmsResource> xmlBundles = cms.readResources("/", CmsResourceFilter.ALL.addRequireType(xmlType), true);
+            for (CmsResource xmlBundle : xmlBundles) {
+            	if (!result.contains(xmlBundle.getName())) result.add(xmlBundle.getName());
+            }
+        } catch (Exception e) {
+        	try {
+        		out.println("<h3>" + e.getMessage() + "</h3>");
+        	} catch (Exception e1) {
+        		// do nothing
+        	}
+        }
+
+		Collections.sort(result);
+		return result;
+	}
+
+	public static List<String> collectAlkaconModuleMessages(List<String> i18nBundleNames) {
 		Locale locale = new Locale("en");
 		// create a new list and add the base bundle
 		ArrayList<String> result = new ArrayList<String>();
@@ -49,7 +72,7 @@
 				// try to load a bundle with the module names
 				CmsMessages msg = new CmsMessages(bundleName, locale);
 				// bundle was loaded, add to list of bundles
-				if (msg.isInitialized()
+				if (!i18nBundleNames.contains(bundleName) && msg.isInitialized()
 						&& msg.getResourceBundle().keySet().size() > 0) {
 					result.add(bundleName);
 				}
@@ -60,7 +83,7 @@
 				// try to load a bundle with the module names
 				msg = new CmsMessages(bundleName, locale);
 				// bundle was loaded, add to list of bundles
-				if (msg.isInitialized()
+				if (!i18nBundleNames.contains(bundleName) && msg.isInitialized()
 						&& msg.getResourceBundle().keySet().size() > 0) {
 					result.add(bundleName);
 				}
@@ -239,9 +262,14 @@
         bundleNames.add("");
         bundleNames.addAll(collectClientMessages());
         
+        // OpenCms i18n XML Messages
+        bundleNames.add("");
+        List<String> i18nBundleNames = collectI18nXmlMessages(cms.getCmsObject(), out);
+        bundleNames.addAll(i18nBundleNames);
+
         // Alkacon Modules' Messages
         bundleNames.add("");
-        bundleNames.addAll(collectAlkaconModuleMessages());
+        bundleNames.addAll(collectAlkaconModuleMessages(i18nBundleNames));
         
         // Additional Modules' Messages
         bundleNames.add("");
@@ -264,6 +292,9 @@
 
         // Get the current file and folder name
         String translatedBundle = CmsWorkplace.VFS_PATH_WORKPLACE + "locales/" + localeString + "/messages/" + originalBundle + "_" + localeString + ".properties";
+        if (i18nBundleNames.contains(selectedBundle)) {
+        	translatedBundle = "/system/modules/org.langhua.opencms.workplace/i18n/" + selectedBundle;
+        }
 
 
         if(!cms.getCmsObject().existsResource(translatedBundle)) {
@@ -314,12 +345,12 @@
         CmsFile file = cms.getCmsObject().readFile(translatedBundle);
         contents = file.getContents();
         
-                        
-        // Get the current file and folder name
         ByteArrayInputStream inStream = new ByteArrayInputStream(contents);
         Properties newMessages = new Properties();
         newMessages.load(inStream);
-        
+%>
+	<h4><%= translatedBundle %>有<%= newMessages.keySet().size() %>个键</h4>
+<%        
         boolean combineMissing = !"false".equals(request.getParameter("combine"));
         boolean hideMatching = "true".equals(request.getParameter("hideMatching"));
         boolean hideMissing = "true".equals(request.getParameter("hideMissing"));        
@@ -336,7 +367,7 @@
         while (keys.hasMoreElements()) {                
                 String key = (String)keys.nextElement();
                 if (magicKeyList.indexOf(key) < 0) newList.add(key);
-                String value = ((String)newMessages.get(key)).replaceAll("\n","\\n");
+                String value = (newMessages.getProperty(key)).replaceAll("\n","\\n");
                 String spaces = "";
                 while(value.startsWith(" ")) {
                         value = value.substring(1);
@@ -385,7 +416,7 @@
         Collections.sort(originalList);        
         Collections.sort(newList);        
         
-        List<String> missingKeys = new ArrayList<String>();
+        Set<String> missingKeys = new HashSet<String>();
         List<String> matchingKeys = new ArrayList<String>();
         List<String> unnecessaryKeys = new ArrayList<String>();
         
