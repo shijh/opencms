@@ -7,7 +7,10 @@
 	             org.opencms.main.*,
 	             org.opencms.util.*,
 	             org.opencms.gwt.*,
-	             org.opencms.workplace.*"%><%!
+	             org.opencms.workplace.*,
+	             org.opencms.xml.*,
+	             org.opencms.xml.types.*,
+	             org.opencms.xml.content.*"%><%!
 	
 	public void createResourceWithParentFolders(CmsObject cms, String path,
 			int typeId) throws CmsException {
@@ -28,7 +31,7 @@
 		cms.getRequestContext().setSiteRoot(siteRoot);
 	}
 
-	public static List<String> collectI18nXmlMessages(CmsObject cms, JspWriter out) {
+	public static List<String> collectI18nXmlMessages(CmsObject cms, JspWriter out, Map<String, List<CmsResource>> xmlBundleFiles) {
 		Locale locale = new Locale("en");
 		// create a new list and add the base bundle
 		ArrayList<String> result = new ArrayList<String>();
@@ -37,7 +40,21 @@
             int xmlType = OpenCms.getResourceManager().getResourceType(CmsVfsBundleManager.TYPE_XML_BUNDLE).getTypeId();
             List<CmsResource> xmlBundles = cms.readResources("/", CmsResourceFilter.ALL.addRequireType(xmlType), true);
             for (CmsResource xmlBundle : xmlBundles) {
-            	if (!result.contains(xmlBundle.getName())) result.add(xmlBundle.getName());
+            	String bundleName = xmlBundle.getName();
+            	if (!result.contains(xmlBundle.getName())) result.add(bundleName);
+            	if (xmlBundleFiles.containsKey(bundleName)) {
+            		List<CmsResource> xmlBundleList = xmlBundleFiles.get(bundleName);
+            		if (xmlBundleList == null) {
+            			xmlBundleList = new ArrayList<CmsResource>();
+            		}
+            		xmlBundleList.add(xmlBundle);
+            		xmlBundleFiles.put(bundleName, xmlBundleList);
+            	} else {
+            		List<CmsResource> xmlBundleList = new ArrayList<CmsResource>();
+            		xmlBundleList.add(xmlBundle);
+            		xmlBundleFiles.put(bundleName, xmlBundleList);
+            	}
+            	
             }
         } catch (Exception e) {
         	try {
@@ -264,7 +281,8 @@
         
         // OpenCms i18n XML Messages
         bundleNames.add("");
-        List<String> i18nBundleNames = collectI18nXmlMessages(cms.getCmsObject(), out);
+        Map<String, List<CmsResource>> xmlBundleFiles = new HashMap<String, List<CmsResource>>();
+        List<String> i18nBundleNames = collectI18nXmlMessages(cms.getCmsObject(), out, xmlBundleFiles);
         bundleNames.addAll(i18nBundleNames);
 
         // Alkacon Modules' Messages
@@ -292,8 +310,10 @@
 
         // Get the current file and folder name
         String translatedBundle = CmsWorkplace.VFS_PATH_WORKPLACE + "locales/" + localeString + "/messages/" + originalBundle + "_" + localeString + ".properties";
+        boolean isXmlMessages = false;
         if (i18nBundleNames.contains(selectedBundle)) {
         	translatedBundle = "/system/modules/org.langhua.opencms.workplace/i18n/" + selectedBundle;
+        	isXmlMessages = true;
         }
 
 
@@ -342,15 +362,28 @@
         
      byte[] contents = "error".getBytes();
      try {
-        CmsFile file = cms.getCmsObject().readFile(translatedBundle);
-        contents = file.getContents();
-        
-        ByteArrayInputStream inStream = new ByteArrayInputStream(contents);
+		CmsFile file = cms.getCmsObject().readFile(translatedBundle);
         Properties newMessages = new Properties();
-        newMessages.load(inStream);
-%>
-	<h4><%= translatedBundle %>有<%= newMessages.keySet().size() %>个键</h4>
-<%        
+        
+        if (isXmlMessages) {
+        	CmsXmlContent content = CmsXmlContentFactory.unmarshal(cms.getCmsObject(), file);
+            Locale zhLocale = new Locale("zh");
+        	List<I_CmsXmlContentValue> messageValues = content.getValues("Message", zhLocale);
+        	for (I_CmsXmlContentValue messageValue : messageValues) {
+                String messageXpath = messageValue.getPath();
+                I_CmsXmlContentValue keyValue = content.getValue(CmsXmlUtils.concatXpath(messageXpath, "Key"), zhLocale);
+                String key = keyValue.getStringValue(cms.getCmsObject());
+                I_CmsXmlContentValue valueValue = content.getValue(CmsXmlUtils.concatXpath(messageXpath, "Value"), zhLocale);
+                String value = valueValue.getStringValue(cms.getCmsObject());
+        		newMessages.put(key, value);
+            }
+        } else {
+            // Get the current file and folder name
+        	contents = file.getContents();
+            ByteArrayInputStream inStream = new ByteArrayInputStream(contents);
+            newMessages.load(inStream);
+        }
+
         boolean combineMissing = !"false".equals(request.getParameter("combine"));
         boolean hideMatching = "true".equals(request.getParameter("hideMatching"));
         boolean hideMissing = "true".equals(request.getParameter("hideMissing"));        
@@ -387,12 +420,23 @@
         ResourceBundle originalResourceBundle = null;
         try {
             originalMessages.load(getClass().getClassLoader().getResourceAsStream(originalBundle));
-            keys = originalMessages.keys();
         } catch (Exception e) {
-			CmsMessages msg = new CmsMessages(selectedBundle, new Locale("en"));
-			originalResourceBundle = msg.getResourceBundle();
-            keys = originalResourceBundle.getKeys();
+        	List<CmsResource> xmlBundles = xmlBundleFiles.get(selectedBundle);
+        	for (CmsResource xmlBundle : xmlBundles) {
+            	CmsXmlContent content = CmsXmlContentFactory.unmarshal(cms.getCmsObject(), cms.getCmsObject().readFile(xmlBundle));
+                Locale enLocale = new Locale("en");
+            	List<I_CmsXmlContentValue> messageValues = content.getValues("Message", enLocale);
+            	for (I_CmsXmlContentValue messageValue : messageValues) {
+                    String messageXpath = messageValue.getPath();
+                    I_CmsXmlContentValue keyValue = content.getValue(CmsXmlUtils.concatXpath(messageXpath, "Key"), enLocale);
+                    String key = keyValue.getStringValue(cms.getCmsObject());
+                    I_CmsXmlContentValue valueValue = content.getValue(CmsXmlUtils.concatXpath(messageXpath, "Value"), enLocale);
+                    String value = valueValue.getStringValue(cms.getCmsObject());
+                    originalMessages.put(key, value);
+                }
+        	}
         }
+        keys = originalMessages.keys();
     	
         List<String> originalList = new ArrayList<String>();
         while (keys.hasMoreElements()) {
@@ -429,7 +473,7 @@
                 if (index < 0) {
                         missingKeys.add(key);
                 } else {
-                        if (! "".equals(((String)newMessages.get(key)).trim())) {
+                        if (!"".equals(((String) newMessages.get(key)).trim())) {
                                 matchingKeys.add(key);
                         } else {
                                 missingKeys.add(key);
@@ -443,7 +487,7 @@
                 if (index < 0) {
                         if (! "".equals(((String)newMessages.get(key)).trim())) {
                                 unnecessaryKeys.add(key);
-                        }        
+                        }
                 }
         }        
                 
@@ -473,7 +517,7 @@ if (hideMatching) {
 		<dd style="color: #660000"><%= CmsEncoder.escapeHtml((String)originalMessages.get(key)) %>
 			&nbsp;
 		</dd>
-		<dd style="color: #000066"><%= new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8") %>
+		<dd style="color: #000066"><%= isXmlMessages? (String) newMessages.get(key) : new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8") %>
 			&nbsp;
 		</dd>
 		<%        } %>
@@ -487,7 +531,7 @@ if (hideMatching) {
                 String key = (String)i.next();
 %>
 		<dt style="color: #006600"><%= key %></dt>
-		<dd style="color: #000066"><%= new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8")  %></dd>
+		<dd style="color: #000066"><%= isXmlMessages? (String) newMessages.get(key) : new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8")  %></dd>
 		<%        } %>
 	</dl> <% } else { %>
 	<h4>没有不必要的键！</h4>
@@ -567,16 +611,10 @@ if (hideNew) {
 	</h4> <% if (! hideNew) { %> <pre
 		style="background-color: #eeeeee; border: solid; border-width: 1px; padding: 15px">
 <%                
-        i = magicKeyList.iterator();        
-        while (i.hasNext()) {
-                String key = (String)i.next();
-%><%= key %>=<%= new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8")  %>
-<%        } %>
-<%                
         i = matchingKeys.iterator();        
         while (i.hasNext()) {
                 String key = (String)i.next();
-%><%= key %>=<%= new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8")  %>
+%><%= key %>=<%= isXmlMessages? (String) newMessages.get(key) : new String(((String)newMessages.get(key)).getBytes("ISO-8859-1"),"UTF-8")  %>
 <%        } %>
 	</pre> <% } %> <% } %> <%       
 
