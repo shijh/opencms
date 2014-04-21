@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<XmlVfsBundles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.config/schemas/xmlvfsbundle.xsd">
+  <Bundle language="zh">
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.Title]]></Key>
+      <Value><![CDATA[标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.Title.help]]></Key>
+      <Value><![CDATA[标题不显示。用于在库中查找元素。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.NavStartLevel]]></Key>
+      <Value><![CDATA[导航开始级数]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.NavStartLevel.help]]></Key>
+      <Value><![CDATA[选择导航要开始的文件夹级数。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.LogoLink]]></Key>
+      <Value><![CDATA[图标链接]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.LogoLink.help]]></Key>
+      <Value><![CDATA[当点击页眉图标时的链接目标。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.Header]]></Key>
+      <Value><![CDATA[页眉HTML]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.Header.help]]></Key>
+      <Value><![CDATA[用于页眉的HTML代码。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.TabGeneral]]></Key>
+      <Value><![CDATA[通用设置]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapNavigation.TabHeader]]></Key>
+      <Value><![CDATA[页眉]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.navigation.navstartlevel.0]]></Key>
+      <Value><![CDATA[0 - 根级]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.navigation.navstartlevel.1]]></Key>
+      <Value><![CDATA[1 - 第一级]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.navigation.navstartlevel.2]]></Key>
+      <Value><![CDATA[2 - 第二级]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.navigation.navstartlevel.3]]></Key>
+      <Value><![CDATA[3 - 第三级]]></Value>
+    </Message>
+  </Bundle>
+</XmlVfsBundles>

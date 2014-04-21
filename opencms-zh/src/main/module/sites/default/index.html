@@ -1,60 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <AlkaconContainerPages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.containerpage/schemas/container_page.xsd">
-  <AlkaconContainerPage language="en">
+  <AlkaconContainerPage language="de">
     <Containers>
       <Name><![CDATA[headercontainer]]></Name>
       <Type><![CDATA[header]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/config/c_0001.html]]></target>
-            <uuid>a997c4b7-70d7-11e0-b894-5de1afb8a118</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/formatters/config.jsp]]></target>
-            <uuid>c3b2d43e-70d0-11e0-af5a-5de1afb8a118</uuid>
-          </link>
-        </Formatter>
-      </Elements>
     </Containers>
     <Containers>
       <Name><![CDATA[leftcontainer]]></Name>
       <Type><![CDATA[left]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/release/.content/article/a_00047.html]]></target>
-            <uuid>c77b0e49-c80f-11e0-a3d5-7b2444d59c19</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.article/formatters/side.jsp]]></target>
-            <uuid>c2fc28d8-6b61-11e0-b1bb-c3baf286301a</uuid>
-          </link>
-        </Formatter>
-        <Properties>
-          <Name><![CDATA[hidetitle]]></Name>
-          <Value>
-            <String><![CDATA[false]]></String>
-          </Value>
-        </Properties>
-        <Properties>
-          <Name><![CDATA[keephtml]]></Name>
-          <Value>
-            <String><![CDATA[true]]></String>
-          </Value>
-        </Properties>
-        <Properties>
-          <Name><![CDATA[boxschema]]></Name>
-          <Value>
-            <String><![CDATA[box_schema1]]></String>
-          </Value>
-        </Properties>
-      </Elements>
     </Containers>
     <Containers>
       <Name><![CDATA[rightcontainer]]></Name>
@@ -63,198 +17,342 @@
     <Containers>
       <Name><![CDATA[centercontainer]]></Name>
       <Type><![CDATA[center]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[footercontainer]]></Name>
+      <Type><![CDATA[footer]]></Type>
+    </Containers>
+  </AlkaconContainerPage>
+  <AlkaconContainerPage language="en">
+    <Containers>
+      <Name><![CDATA[top-wide]]></Name>
+      <Type><![CDATA[content-wide]]></Type>
       <Elements>
         <Uri>
           <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/function/function-00004.html]]></target>
-            <uuid>201bc473-c7ea-11e0-a3d5-7b2444d59c19</uuid>
+            <target><![CDATA[/sites/default/demo/.content/sliders/sl_00001.xml]]></target>
+            <uuid>0e52d1b6-2457-11e3-adc8-000c297c001d</uuid>
           </link>
         </Uri>
         <Formatter>
           <link type="STRONG">
-            <target><![CDATA[/system/modules/org.opencms.ade.containerpage/formatters/function.jsp]]></target>
-            <uuid>087ba7c9-e7fc-4336-acb8-d3416a4eb1fd</uuid>
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/slider.jsp]]></target>
+            <uuid>5e9a18fa-241f-11e3-adc8-000c297c001d</uuid>
           </link>
         </Formatter>
-      </Elements>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/release/.content/article/a_00046.html]]></target>
-            <uuid>24edefc0-c7eb-11e0-a3d5-7b2444d59c19</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.article/formatters/detail.jsp]]></target>
-            <uuid>cf80815c-6b61-11e0-b1bb-c3baf286301a</uuid>
-          </link>
-        </Formatter>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top-wide]]></Name>
+          <Value>
+            <String><![CDATA[9a7941b3-420e-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top]]></Name>
+          <Value>
+            <String><![CDATA[9a7941b3-420e-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[templateContexts]]></Name>
+          <Value>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
         <Properties>
           <Name><![CDATA[hidetitle]]></Name>
           <Value>
             <String><![CDATA[true]]></String>
           </Value>
         </Properties>
+      </Elements>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[top]]></Name>
+      <Type><![CDATA[content-full]]></Type>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/tutorial/.content/teaserrows/tr_00002.xml]]></target>
+            <uuid>cd27f8ae-4600-11e3-945d-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/teaserrow.jsp]]></target>
+            <uuid>0371f7a4-3c8e-11e3-a99f-000c2943a707</uuid>
+          </link>
+        </Formatter>
         <Properties>
-          <Name><![CDATA[keephtml]]></Name>
+          <Name><![CDATA[formatterSettings#top]]></Name>
           <Value>
-            <String><![CDATA[false]]></String>
+            <String><![CDATA[27dcabef-4210-11e3-9920-000c29d28104]]></String>
           </Value>
         </Properties>
         <Properties>
-          <Name><![CDATA[boxschema]]></Name>
+          <Name><![CDATA[templateContexts]]></Name>
           <Value>
-            <String><![CDATA[box_schema3]]></String>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hidetitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+      </Elements>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/tutorial/.content/teaserrows/tr_00001.xml]]></target>
+            <uuid>9bfb13a4-4550-11e3-a0f9-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/teaserrow.jsp]]></target>
+            <uuid>0371f7a4-3c8e-11e3-a99f-000c2943a707</uuid>
+          </link>
+        </Formatter>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top]]></Name>
+          <Value>
+            <String><![CDATA[27dcabef-4210-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[templateContexts]]></Name>
+          <Value>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hidetitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+      </Elements>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/demo/.content/flexiblecontents/fc_00003.xml]]></target>
+            <uuid>537414e9-8e6e-11e3-8ef1-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/flexible.jsp]]></target>
+            <uuid>3496dbbd-210d-11e3-9f67-000c297c001d</uuid>
+          </link>
+        </Formatter>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top]]></Name>
+          <Value>
+            <String><![CDATA[a97ba455-420c-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[templateContexts]]></Name>
+          <Value>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hideTitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[requireReload]]></Name>
+          <Value>
+            <String><![CDATA[false]]></String>
           </Value>
         </Properties>
       </Elements>
     </Containers>
     <Containers>
-      <Name><![CDATA[footercontainer]]></Name>
-      <Type><![CDATA[footer]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/config/c_0001.html]]></target>
-            <uuid>a997c4b7-70d7-11e0-b894-5de1afb8a118</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/formatters/config.jsp]]></target>
-            <uuid>c3b2d43e-70d0-11e0-af5a-5de1afb8a118</uuid>
-          </link>
-        </Formatter>
-      </Elements>
+      <Name><![CDATA[middle-left]]></Name>
+      <Type><![CDATA[content]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[middle-right]]></Name>
+      <Type><![CDATA[content]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[bottom]]></Name>
+      <Type><![CDATA[content-full]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[foot]]></Name>
+      <Type><![CDATA[content-wide]]></Type>
     </Containers>
   </AlkaconContainerPage>
   <AlkaconContainerPage language="zh">
     <Containers>
-      <Name><![CDATA[headercontainer]]></Name>
-      <Type><![CDATA[header]]></Type>
+      <Name><![CDATA[top-wide]]></Name>
+      <Type><![CDATA[content-wide]]></Type>
       <Elements>
         <Uri>
           <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/config/c_0001.html]]></target>
-            <uuid>a997c4b7-70d7-11e0-b894-5de1afb8a118</uuid>
+            <target><![CDATA[/sites/default/demo/.content/sliders/sl_00001.xml]]></target>
+            <uuid>0e52d1b6-2457-11e3-adc8-000c297c001d</uuid>
           </link>
         </Uri>
         <Formatter>
           <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/formatters/config.jsp]]></target>
-            <uuid>c3b2d43e-70d0-11e0-af5a-5de1afb8a118</uuid>
-          </link>
-        </Formatter>
-      </Elements>
-    </Containers>
-    <Containers>
-      <Name><![CDATA[leftcontainer]]></Name>
-      <Type><![CDATA[left]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/release/.content/article/a_00047.html]]></target>
-            <uuid>c77b0e49-c80f-11e0-a3d5-7b2444d59c19</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.article/formatters/side.jsp]]></target>
-            <uuid>c2fc28d8-6b61-11e0-b1bb-c3baf286301a</uuid>
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/slider.jsp]]></target>
+            <uuid>5e9a18fa-241f-11e3-adc8-000c297c001d</uuid>
           </link>
         </Formatter>
         <Properties>
-          <Name><![CDATA[hidetitle]]></Name>
+          <Name><![CDATA[formatterSettings#top-wide]]></Name>
           <Value>
-            <String><![CDATA[false]]></String>
+            <String><![CDATA[9a7941b3-420e-11e3-9920-000c29d28104]]></String>
           </Value>
         </Properties>
         <Properties>
-          <Name><![CDATA[keephtml]]></Name>
+          <Name><![CDATA[formatterSettings#top]]></Name>
           <Value>
-            <String><![CDATA[true]]></String>
+            <String><![CDATA[9a7941b3-420e-11e3-9920-000c29d28104]]></String>
           </Value>
         </Properties>
         <Properties>
-          <Name><![CDATA[boxschema]]></Name>
+          <Name><![CDATA[templateContexts]]></Name>
           <Value>
-            <String><![CDATA[box_schema1]]></String>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
           </Value>
         </Properties>
-      </Elements>
-    </Containers>
-    <Containers>
-      <Name><![CDATA[rightcontainer]]></Name>
-      <Type><![CDATA[right]]></Type>
-    </Containers>
-    <Containers>
-      <Name><![CDATA[centercontainer]]></Name>
-      <Type><![CDATA[center]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/function/function-00004.html]]></target>
-            <uuid>201bc473-c7ea-11e0-a3d5-7b2444d59c19</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/org.opencms.ade.containerpage/formatters/function.jsp]]></target>
-            <uuid>087ba7c9-e7fc-4336-acb8-d3416a4eb1fd</uuid>
-          </link>
-        </Formatter>
-      </Elements>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/release/.content/article/a_00046.html]]></target>
-            <uuid>24edefc0-c7eb-11e0-a3d5-7b2444d59c19</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.article/formatters/detail.jsp]]></target>
-            <uuid>cf80815c-6b61-11e0-b1bb-c3baf286301a</uuid>
-          </link>
-        </Formatter>
         <Properties>
           <Name><![CDATA[hidetitle]]></Name>
           <Value>
             <String><![CDATA[true]]></String>
           </Value>
         </Properties>
+      </Elements>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[top]]></Name>
+      <Type><![CDATA[content-full]]></Type>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/tutorial/.content/teaserrows/tr_00002.xml]]></target>
+            <uuid>cd27f8ae-4600-11e3-945d-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/teaserrow.jsp]]></target>
+            <uuid>0371f7a4-3c8e-11e3-a99f-000c2943a707</uuid>
+          </link>
+        </Formatter>
         <Properties>
-          <Name><![CDATA[keephtml]]></Name>
+          <Name><![CDATA[formatterSettings#top]]></Name>
           <Value>
-            <String><![CDATA[false]]></String>
+            <String><![CDATA[27dcabef-4210-11e3-9920-000c29d28104]]></String>
           </Value>
         </Properties>
         <Properties>
-          <Name><![CDATA[boxschema]]></Name>
+          <Name><![CDATA[templateContexts]]></Name>
           <Value>
-            <String><![CDATA[box_schema3]]></String>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hidetitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+      </Elements>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/tutorial/.content/teaserrows/tr_00001.xml]]></target>
+            <uuid>9bfb13a4-4550-11e3-a0f9-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/teaserrow.jsp]]></target>
+            <uuid>0371f7a4-3c8e-11e3-a99f-000c2943a707</uuid>
+          </link>
+        </Formatter>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top]]></Name>
+          <Value>
+            <String><![CDATA[27dcabef-4210-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[templateContexts]]></Name>
+          <Value>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hidetitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+      </Elements>
+      <Elements>
+        <Uri>
+          <link type="STRONG">
+            <target><![CDATA[/sites/default/demo/.content/flexiblecontents/fc_00003.xml]]></target>
+            <uuid>537414e9-8e6e-11e3-8ef1-000c29d28104</uuid>
+          </link>
+        </Uri>
+        <Formatter>
+          <link type="STRONG">
+            <target><![CDATA[/system/modules/com.alkacon.bootstrap.formatters/formatters/flexible.jsp]]></target>
+            <uuid>3496dbbd-210d-11e3-9f67-000c297c001d</uuid>
+          </link>
+        </Formatter>
+        <Properties>
+          <Name><![CDATA[formatterSettings#top]]></Name>
+          <Value>
+            <String><![CDATA[a97ba455-420c-11e3-9920-000c29d28104]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[templateContexts]]></Name>
+          <Value>
+            <String><![CDATA[desktop|mobile|tablet]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[hideTitle]]></Name>
+          <Value>
+            <String><![CDATA[true]]></String>
+          </Value>
+        </Properties>
+        <Properties>
+          <Name><![CDATA[requireReload]]></Name>
+          <Value>
+            <String><![CDATA[false]]></String>
           </Value>
         </Properties>
       </Elements>
     </Containers>
     <Containers>
-      <Name><![CDATA[footercontainer]]></Name>
-      <Type><![CDATA[footer]]></Type>
-      <Elements>
-        <Uri>
-          <link type="STRONG">
-            <target><![CDATA[/sites/default/.content/config/c_0001.html]]></target>
-            <uuid>a997c4b7-70d7-11e0-b894-5de1afb8a118</uuid>
-          </link>
-        </Uri>
-        <Formatter>
-          <link type="STRONG">
-            <target><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/formatters/config.jsp]]></target>
-            <uuid>c3b2d43e-70d0-11e0-af5a-5de1afb8a118</uuid>
-          </link>
-        </Formatter>
-      </Elements>
+      <Name><![CDATA[middle-left]]></Name>
+      <Type><![CDATA[content]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[middle-right]]></Name>
+      <Type><![CDATA[content]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[bottom]]></Name>
+      <Type><![CDATA[content-full]]></Type>
+    </Containers>
+    <Containers>
+      <Name><![CDATA[foot]]></Name>
+      <Type><![CDATA[content-wide]]></Type>
     </Containers>
   </AlkaconContainerPage>
 </AlkaconContainerPages>

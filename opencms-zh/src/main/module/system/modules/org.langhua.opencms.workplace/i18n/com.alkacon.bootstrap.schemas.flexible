@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<XmlVfsBundles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.config/schemas/xmlvfsbundle.xsd">
+  <Bundle language="zh">
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.Title]]></Key>
+      <Value><![CDATA[标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.Title.help]]></Key>
+      <Value><![CDATA[灵活元素的标题。能用一个设置把它隐藏起来。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.Choice]]></Key>
+      <Value><![CDATA[元素]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.Choice.help]]></Key>
+      <Value><![CDATA[选择要显示的灵活内容类型。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Image]]></Key>
+      <Value><![CDATA[图片]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Image.help]]></Key>
+      <Value><![CDATA[图片会被缩放到最大列宽。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Text]]></Key>
+      <Value><![CDATA[文本]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Text.help]]></Key>
+      <Value><![CDATA[能够自由编辑的文本。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Code]]></Key>
+      <Value><![CDATA[代码]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElementChoice.Code.help]]></Key>
+      <Value><![CDATA[用于包含HTML代码或JavaScript。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.flexible.message.changed]]></Key>
+      <Value><![CDATA[已经编辑了内容，请刷新页面！]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.flexible.message.edit]]></Key>
+      <Value><![CDATA[请编辑这个灵活元素内容。]]></Value>
+    </Message>
+  </Bundle>
+</XmlVfsBundles>

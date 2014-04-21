@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<XmlVfsBundles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.config/schemas/xmlvfsbundle.xsd">
+  <Bundle language="zh">
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerow.Title]]></Key>
+      <Value><![CDATA[标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerow.Title.help]]></Key>
+      <Value><![CDATA[显示在图片行上面的标题。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerow.Item]]></Key>
+      <Value><![CDATA[行条目]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerow.Item.help]]></Key>
+      <Value><![CDATA[一个行条目有一个头条、文本和可选的图片和链接。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Headline]]></Key>
+      <Value><![CDATA[头条]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Headline.help]]></Key>
+      <Value><![CDATA[图片行条目的头条。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Text]]></Key>
+      <Value><![CDATA[文本]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Text.help]]></Key>
+      <Value><![CDATA[条目的文本。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Image]]></Key>
+      <Value><![CDATA[图片]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Image.help]]></Key>
+      <Value><![CDATA[条目的图片。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Link]]></Key>
+      <Value><![CDATA[链接]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImagerowItem.Link.help]]></Key>
+      <Value><![CDATA[指向更多信息的链接，可以是外部链接(以<b>http://</b>开头)。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.imagerow.default.Title]]></Key>
+      <Value><![CDATA[新建图片行]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.imagerow.default.Text]]></Key>
+      <Value><![CDATA[请编辑图片行条目文本。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.imagerow.frontend.readmore]]></Key>
+      <Value><![CDATA[浏览详情 >>]]></Value>
+    </Message>
+  </Bundle>
+</XmlVfsBundles>

@@ -3,8 +3,8 @@
 <export>
 	<info>
 		<creator>Admin</creator>
-		<opencms_version>8.0.3</opencms_version>
-		<createdate>Mon, 09 Jan 2012 02:47:30 GMT</createdate>
+		<opencms_version>9.0.1</opencms_version>
+		<createdate>Mon, 21 Apr 2014 09:53:44 GMT</createdate>
 		<infoproject>Offline</infoproject>
 		<export_version>7</export_version>
 	</info>
@@ -13,8 +13,8 @@
 		<nicename><![CDATA[Chinese Language Module]]></nicename>
 		<group>Langhua Opensource</group>
 		<class/>
-		<description><![CDATA[Chinese Language Module for OpenCms 8.0.3. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
-		<version>8.0.3.0</version>
+		<description><![CDATA[Chinese Language Module for OpenCms 9.0.1. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
+		<version>9.0.1</version>
 		<authorname><![CDATA[Shi Jinghai]]></authorname>
 		<authoremail><![CDATA[huaruhai@hotmail.com]]></authoremail>
 		<datecreated/>
@@ -28,18 +28,11 @@
 		</exportpoints>
 		<resources>
 			<resource uri="/system/modules/org.langhua.opencms.workplace/"/>
-			<resource uri="/system/workplace/commons/chnav.jsp"/>
 			<resource uri="/system/workplace/commons/preferences.jsp"/>
 			<resource uri="/system/workplace/locales/zh/"/>
 			<resource uri="/system/workplace/resources/commons/explorer.js"/>
 			<resource uri="/system/workplace/resources/commons/tree.js"/>
-			<resource uri="/system/workplace/resources/editors/fckeditor/editor/lang/zh.js"/>
-			<resource uri="/system/workplace/editors/fckeditor/plugins/imagegallery/fckplugin.js"/>
-			<resource uri="/system/workplace/editors/fckeditor/plugins/downloadgallery/fckplugin.js"/>
 			<resource uri="/sites/default/index.html"/>
-			<resource uri="/sites/default/release/.content/article/a_00046.html"/>
-			<resource uri="/sites/default/release/.content/article/a_00047.html"/>
-			<resource uri="/sites/default/release/welcome.jsp"/>
 		</resources>
 		<parameters/>
 	</module>
@@ -47,10 +40,10 @@
 		<file>
 			<destination>system</destination>
 			<type>folder</type>
-			<uuidstructure>c243e71d-3a2b-11e1-be09-e4ce8f2df730</uuidstructure>
-			<datelastmodified>Sun, 08 Jan 2012 19:05:41 GMT</datelastmodified>
+			<uuidstructure>00f91eef-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Wed, 16 Apr 2014 07:59:15 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Sun, 08 Jan 2012 19:05:41 GMT</datecreated>
+			<datecreated>Wed, 16 Apr 2014 07:59:15 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -69,10 +62,10 @@
 		<file>
 			<destination>system/modules</destination>
 			<type>folder</type>
-			<uuidstructure>c2903199-3a2b-11e1-be09-e4ce8f2df730</uuidstructure>
-			<datelastmodified>Sun, 08 Jan 2012 19:05:42 GMT</datelastmodified>
+			<uuidstructure>02ce063b-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Sun, 08 Jan 2012 19:05:42 GMT</datecreated>
+			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -973,7 +966,7 @@
 			<type>jsp</type>
 			<uuidstructure>ac5167ea-b5bb-11dc-a62a-73f74a2d1f86</uuidstructure>
 			<uuidresource>ac5167eb-b5bb-11dc-a62a-73f74a2d1f86</uuidresource>
-			<datelastmodified>Sat, 07 Jan 2012 00:17:13 GMT</datelastmodified>
+			<datelastmodified>Sun, 20 Apr 2014 23:48:44 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Sat, 29 Dec 2007 03:10:56 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -992,9 +985,402 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n</destination>
+			<type>folder</type>
+			<uuidstructure>63df0c30-c706-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 14:33:21 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 14:33:21 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.dev.demo.workplace</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.dev.demo.workplace</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>31b44ab6-c868-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>31b44ab7-c868-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Sun, 20 Apr 2014 11:24:34 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 08:45:58 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Dev-Demo messages]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.formatters.messages</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.formatters.messages</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>33a0f307-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>33a0f308-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Sun, 20 Apr 2014 23:31:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:21 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.blog</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.blog</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f24f28a-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f24f28b-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Sun, 20 Apr 2014 23:49:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:40 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for blog]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.carousel</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.carousel</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f44887e-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f44887f-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 00:04:32 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:40 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for carousel element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.flexible</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.flexible</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f4ec1b2-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f4ec1b3-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 00:26:05 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:40 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization flexible element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.imagegalleryshow</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.imagegalleryshow</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f537ca6-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f537ca7-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 00:32:08 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for image gallery show element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.imagerow</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.imagerow</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f58379a-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f58379b-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 00:50:26 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization image row element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.jumbotron</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.jumbotron</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f5c7d5e-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f5c7d5f-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 01:04:36 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization jumbotron element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.list</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.list</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3f607502-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3f607503-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 01:20:34 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for blog]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.login</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.login</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fa6ccd6-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fa6ccd7-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 01:23:47 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for login element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.navigation</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.navigation</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fb6362a-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fb6362b-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 01:30:46 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization navigation element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.slider</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.slider</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fba2dce-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fba2dcf-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 05:22:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for slider element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.tabs</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.tabs</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fbf8502-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fbf8503-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 06:40:09 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization tabs element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.teaserrow</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.teaserrow</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fc3a3b6-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fc3a3b7-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 07:13:50 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization for teaser row element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.textblock</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.textblock</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fc8108a-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fc8108b-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 08:28:12 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization text block element]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.workplace</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.workplace</destination>
+			<type>xmlvfsbundle</type>
+			<uuidstructure>3fcb1dce-c87d-11e3-92be-65233d6e4a16</uuidstructure>
+			<uuidresource>3fcb1dcf-c87d-11e3-92be-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 08:56:15 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 20 Apr 2014 11:16:41 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Localization workplace]]></value>
+				</property>
+				<property>
+					<name>search.exclude</name>
+					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace</destination>
 			<type>folder</type>
-			<uuidstructure>6dbd9558-8db6-11e0-972f-8f51174189b7</uuidstructure>
+			<uuidstructure>825afce2-11b7-11db-91cd-fdbae480bac9</uuidstructure>
 			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
@@ -1855,6 +2241,171 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap</destination>
+			<type>folder</type>
+			<uuidstructure>7bd713f3-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:20 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev</destination>
+			<type>folder</type>
+			<uuidstructure>7bd89a95-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:20 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev/demo</destination>
+			<type>folder</type>
+			<uuidstructure>7bd9ac07-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:20 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev/demo/workplace_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev/demo/workplace_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>7bdabd79-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>7bdabd7a-c690-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:20 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:20 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters</destination>
+			<type>folder</type>
+			<uuidstructure>7f0c4e5c-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:26 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:26 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>7f0dfc0e-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>7f0dfc0f-c690-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:26 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:26 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas</destination>
+			<type>folder</type>
+			<uuidstructure>8316da21-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:32 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/blog_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/blog_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>ffeed33a-c6ec-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>ffeed33b-c6ec-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Fri, 18 Apr 2014 11:31:35 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 11:31:35 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/carousel_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/carousel_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>3589c7cd-c706-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>3589c7ce-c706-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Fri, 18 Apr 2014 14:32:03 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 14:32:03 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/workplace_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/workplace_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>831812a3-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>831812a4-c690-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Fri, 18 Apr 2014 00:29:32 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 00:29:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/com/alkacon/documentation</destination>
 			<type>folder</type>
 			<uuidstructure>25b7876f-c1bc-11dd-a34e-9dc78d4801ae</uuidstructure>
@@ -2662,6 +3213,59 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/contenteditor</destination>
+			<type>folder</type>
+			<uuidstructure>555e1244-c618-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Thu, 17 Apr 2014 10:09:16 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 10:09:16 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/contenteditor/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/contenteditor/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>31af154d-c6a8-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>31af154e-c6a8-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:14:41 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 03:19:04 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/contenteditor/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/contenteditor/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>555fbff6-c618-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>555fbff7-c618-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:10:57 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 10:09:16 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/ade/detailpage</destination>
 			<type>folder</type>
 			<uuidstructure>9890faed-3015-11e1-8539-e4ce8f2df730</uuidstructure>
@@ -2736,6 +3340,39 @@
 			<datelastmodified>Tue, 27 Dec 2011 16:07:46 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Tue, 27 Dec 2011 12:36:29 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/postupload</destination>
+			<type>folder</type>
+			<uuidstructure>7c72f990-c6ca-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 07:24:32 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 07:24:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/postupload/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/postupload/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>7c74a742-c6ca-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>7c74a743-c6ca-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:20:34 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 07:24:32 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
@@ -3177,6 +3814,39 @@
 			<datelastmodified>Fri, 06 Jan 2012 05:48:43 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Thu, 05 Jan 2012 22:12:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/editors/codemirror</destination>
+			<type>folder</type>
+			<uuidstructure>89ddca49-c61a-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Thu, 17 Apr 2014 10:25:03 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 10:25:03 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/editors/codemirror/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/editors/codemirror/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>89dfed2b-c61a-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>89dfed2c-c61a-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:17:45 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 10:25:03 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
@@ -3768,6 +4438,39 @@
 			<datelastmodified>Fri, 06 Jan 2012 08:47:56 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Thu, 05 Jan 2012 22:19:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/gwt/seo</destination>
+			<type>folder</type>
+			<uuidstructure>578e8095-c6d4-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Fri, 18 Apr 2014 08:35:05 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 08:35:05 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/gwt/seo/clientmessages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/gwt/seo/clientmessages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>578fb917-c6d4-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>578fb918-c6d4-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:22:18 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Fri, 18 Apr 2014 08:35:05 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
@@ -4392,6 +5095,39 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/search/solr</destination>
+			<type>folder</type>
+			<uuidstructure>99f631aa-c5e8-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Thu, 17 Apr 2014 04:27:35 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 04:27:35 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/search/solr/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/search/solr/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>99f8066c-c5e8-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>99f8066d-c5e8-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:05:38 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 04:27:35 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/security</destination>
 			<type>folder</type>
 			<uuidstructure>f59420e6-2e02-11dc-b049-e18fd21fe262</uuidstructure>
@@ -4673,6 +5409,39 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workflow</destination>
+			<type>folder</type>
+			<uuidstructure>aecc499f-c5f5-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Thu, 17 Apr 2014 06:01:14 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 06:01:14 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workflow/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workflow/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>aecdd041-c5f5-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>aecdd042-c5f5-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:07:58 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 06:01:14 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
@@ -5617,6 +6386,39 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/sites</destination>
+			<type>folder</type>
+			<uuidstructure>03ac8c7e-c62b-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Thu, 17 Apr 2014 12:22:59 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 12:22:59 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/workplace/tools/sites/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/sites/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>03ae3a30-c62b-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<uuidresource>03ae3a31-c62b-11e3-a1bd-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:19:25 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Thu, 17 Apr 2014 12:22:59 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/workplace/tools/widgetdemo</destination>
 			<type>folder</type>
 			<uuidstructure>501cc886-2e05-11dc-b049-e18fd21fe262</uuidstructure>
@@ -5881,10 +6683,10 @@
 		<file>
 			<destination>sites</destination>
 			<type>folder</type>
-			<uuidstructure>3e1ebcd4-3a72-11e1-919b-e4ce8f2df730</uuidstructure>
-			<datelastmodified>Mon, 09 Jan 2012 03:30:14 GMT</datelastmodified>
+			<uuidstructure>02c553a5-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 09 Jan 2012 03:30:14 GMT</datecreated>
+			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -5894,26 +6696,13 @@
 		<file>
 			<destination>sites/default</destination>
 			<type>folder</type>
-			<uuidstructure>3e212dd6-3a72-11e1-919b-e4ce8f2df730</uuidstructure>
-			<datelastmodified>Wed, 29 Jun 2011 10:51:27 GMT</datelastmodified>
+			<uuidstructure>02c8d617-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
+			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 09 Jan 2012 03:30:14 GMT</datecreated>
+			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
-			<properties>
-				<property>
-					<name>NavText</name>
-					<value><![CDATA[OpenCms 8 Demo]]></value>
-				</property>
-				<property>
-					<name>style.layout</name>
-					<value><![CDATA[/.content/style]]></value>
-				</property>
-				<property>
-					<name>template</name>
-					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
-				</property>
-			</properties>
+			<properties/>
 			<relations/>
 			<accesscontrol>
 				<accessentry>
@@ -5930,191 +6719,25 @@
 			<source>sites/default/index.html</source>
 			<destination>sites/default/index.html</destination>
 			<type>containerpage</type>
-			<uuidstructure>da97aa19-77c5-11e0-be13-000c2972a6a4</uuidstructure>
-			<uuidresource>da97aa1a-77c5-11e0-be13-000c2972a6a4</uuidresource>
-			<datelastmodified>Wed, 11 Jan 2012 10:22:28 GMT</datelastmodified>
+			<uuidstructure>f59625c4-4543-11e3-93f3-000c29d28104</uuidstructure>
+			<uuidresource>f59625c5-4543-11e3-93f3-000c29d28104</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 09:29:01 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 06 May 2011 09:47:28 GMT</datecreated>
+			<datecreated>Mon, 04 Nov 2013 11:26:33 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
 				<property>
-					<name>NavPos</name>
-					<value><![CDATA[0.25]]></value>
-				</property>
-				<property>
-					<name>NavText</name>
-					<value><![CDATA[Welcome to OpenCms]]></value>
+					<name>Description</name>
+					<value><![CDATA[This is root folder of the OpenCms demo website. OpenCms is the user friendly website CMS brought to you by Alkacon Software.]]></value>
 				</property>
 				<property>
 					<name>Title</name>
-					<value><![CDATA[Welcome to OpenCms]]></value>
-				</property>
-				<property>
-					<name>style.columns</name>
-					<value><![CDATA[2]]></value>
-				</property>
-				<property>
-					<name>style.layout</name>
-					<value><![CDATA[/release/.content/style]]></value>
+					<value><![CDATA[欢迎]]></value>
 				</property>
 				<property>
 					<name>template</name>
-					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>sites/default/release</destination>
-			<type>subsitemap</type>
-			<uuidstructure>3f6dc54d-7712-11e0-bfd0-1797e684fbbe</uuidstructure>
-			<datelastmodified>Wed, 29 Jun 2011 10:30:26 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 05 May 2011 12:21:47 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>NavPos</name>
-					<value><![CDATA[2.0]]></value>
-				</property>
-				<property>
-					<name>NavText</name>
-					<value><![CDATA[Release Notes]]></value>
-				</property>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[OpenCms release notes and welcome pages]]></value>
-				</property>
-				<property>
-					<name>export</name>
-					<value><![CDATA[false]]></value>
-				</property>
-				<property>
-					<name>locale</name>
-					<value><![CDATA[en]]></value>
-				</property>
-				<property>
-					<name>style.columns</name>
-					<value><![CDATA[2]]></value>
-				</property>
-				<property>
-					<name>style.layout</name>
-					<value><![CDATA[/release/.content/style]]></value>
-				</property>
-				<property>
-					<name>template</name>
-					<value><![CDATA[/system/modules/com.alkacon.opencms.v8.template3/templates/main.jsp]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>sites/default/release/.content</destination>
-			<type>content_folder</type>
-			<uuidstructure>39938abe-a19e-11e0-b12f-df452125cf28</uuidstructure>
-			<datelastmodified>Wed, 29 Jun 2011 10:52:14 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Tue, 28 Jun 2011 15:49:36 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Container contents]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>sites/default/release/.content/article</destination>
-			<type>v8articlegallery</type>
-			<uuidstructure>6a8d2bdf-7715-11e0-bfd0-1797e684fbbe</uuidstructure>
-			<datelastmodified>Wed, 29 Jun 2011 09:04:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 05 May 2011 12:44:28 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Articles (Release Notes)]]></value>
-				</property>
-				<property>
-					<name>search.exclude</name>
-					<value><![CDATA[true]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>sites/default/release/.content/article/a_00046.html</source>
-			<destination>sites/default/release/.content/article/a_00046.html</destination>
-			<type>v8article</type>
-			<uuidstructure>24edefc0-c7eb-11e0-a3d5-7b2444d59c19</uuidstructure>
-			<uuidresource>24edefc1-c7eb-11e0-a3d5-7b2444d59c19</uuidresource>
-			<datelastmodified>Wed, 11 Jan 2012 22:15:56 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Tue, 16 Aug 2011 09:35:57 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Documentation link for welcome page]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>sites/default/release/.content/article/a_00047.html</source>
-			<destination>sites/default/release/.content/article/a_00047.html</destination>
-			<type>v8article</type>
-			<uuidstructure>c77b0e49-c80f-11e0-a3d5-7b2444d59c19</uuidstructure>
-			<uuidresource>c77b0e4a-c80f-11e0-a3d5-7b2444d59c19</uuidresource>
-			<datelastmodified>Wed, 11 Jan 2012 10:33:37 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Tue, 16 Aug 2011 13:58:11 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Further Information]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>sites/default/release/welcome.jsp</source>
-			<destination>sites/default/release/welcome.jsp</destination>
-			<type>jsp</type>
-			<uuidstructure>c8d5c415-77c5-11e0-be13-000c2972a6a4</uuidstructure>
-			<uuidresource>c8d5c416-77c5-11e0-be13-000c2972a6a4</uuidresource>
-			<datelastmodified>Wed, 11 Jan 2012 22:11:15 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 06 May 2011 09:46:58 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>512</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Welcome JSP code]]></value>
-				</property>
-				<property>
-					<name>cache</name>
-					<value><![CDATA[uri;user]]></value>
-				</property>
-				<property type="shared">
-					<name>export</name>
-					<value><![CDATA[false]]></value>
+					<value><![CDATA[provider=org.opencms.loader.CmsDefaultTemplateContextProvider,template=/system/modules/com.alkacon.bootstrap.formatters/templates/bootstrap-page.jsp]]></value>
 				</property>
 			</properties>
 			<relations/>
@@ -6132,30 +6755,6 @@
 			<properties>
 				<property>
 					<name>cache</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/commons/chnav.jsp</source>
-			<destination>system/workplace/commons/chnav.jsp</destination>
-			<type>jsp</type>
-			<uuidstructure>c855b8b5-11b7-11db-91cd-fdbae480bac9</uuidstructure>
-			<uuidresource>68f46073-f052-11d8-ba65-db38cc8f19d7</uuidresource>
-			<datelastmodified>Mon, 23 Apr 2007 12:27:52 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[Dialog - Change navigation]]></value>
-				</property>
-				<property>
-					<name>export</name>
 					<value><![CDATA[false]]></value>
 				</property>
 			</properties>
@@ -6187,129 +6786,9 @@
 			<accesscontrol/>
 		</file>
 		<file>
-			<destination>system/workplace/editors</destination>
-			<type>folder</type>
-			<uuidstructure>896ef88a-11b7-11db-91cd-fdbae480bac9</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>cache</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/editors/fckeditor</destination>
-			<type>folder</type>
-			<uuidstructure>524b45f1-5cf1-11db-85b1-432854714568</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 21 Sep 2005 09:36:42 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[FCKeditor]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/editors/fckeditor/plugins</destination>
-			<type>folder</type>
-			<uuidstructure>5277862a-5cf1-11db-85b1-432854714568</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 07 Dec 2005 08:46:33 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property type="shared">
-					<name>Title</name>
-					<value><![CDATA[Additional plugins]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/editors/fckeditor/plugins/downloadgallery</destination>
-			<type>folder</type>
-			<uuidstructure>fd610177-04ec-11df-a73b-5fcb07ee46a5</uuidstructure>
-			<datelastmodified>Tue, 19 Jan 2010 11:22:55 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Tue, 19 Jan 2010 11:22:55 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/editors/fckeditor/plugins/downloadgallery/fckplugin.js</source>
-			<destination>system/workplace/editors/fckeditor/plugins/downloadgallery/fckplugin.js</destination>
-			<type>jsp</type>
-			<uuidstructure>18278f19-04ed-11df-a73b-5fcb07ee46a5</uuidstructure>
-			<uuidresource>18278f1a-04ed-11df-a73b-5fcb07ee46a5</uuidresource>
-			<datelastmodified>Mon, 11 Jan 2010 14:42:39 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Tue, 19 Jan 2010 11:23:40 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property type="shared">
-					<name>export</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/editors/fckeditor/plugins/imagegallery</destination>
-			<type>folder</type>
-			<uuidstructure>d29b0ff9-fb70-11de-b5f5-c7b77b1e3efa</uuidstructure>
-			<datelastmodified>Thu, 07 Jan 2010 09:41:25 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 07 Jan 2010 09:41:25 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/editors/fckeditor/plugins/imagegallery/fckplugin.js</source>
-			<destination>system/workplace/editors/fckeditor/plugins/imagegallery/fckplugin.js</destination>
-			<type>jsp</type>
-			<uuidstructure>df431d1b-fb70-11de-b5f5-c7b77b1e3efa</uuidstructure>
-			<uuidresource>df431d1c-fb70-11de-b5f5-c7b77b1e3efa</uuidresource>
-			<datelastmodified>Mon, 09 Jan 2012 01:48:09 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Thu, 07 Jan 2010 09:41:46 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property type="shared">
-					<name>export</name>
-					<value><![CDATA[false]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
 			<destination>system/workplace/resources</destination>
 			<type>folder</type>
-			<uuidstructure>6dbfdf50-8db6-11e0-972f-8f51174189b7</uuidstructure>
+			<uuidstructure>82c16052-11b7-11db-91cd-fdbae480bac9</uuidstructure>
 			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
@@ -6369,73 +6848,6 @@
 					<value><![CDATA[Explorer tree - JavaScript]]></value>
 				</property>
 			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/resources/editors</destination>
-			<type>folder</type>
-			<uuidstructure>8ae2d3a5-11b7-11db-91cd-fdbae480bac9</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/resources/editors/fckeditor</destination>
-			<type>folder</type>
-			<uuidstructure>52901745-5cf1-11db-85b1-432854714568</uuidstructure>
-			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 21 Sep 2005 10:20:45 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/resources/editors/fckeditor/editor</destination>
-			<type>folder</type>
-			<uuidstructure>c770fe93-a9a6-11de-ab05-9d4897666447</uuidstructure>
-			<datelastmodified>Mon, 16 Oct 2006 08:46:24 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 25 Sep 2009 07:41:04 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>system/workplace/resources/editors/fckeditor/editor/lang</destination>
-			<type>folder</type>
-			<uuidstructure>d00be870-a9a6-11de-ab05-9d4897666447</uuidstructure>
-			<datelastmodified>Thu, 21 Feb 2008 10:37:17 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 25 Sep 2009 07:41:18 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/resources/editors/fckeditor/editor/lang/zh.js</source>
-			<destination>system/workplace/resources/editors/fckeditor/editor/lang/zh.js</destination>
-			<type>plain</type>
-			<uuidstructure>d17b2f8a-a9a6-11de-ab05-9d4897666447</uuidstructure>
-			<uuidresource>d17b2f8b-a9a6-11de-ab05-9d4897666447</uuidresource>
-			<datelastmodified>Thu, 21 Feb 2008 10:38:24 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 25 Sep 2009 07:41:21 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
 			<relations/>
 			<accesscontrol/>
 		</file>
