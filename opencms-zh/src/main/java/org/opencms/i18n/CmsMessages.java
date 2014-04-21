@@ -27,6 +27,7 @@
 
 package org.opencms.i18n;
 
+import org.mozilla.universalchardet.UniversalDetector;
 import org.opencms.main.CmsLog;
 import org.opencms.util.CmsDateUtil;
 import org.opencms.util.CmsStringUtil;
@@ -342,8 +343,10 @@ public class CmsMessages {
 				String value = m_resourceBundle.getString(keyName);
 				try {
 					if (m_encodeTransfer) {
-						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
-								CmsEncoder.ENCODING_UTF_8);
+						byte[] bytes = value.getBytes(CmsEncoder.ENCODING_ISO_8859_1);
+						if (validUTF8(bytes)) {
+							value = new String(bytes, CmsEncoder.ENCODING_UTF_8);
+						}
 					}
 				} catch (UnsupportedEncodingException e1) {
 					e1.printStackTrace();
@@ -430,8 +433,10 @@ public class CmsMessages {
 				String value = m_resourceBundle.getString(keyName);
 				try {
 					if (m_encodeTransfer) {
-						value = new String(value.getBytes(CmsEncoder.ENCODING_ISO_8859_1),
-								CmsEncoder.ENCODING_UTF_8);
+						byte[] bytes = value.getBytes(CmsEncoder.ENCODING_ISO_8859_1);
+						if (validUTF8(bytes)) {
+							value = new String(bytes, CmsEncoder.ENCODING_UTF_8);
+						}
 					}
 				} catch (UnsupportedEncodingException e1) {
 					// do nothing
@@ -645,4 +650,14 @@ public class CmsMessages {
 
         m_resourceBundle = resourceBundle;
     }
+
+	protected static boolean validUTF8(byte[] input) {
+		UniversalDetector detector = new UniversalDetector(null);
+		detector.handleData(input, 0, input.length);
+		detector.dataEnd();
+		if (CmsEncoder.ENCODING_UTF_8.equals(detector.getDetectedCharset())) {
+			return true;
+		}
+		return false;
+	}
 }

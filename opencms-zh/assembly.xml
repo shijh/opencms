@@ -19,6 +19,7 @@
 				<include>**/*.html</include>
 				<include>**/*.jpg</include>
 				<include>**/*.dtd</include>
+				<include>**/i18n/*</include>
 			</includes>
 		</fileSet>
         <fileSet>
@@ -41,8 +42,9 @@
 	</fileSets>
     <dependencySets>
         <dependencySet>
-            <outputFileNameMapping>${project.artifactId}.${extension}</outputFileNameMapping>
-            <scope>runtime</scope>
+            <includes>
+                <include>com.googlecode.juniversalchardet:juniversalchardet</include>
+            </includes>
             <outputDirectory>/system/modules/org.langhua.opencms.workplace/lib</outputDirectory>
         </dependencySet>
     </dependencySets>

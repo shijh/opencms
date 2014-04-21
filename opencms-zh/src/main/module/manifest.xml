@@ -4,7 +4,7 @@
 	<info>
 		<creator>Admin</creator>
 		<opencms_version>9.0.1</opencms_version>
-		<createdate>Mon, 21 Apr 2014 09:53:44 GMT</createdate>
+		<createdate>Mon, 21 Apr 2014 18:46:34 GMT</createdate>
 		<infoproject>Offline</infoproject>
 		<export_version>7</export_version>
 	</info>
@@ -1378,6 +1378,34 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/modules/org.langhua.opencms.workplace/lib</destination>
+			<type>folder</type>
+			<uuidstructure>e860dc1c-c982-11e3-bde8-65233d6e4a16</uuidstructure>
+			<datelastmodified>Mon, 21 Apr 2014 18:29:43 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 21 Apr 2014 18:29:43 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/lib/juniversalchardet-1.0.3.jar</source>
+			<destination>system/modules/org.langhua.opencms.workplace/lib/juniversalchardet-1.0.3.jar</destination>
+			<type>binary</type>
+			<uuidstructure>f33f4ccf-c982-11e3-bde8-65233d6e4a16</uuidstructure>
+			<uuidresource>f33f4cd0-c982-11e3-bde8-65233d6e4a16</uuidresource>
+			<datelastmodified>Mon, 21 Apr 2014 18:30:05 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 21 Apr 2014 18:30:01 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace</destination>
 			<type>folder</type>
 			<uuidstructure>825afce2-11b7-11db-91cd-fdbae480bac9</uuidstructure>
@@ -2280,26 +2308,6 @@
 			<accesscontrol/>
 		</file>
 		<file>
-			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev/demo/workplace_zh.properties</source>
-			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/dev/demo/workplace_zh.properties</destination>
-			<type>plain</type>
-			<uuidstructure>7bdabd79-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<uuidresource>7bdabd7a-c690-11e3-a1bd-65233d6e4a16</uuidresource>
-			<datelastmodified>Fri, 18 Apr 2014 00:29:20 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 18 Apr 2014 00:29:20 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>content-encoding</name>
-					<value><![CDATA[UTF-8]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
 			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters</destination>
 			<type>folder</type>
 			<uuidstructure>7f0c4e5c-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
@@ -2313,26 +2321,6 @@
 			<accesscontrol/>
 		</file>
 		<file>
-			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters/messages_zh.properties</source>
-			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/formatters/messages_zh.properties</destination>
-			<type>plain</type>
-			<uuidstructure>7f0dfc0e-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<uuidresource>7f0dfc0f-c690-11e3-a1bd-65233d6e4a16</uuidresource>
-			<datelastmodified>Fri, 18 Apr 2014 00:29:26 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 18 Apr 2014 00:29:26 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>content-encoding</name>
-					<value><![CDATA[UTF-8]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
 			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas</destination>
 			<type>folder</type>
 			<uuidstructure>8316da21-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
@@ -2342,66 +2330,6 @@
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/blog_zh.properties</source>
-			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/blog_zh.properties</destination>
-			<type>plain</type>
-			<uuidstructure>ffeed33a-c6ec-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<uuidresource>ffeed33b-c6ec-11e3-a1bd-65233d6e4a16</uuidresource>
-			<datelastmodified>Fri, 18 Apr 2014 11:31:35 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 18 Apr 2014 11:31:35 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>content-encoding</name>
-					<value><![CDATA[UTF-8]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/carousel_zh.properties</source>
-			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/carousel_zh.properties</destination>
-			<type>plain</type>
-			<uuidstructure>3589c7cd-c706-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<uuidresource>3589c7ce-c706-11e3-a1bd-65233d6e4a16</uuidresource>
-			<datelastmodified>Fri, 18 Apr 2014 14:32:03 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 18 Apr 2014 14:32:03 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>content-encoding</name>
-					<value><![CDATA[UTF-8]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<source>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/workplace_zh.properties</source>
-			<destination>system/workplace/locales/zh/messages/com/alkacon/bootstrap/schemas/workplace_zh.properties</destination>
-			<type>plain</type>
-			<uuidstructure>831812a3-c690-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<uuidresource>831812a4-c690-11e3-a1bd-65233d6e4a16</uuidresource>
-			<datelastmodified>Fri, 18 Apr 2014 00:29:32 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Fri, 18 Apr 2014 00:29:32 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>content-encoding</name>
-					<value><![CDATA[UTF-8]]></value>
-				</property>
-			</properties>
 			<relations/>
 			<accesscontrol/>
 		</file>
