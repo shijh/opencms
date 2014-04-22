@@ -173,6 +173,9 @@
 									todir="${basedir}/target/opencms.war/WEB-INF/packages/modules"
 									overwrite="true" />
 
+								<copy file="${user.home}/.m2/repository/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3.jar" 
+									todir="${basedir}/target/opencms.war/WEB-INF/lib/" overwrite="false" /> -->
+									
 								<war
 									destfile="${basedir}/target/${project.artifactId}-${project.version}.war"
 									basedir="${basedir}/target/opencms.war" />

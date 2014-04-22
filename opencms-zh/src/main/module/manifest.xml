@@ -20,7 +20,9 @@
 		<datecreated/>
 		<userinstalled/>
 		<dateinstalled/>
-		<dependencies/>
+		<dependencies>
+			<dependency name="com.alkacon.bootstrap.contents" version="9.0.1"/>
+		</dependencies>
 		<exportpoints>
 			<exportpoint uri="/system/modules/org.langhua.opencms.workplace/lib/" destination="WEB-INF/lib/"/>
 			<exportpoint uri="/system/modules/org.langhua.opencms.workplace/classes/" destination="WEB-INF/classes/"/>
@@ -32,7 +34,7 @@
 			<resource uri="/system/workplace/locales/zh/"/>
 			<resource uri="/system/workplace/resources/commons/explorer.js"/>
 			<resource uri="/system/workplace/resources/commons/tree.js"/>
-			<resource uri="/sites/default/index.html"/>
+			<resource uri="/index.html"/>
 		</resources>
 		<parameters/>
 	</module>
@@ -6644,8 +6646,8 @@
 			</accesscontrol>
 		</file>
 		<file>
-			<source>sites/default/index.html</source>
-			<destination>sites/default/index.html</destination>
+			<source>index.html</source>
+			<destination>index.html</destination>
 			<type>containerpage</type>
 			<uuidstructure>f59625c4-4543-11e3-93f3-000c29d28104</uuidstructure>
 			<uuidresource>f59625c5-4543-11e3-93f3-000c29d28104</uuidresource>
