@@ -83,7 +83,7 @@
 					} else {
 						if (!Bean.validateJdbc()) {
 							%>
-							<%= Bean.getHtmlPart("C_BLOCK_START", "Validating Jdbc Drivers") %>
+							<%= Bean.getHtmlPart("C_BLOCK_START", "正在验证数据库驱动程序") %>
 							<table border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td><img src="resources/warning.png" border="0"></td>
