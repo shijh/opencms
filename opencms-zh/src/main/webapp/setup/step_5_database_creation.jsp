@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true" %><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="utf-8"%><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -71,12 +71,12 @@
 	}
 
 %><%= Bean.getHtmlPart("C_HTML_START") %>
-Alkacon OpenCms Setup Wizard
+内容管理系统安装程序
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-Alkacon OpenCms Setup Wizard - Create database &amp; tables
+内容管理系统安装程序 - 创建数据库表
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized())	{ %>
 <form action="<%= nextPage %>" method="post" class="nomargin">
@@ -87,13 +87,13 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 					if (!createDb && !createTables && !dbExists)	{
 						enableContinue = true;
 						%>
-						<%= Bean.getHtmlPart("C_BLOCK_START", "Create Database") %>
+						<%= Bean.getHtmlPart("C_BLOCK_START", "创建数据库") %>
 						<table border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td><img src="resources/warning.png" border="0"></td>
 								<td>&nbsp;&nbsp;</td>
-								<td>You have not created the Alkacon OpenCms database.<br>
-									You cannot import the modules successfully without the database and tables!
+								<td>你没有创建内容管理系统数据库。<br>
+									没有数据库表将不能成功导入作业区！
 								</td>
 							</tr>
 						</table>
@@ -103,12 +103,12 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 					else {
 						if (dbExists && createTables && !dropDb && db != null)	{
 							db.closeConnection(); %>
-							<%= Bean.getHtmlPart("C_BLOCK_START", "Create Database") %>
+							<%= Bean.getHtmlPart("C_BLOCK_START", "创建数据库") %>
 							<table border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td><img src="resources/warning.png" border="0"></td>
 									<td>&nbsp;&nbsp;</td>
-									<td>An existing database has been detected. Drop it ?</td>
+									<td>检测到存在一个数据库。删除它吗？</td>
 								</tr>
 								<tr>
 									<td colspan="3">&nbsp;</td>
@@ -116,8 +116,8 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 								<tr>
 									<td colspan="2">&nbsp;</td>
 									<td>
-										<input type="submit" name="dropDb" class="dialogbutton" style="margin-left: 0;" value="Yes">&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="button" value="No" onClick="location.href='step_3_database_selection.jsp';" class="dialogbutton">
+										<input type="submit" name="dropDb" class="dialogbutton" style="margin-left: 0;" value="是" onClick="this.value='Yes';">&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" value="否" onClick="location.href='step_3_database_selection.jsp';" class="dialogbutton">
 									</td>
 								</tr>
 							</table>
@@ -127,7 +127,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 						else	{
 							if (createDb && dropDb && db != null)	{
 								// Drop Database %>
-								<%= Bean.getHtmlPart("C_BLOCK_START", "Dropping database ...") %>
+								<%= Bean.getHtmlPart("C_BLOCK_START", "正在删除数据库 ...") %>
 								<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 								
 								<%
@@ -138,7 +138,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 									<tr>
 										<td><img src="resources/ok.png" border="0"></td>
 										<td>&nbsp;&nbsp;</td>
-										<td style="width: 100%;">Database has been successfully dropped.</td>
+										<td style="width: 100%;">成功删除数据库。</td>
 									</tr>									
 									<%
 									enableContinue = true;
@@ -151,7 +151,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 										<td>&nbsp;&nbsp;</td>
 										<td style="width: 100%;">
 											<div style="width: 100%; height:70px; overflow: auto;">
-											<p style="margin-bottom: 4px;">Database could not be dropped!</p>
+											<p style="margin-bottom: 4px;">无法删除数据库!</p>
 											<%
 											List<String> errors = db.getErrors();
 											Iterator<String> it = errors.iterator();
@@ -177,7 +177,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 
 							if (createDb && db != null) {
 								// Create Database %>
-								<%= Bean.getHtmlPart("C_BLOCK_START", "Creating database ...") %>
+								<%= Bean.getHtmlPart("C_BLOCK_START", "正在创建数据库 ...") %>
 								<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 								
 								<%
@@ -186,7 +186,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 									<tr>
 										<td><img src="resources/ok.png" border="0"></td>
 										<td>&nbsp;&nbsp;</td>
-										<td style="width: 100%;">Database has been successfully created.</td>
+										<td style="width: 100%;">成功创建数据库。</td>
 									</tr>									
 									<%
 									enableContinue = true;
@@ -199,7 +199,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 										<td>&nbsp;&nbsp;</td>
 										<td style="width: 100%;">
 											<div style="width: 100%; height:70px; overflow: auto;">
-											<p style="margin-bottom: 4px;">Database could not be created!</p>
+											<p style="margin-bottom: 4px;">无法创建数据库!</p>
 											<%
 											List<String> errors = db.getErrors();
 											Iterator<String> it = errors.iterator();
@@ -235,7 +235,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 				
 								//Create Tables %>
 								
-								<%= Bean.getHtmlPart("C_BLOCK_START", "Creating tables ...") %>
+								<%= Bean.getHtmlPart("C_BLOCK_START", "正在创建库表 ...") %>
 								<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 								<%
 								db.createTables(Bean.getDatabase(), Bean.getReplacer());
@@ -244,7 +244,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 									<tr>
 										<td><img src="resources/ok.png" border="0"></td>
 										<td>&nbsp;&nbsp;</td>
-										<td style="width: 100%;">Tables have been successfully created.</td>
+										<td style="width: 100%;">成功创建库表。</td>
 									</tr>									
 									<%
 									enableContinue = true;
@@ -259,7 +259,7 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 										<td>&nbsp;&nbsp;</td>
 										<td style="width: 100%;">
 											<div style="width: 100%; height:70px; overflow: auto;">
-											<p style="margin-bottom: 4px;">Tables could not be created!</p>
+											<p style="margin-bottom: 4px;">无法创建库表!</p>
 											<%
 											List<String> errors = db.getErrors();
 											Iterator<String> it = errors.iterator();
@@ -289,9 +289,9 @@ Alkacon OpenCms Setup Wizard - Create database &amp; tables
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="btcontinue" type="submit" value="Continue &#062;&#062;" class="dialogbutton" disabled="disabled" id="btcontinue">
-<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="btcontinue" type="submit" value="继续 &#062;&#062;" class="dialogbutton" disabled="disabled" id="btcontinue">
+<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <% 
   if (db != null) {

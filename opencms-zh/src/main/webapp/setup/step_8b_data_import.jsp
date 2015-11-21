@@ -1,4 +1,4 @@
-<%@ page session="true" %><%--
+<%@ page session="true" pageEncoding="utf-8" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%--
 --%><%
@@ -8,8 +8,8 @@ Bean.prepareStep8b();
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
-<title>Alkacon OpenCms Setup Wizard - Import modules</title>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>内容管理系统安装程序 - 导入模块</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <script language="JavaScript">
 <!--
 

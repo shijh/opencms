@@ -1,4 +1,4 @@
-<%@ page session="true" %><%--
+<%@ page session="true" pageEncoding="UTF-8"%><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -33,7 +33,7 @@ try {
 
 
 <%= Bean.getHtmlPart("C_HTML_START") %>
-Alkacon OpenCms Setup Wizard
+内容管理系统安装程序
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -43,7 +43,7 @@ Alkacon OpenCms Setup Wizard
 	}	
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-Alkacon OpenCms Setup Wizard - License Agreement
+内容管理系统安装程序 - 版权协议
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <form action="<%= nextPage %>" method="post" class="nomargin">
 
@@ -61,13 +61,13 @@ Alkacon OpenCms Setup Wizard - License Agreement
 			<td style="vertical-align: bottom;padding-top: 12px;">
 				<table border="0" cellpadding="0" cellspacing="0" style="vertical-align: bottom; height: 20px;">
 				<tr>
-					<td>Do you accept all the terms of the preceding license agreement?</td>
+					<td>你接受本版权协议的全部条款吗？</td>
 					<td>&nbsp;&nbsp;</td>
 					<td style="width: 25px;"><input type="radio" name="agree" value="yes" onclick="toggleButton(false);"></td>
-					<td> yes</td>
+					<td> 是</td>
 					<td>&nbsp;&nbsp;</td>
 					<td style="width: 25px;"><input type="radio" name="agree" value="no" onclick="toggleButton(true);" checked="checked"></td>
-					<td> no</td>
+					<td> 否</td>
 				</tr>
 		
 				</table>
@@ -76,25 +76,25 @@ Alkacon OpenCms Setup Wizard - License Agreement
 	<% } else if (! isInitialized) { %>
 		<tr>
 			<td style="vertical-align: middle;">
-				<%= Bean.getHtmlPart("C_BLOCK_START", "Error starting wizard") %>
+				<%= Bean.getHtmlPart("C_BLOCK_START", "启动安装程序时出错") %>
 				<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 					<tr>
 						<td><img src="resources/error.png" border="0"></td>
 						<td>&nbsp;&nbsp;</td>
 						<td>
-							Error starting Alkacon OpenCms setup wizard.<br>
-							It appears that your servlet container did not unpack the Alkacon OpenCms WAR file.
-							Alkacon OpenCms requires that it's WAR file is unpacked.
+							启动内容管理系统安装程序时出错。<br>
+							可能是你的servlet服务器没有解开内容管理系统WAR文件包。<br>
+							内容管理系统所需的WAR文件没有解开。
 							<br><br>
-							<b>Please unpack the Alkacon OpenCms WAR file and try again.</b>
+							<b>请解开内容管理系统的WAR文件然后重试。</b>
 							<br><br>
-							Check out the documentation of your Servlet container to learn how to unpack the WAR file,
-							or do it manually with some kind of unzip - tool.
+							请查阅你的Servlet服务器的文档，了解如何解开WAR文件包，
+							或者手工用解压缩工具解开。
 							<br><br>
-							Tip for Tomcat users:<br>
-							Open the file <code>{tomcat-home}/conf/server.xml</code> and search
-							for <code>unpackWARs="false"</code>. Replace this with <code>unpackWARs="true"</code>.
-							Then restart Tomcat.
+							对Tomcat用户的提示：<br>
+							编辑文件<code>{tomcat-home}/conf/server.xml</code>，找到
+							<code>unpackWARs="false"</code>。用<code>unpackWARs="true"</code>替换。
+							然后重新启动Tomcat。
 						</td>
 					</tr>
 				</table>
@@ -104,14 +104,14 @@ Alkacon OpenCms Setup Wizard - License Agreement
 	<% } else { %>
 		<tr>
 			<td style="vertical-align: middle; height: 100%;">
-				<%= Bean.getHtmlPart("C_BLOCK_START", "Wizard locked") %>
+				<%= Bean.getHtmlPart("C_BLOCK_START", "安装程序已经上锁") %>
 				<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 					<tr>
 						<td><img src="resources/error.png" border="0"></td>
 						<td>&nbsp;&nbsp;</td>
 						<td style="width: 100%;">
-							The Alkacon OpenCms setup wizard is not available!<br>
-							To enable the wizard, unlock it in "opencms.properties".
+							内容管理系统安装程序不可用！<br>
+							要使用安装程序，在"opencms.properties"中把锁打开。
 						</td>
 					</tr>
 				</table>
@@ -126,9 +126,9 @@ Alkacon OpenCms Setup Wizard - License Agreement
 
 <% if (showButtons) { %>
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" style="visibility: hidden;" disabled="disabled">
-<input name="continue" id="continue" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="Cancel" class="dialogbutton" style="margin-left: 50px; visibility: hidden;" disabled="disabled">
+<input name="back" type="button" value="&#060;&#060; 返回" class="dialogbutton" style="visibility: hidden;" disabled="disabled">
+<input name="continue" id="continue" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="取消" class="dialogbutton" style="margin-left: 50px; visibility: hidden;" disabled="disabled">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 <script type="text/javascript">

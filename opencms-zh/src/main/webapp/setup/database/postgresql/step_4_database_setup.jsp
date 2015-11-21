@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true" %><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true"  pageEncoding="utf-8" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -10,7 +10,7 @@
     boolean isFormSubmitted = Bean.setDbParamaters(request, CmsSetupBean.POSTGRESQL_PROVIDER);
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-Alkacon OpenCms Setup Wizard
+内容管理系统安装程序
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -19,31 +19,31 @@ Alkacon OpenCms Setup Wizard
 <!--
 	function checkSubmit()	{
 		if(document.forms[0].dbCreateConStr.value == "")	{
-			alert("Please insert the Connection String");
+			alert("请输入连接串");
 			document.forms[0].dbCreateConStr.focus();
 			return false;
 		}
 		else if (document.forms[0].dbWorkUser.value == "")	{
-			alert("Please insert a User name");
+			alert("请输入用户名");
 			document.forms[0].dbWorkUser.focus();
 			return false;
 		}
 		else if (document.forms[0].dbWorkPwd.value == "")	{
-			alert("Please insert a password");
+			alert("请输入密码");
 			document.forms[0].dbWorkPwd.focus();
 			return false;
 		}
 		else if (document.forms[0].dbName.value == "")	{
-			alert("Please insert a Database Name");
+			alert("请输入数据库名");
 			document.forms[0].dbName.focus();
 			return false;
 		} else if (!isValidDbName(document.forms[0].dbName.value)) {
-		    alert("Invalid database name");
+		    alert("无效的数据库名");
 			document.forms[0].dbName.focus();
 		    return false; 
 		}
 		else if (document.forms[0].createDb.value != "" && document.forms[0].templateDb.value == "") {
-			alert("Please insert the name of the Template Database");
+			alert("请输入模板数据库名");
 			document.forms[0].dbWorkPwd.focus();
 			return false;
 		}
@@ -62,17 +62,17 @@ Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_END") %>
 
 <% if (Bean.isInitialized()) { %>
-Alkacon OpenCms Setup Wizard - <%= Bean.getDatabaseName(Bean.getDatabase()) %> database setup
+内容管理系统安装程序 - 安装<%= Bean.getDatabaseName(Bean.getDatabase()) %>数据库
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <form method="POST" onSubmit="return checkSubmit()" class="nomargin" autocomplete="off">
 
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
 <tr><td style="vertical-align: top;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "Database") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "数据库") %>
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
-		<td>Select Database</td>
+		<td>选择数据库</td>
 		<td><%= Bean.getHtmlForDbSelection() %></td>
 		<% if (Bean.getFullDatabaseKey().contains("_jpa")) { %>
 			<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
@@ -95,17 +95,17 @@ Alkacon OpenCms Setup Wizard - <%= Bean.getDatabaseName(Bean.getDatabase()) %> d
 </td></tr>
 <tr><td style="vertical-align: bottom;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "Database specific settings") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "数据库设置") %>
 					<table border="0" cellpadding="2" cellspacing="0">
 						<tr>
 							<td>&nbsp;</td>
-							<td>User</td>
-							<td>Password</td>
-							<td>Template Db</td>
+							<td>用户名</td>
+							<td>密码</td>
+							<td>模板数据库</td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Setup Connection</td>
+							<td>安装时的连接</td>
 							<td><input type="text" name="dbCreateUser" size="8" style="width:120px;" value='<%= Bean.getDbCreateUser() %>'></td>
 							<td><input type="text" name="dbCreatePwd" size="8" style="width:120px;" value='<%= Bean.getDbCreatePwd() %>'></td>
 							<td><input type="text" name="templateDb" size="8" style="width:120px;" value='<%= Bean.getDbProperty(Bean.getDatabase() + ".templateDb") %>'></td>
@@ -121,14 +121,14 @@ Alkacon OpenCms Setup Wizard - <%= Bean.getDatabaseName(Bean.getDatabase()) %> d
 						//}
 						%>
 						<tr>
-							<td>OpenCms Connection</td>
+							<td>内容管理系统使用时的连接</td>
 							<td><input type="text" name="dbWorkUser" size="8" style="width:120px;" value='<%= user %>'></td>
 							<td><input type="text" name="dbWorkPwd" size="8" style="width:120px;" value='<%= Bean.getDbWorkPwd() %>'></td>
 							<td><%= Bean.getHtmlHelpIcon("2", "../../") %></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Connection String</td>
+							<td>连接串</td>
 							<%
 								//Fixing the Back Button Bug in the next steps.
 								String cnString=Bean.getDbCreateConStr();
@@ -141,15 +141,15 @@ Alkacon OpenCms Setup Wizard - <%= Bean.getDatabaseName(Bean.getDatabase()) %> d
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Database Name</td>
+							<td>数据库名</td>
 							<td colspan="2"><input type="text" name="dbName" style="width:280px;" value=''></td>
 							<td><%= Bean.getHtmlHelpIcon("4", "../../") %></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td>Create Database</td>
-							<td><input type="checkbox" name="createDb" value="true" checked> User</td>
-							<td><input type="checkbox" name="createTables" value="true" checked> Tables<input type="hidden" name="createTables" value="false"></td>
+							<td>创建数据库</td>
+							<td><input type="checkbox" name="createDb" value="true" checked> 用户</td>
+							<td><input type="checkbox" name="createTables" value="true" checked> 表<input type="hidden" name="createTables" value="false"></td>
 							<td><%= Bean.getHtmlHelpIcon("5", "../../") %></td>
 							<td>&nbsp;</td>
 						</tr>
@@ -161,40 +161,40 @@ Alkacon OpenCms Setup Wizard - <%= Bean.getDatabaseName(Bean.getDatabase()) %> d
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "1") %>
-The <b>Setup Connection</b> is used <i>only</i> during this setup process.<br>&nbsp;<br>
-The specified user must have database administration permissions in order to create the database and tables.
-This user information is not stored after the setup is finished.
-For Postgresql versions before 8.0 you can use "template1"/"template0" databases.
-For Postgresql 8.0 and newer it is better to use "postgres" database.
-If you discover problems accessing to the templatedb tipcally a "templatedb is being accessed by other users" try to restart your DBMS or change the templatedb you are accessing.
-Some tools (i.e. PgAdmin3) are accessing to template1 by default, so turn off that tools.
+<b>安装时的连接</b><i>仅</i>在安装过程中使用。<br>&nbsp;<br>
+指定的用户必须有数据库的管理员权限，以便创建数据库表。
+该用户信息在安装完成后系统将不再保存。
+对于Postgresql 8.0以前的版本，你可以使用"template1"/"template0"数据库。
+对于Postgresql 8.0及以后的版本，建议使用"postgres"数据库。
+如果你发现访问templatedb有问题，特别是"templatedb is being accessed by other users"，你可以重新启动你的数据库或修改你访问的templatedb。
+有些工具(如PgAdmin3)缺省访问template1，所以请关闭这样的工具。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "2") %>
-The <b>OpenCms Connection</b> is used when running Alkacon OpenCms after the installation.<br>&nbsp;<br>
-For security reasons, the specified user should <i>not</i> have database administration permissions.
-This user information is stored in the <code>opencms.properties</code> file after the setup.
+<b>内容管理系统使用时的连接</b>在安装完成后运行内容管理系统时使用。<br>&nbsp;<br>
+出于安全上的考虑，指定的用户应该<i>没有</i>数据库管理员的权限。
+该用户的信息安装后存储在<code>opencms.properties</code>文件中。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "3") %>
-Enter the JDBC <b>Connection String</b> to your database.
+输入连接到你数据库的JDBC<b>连接串</b>。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "4") %>
-Enter the Database Name.
+输入数据库名。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "5") %>
-The setup wizard <b>creates</b> the PostgreSql user, the database and the tables for Alkacon OpenCms.<br>&nbsp;<br>
-<b>Attention</b>: Existing user, database and tables will be overwritten!<br>&nbsp;<br>
-Uncheck this option if an already existing user/database should be used.
+安装程序<b>创建</b>PostgreSql用于内容管理系统的用户、数据库和表。<br>&nbsp;<br>
+<b>注意</b>: 会覆盖已存在的用户和数据库表！<br>&nbsp;<br>
+如果要使用一个已经存在的数据库，请不要选中这个选项。
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "6") %>
@@ -206,7 +206,7 @@ It uses modern JPA implementation - <b>Apache OpenJPA</b> which is quite extensi
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <% } else	{ %>
-Alkacon OpenCms Setup Wizard - Database setup
+内容管理系统安装程序 - 数据库安装
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <%= Bean.displayError("../../")%>
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
