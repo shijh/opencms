@@ -17,22 +17,28 @@ OpenCms 9.5.2
 2. Download source code of opencms-core from https://github.com/alkacon/opencms-core.
 
 3. Install cryptix-jce-provider to your local maven repository
+
   3.1 Download cryptix-jce-provider-2.1.jar.zip from http://www.java2s.com/Code/JarDownload/cryptix/cryptix-jce-provider-2.1.jar.zip
 
   3.2 Unzip cryptix-jce-provider-2.1.jar.zip and get cryptix-jce-provider-2.1.jar.
 
   3.3 Install cryptix-jce-provider-2.1.jar to your local maven repository:
+
 	mvn install:install-file -Dfile=cryptix-jce-provider-2.1.jar -DgroupId=cryptix -DartifactId=cryptix-jce-provder -Dversion=2.1 -Dpackaging=jar
 
 
 4. Config pom.xml:
+
   4.1 Set "opencms-core-basedir" point to your local opencms-core directory:
+
 	<opencms-core-basedir>${user.home}/git/opencms-core</opencms-core-basedir>
 
   4.2 Set "opencms.war" point to Alkacon OpenCms release:
+
 	<opencms.war>/opt/opencms-${project.version}/opencms.war</opencms.war>
 
   4.3 Set "overwrite.sourcecode" to true when you want to override the source files:
+
 	<overwrite.sourcecode>false</overwrite.sourcecode>
 
 
