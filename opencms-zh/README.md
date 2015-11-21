@@ -23,9 +23,9 @@ OpenCms 9.5.2
   3.2 Unzip cryptix-jce-provider-2.1.jar.zip and get cryptix-jce-provider-2.1.jar.
 
   3.3 Install cryptix-jce-provider-2.1.jar to your local maven repository:
-
+    ```
 	mvn install:install-file -Dfile=cryptix-jce-provider-2.1.jar -DgroupId=cryptix -DartifactId=cryptix-jce-provder -Dversion=2.1 -Dpackaging=jar
-
+    ```
 
 4. Config pom.xml:
 
