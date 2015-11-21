@@ -39,7 +39,7 @@ OpenCms 9.5.2
 	<opencms.war>/opt/opencms-${project.version}/opencms.war</opencms.war>
     ```
 
-  4.3 Set "overwrite.sourcecode" to true when you want to override the source files:
+  4.3 Set "overwrite.sourcecode" to **true** when you want to override the source files:
     ```
 	<overwrite.sourcecode>false</overwrite.sourcecode>
     ```
