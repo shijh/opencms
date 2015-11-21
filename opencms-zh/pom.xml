@@ -303,6 +303,12 @@
 			<version>1.0.3</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>

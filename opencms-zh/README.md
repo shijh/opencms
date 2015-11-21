@@ -54,7 +54,7 @@ OpenCms 9.5.2
    The necessary source code will be copied from opencms-core to this project. You can compare files with old version to decide whether they should be modified.
 
 
-7. Run **maven package**.
+7. Run **maven install**.
 
    This will build a opencms-zh-${project.version}.war under target folder.
 
