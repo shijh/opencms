@@ -50,7 +50,7 @@ OpenCms 9.5.2
 
    所需的源代码会从opencms-core复制到本项目中。你可以通过Eclipse等工具中的版本比较功能，来决定这些文件是否需要修改。
 
-7. 运行**maven install**：
+7. 运行**maven package**：
 
    这个命令会在target文件夹下构建一个opencms-zh-${project.version}.war文件，比如opencms-zh-9.5.2.war。
 
