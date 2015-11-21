@@ -4,7 +4,7 @@
 
 	<groupId>org.opencms</groupId>
 	<artifactId>opencms-zh</artifactId>
-	<version>9.0.1</version>
+	<version>9.5.2</version>
 	<packaging>jar</packaging>
 
 	<name>opencms-zh</name>
@@ -14,8 +14,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<module.name>org.langhua.opencms.workplace</module.name>
-		<opencms-core-basedir>${user.home}/git/opencms-core</opencms-core-basedir>
-		<opencms.war>/opt/opencms-${project.version}/opencms.war</opencms.war>
+		<opencms-core-basedir>E:/opencms-core-build_9_5_2</opencms-core-basedir>
+		<opencms.war>E:/opencms-${project.version}/opencms.war</opencms.war>
 		<overwrite.sourcecode>false</overwrite.sourcecode>
 	</properties>
 

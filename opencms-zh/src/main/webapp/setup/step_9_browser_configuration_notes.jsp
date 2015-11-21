@@ -1,4 +1,4 @@
-<%@ page session="true" pageEncoding="utf-8"%><%--
+<%@ page session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -9,7 +9,7 @@
 
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -19,7 +19,7 @@
 	}
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 浏览器设置
+Alkacon OpenCms Setup Wizard - Browser configuration
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if(Bean.isInitialized())	{ %>
 <form action="<%= nextPage %>" method="post" class="nomargin">
@@ -36,13 +36,13 @@
 		<td style="vertical-align: bottom;padding-top: 12px;">
 			<table border="0" cellpadding="0" cellspacing="0" style="vertical-align: bottom; height: 20px;">
 			<tr>
-				<td>你阅读这些重要的配置说明了吗？</td>
+				<td>Did you read these important configuration notes?</td>
 				<td>&nbsp;&nbsp;</td>
 				<td style="width: 25px;"><input type="radio" name="understood" value="true" onclick="toggleButton(false);"></td>
-				<td> 是</td>
+				<td> yes</td>
 				<td>&nbsp;&nbsp;</td>
 				<td style="width: 25px;"><input type="radio" name="understood" value="no" onclick="toggleButton(true);" checked="checked"></td>
-				<td> 否</td>
+				<td> no</td>
 			</tr>
 
 			</table>
@@ -53,9 +53,9 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';" disabled="disabled">
-<input name="continue" id="continue" type="submit" value="完成" class="dialogbutton" disabled="disabled">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';" disabled="disabled">
+<input name="continue" id="continue" type="submit" value="Finish" class="dialogbutton" disabled="disabled">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 <% } else { %>

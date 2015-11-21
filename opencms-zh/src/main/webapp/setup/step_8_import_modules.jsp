@@ -1,4 +1,4 @@
-<%@ page session="true" pageEncoding="utf-8" %><%--
+<%@ page session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -11,7 +11,7 @@
 
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序 - 导入模块
+Alkacon OpenCms Setup Wizard - Import modules
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 
 <% if (importWp) { 
@@ -27,7 +27,7 @@
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 导入模块
+Alkacon OpenCms Setup Wizard - Import modules
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized()) { %>
 <form action="<%= nextPage %>" method="post" class="nomargin">
@@ -41,8 +41,8 @@
 				<td><img src="resources/warning.png" border="0"></td>
 				<td>&nbsp;&nbsp;</td>
 				<td style="width: 100%;">
-					没有导入模块。<br>
-					没有虚拟文件系统内容管理系统不会工作!
+					You have not imported the modules.<br>
+					Alkacon OpenCms will not work without the virtual file system!
 				</td>
 			</tr>
 		</table>
@@ -53,9 +53,9 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="top.document.location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="top.document.location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 <% } else { %>

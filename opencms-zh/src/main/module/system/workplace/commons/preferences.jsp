@@ -115,7 +115,7 @@ case 1:
 				<td style="white-space: nowrap;padding: 4px;"><input type="checkbox" name="<%= wp.PARAM_WORKPLACE_SHOWPUBLISHNOTIFICATION %>" value="true"<%= wp.isChecked(wp.getParamTabWpShowPublishNotification()) %>> <%= wp.key(Messages.GUI_PREF_SHOW_PUBLISHNOTIFICATION_0) %></td>
 			</tr>
 			<tr>
-				<td style="white-space: nowrap;padding:4px;"><%= wp.key(Messages.GUI_LABEL_TIMEWARP_0) %></td><td style="padding:4px;"> <input type="text" id="<%= wp.PARAM_WORKPLACE_TIMEWARP %>"  name="<%= wp.PARAM_WORKPLACE_TIMEWARP %>"  style="float:left;" value="<%= wp.getParamTabWpTimewarp()%>"/><table border="0" cellpadding="0" cellspacing="0"><tr><td style="vertical-align:top;"><a id="timewarp.widgettrigger"style="float:left;" href="#" class="button" title="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>"><span unselectable="on" class="norm" onmouseover="className='over'" onmouseout="className='norm'" onmousedown="className='push'" onmouseup="className='over'"><img class="button" src="<%= CmsWorkplace.getSkinUri()%>buttons/calendar.png" alt="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>" title="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>"></span></a></td><%= wp.button("javascript:document.getElementById('" + wp.PARAM_WORKPLACE_TIMEWARP + "').value='-'", "", "deletecontent.png", "GUI_DIALOG_BUTTON_RESET_0", 0) %></tr></table></td><%--
+				<td style="white-space: nowrap;padding:4px;"><%= wp.key(Messages.GUI_LABEL_TIMEWARP_0) %></td><td style="padding:4px;"> <input type="text" id="<%= wp.PARAM_WORKPLACE_TIMEWARP %>"  name="<%= wp.PARAM_WORKPLACE_TIMEWARP %>"  style="float:left;" value="<%= wp.getParamTabWpTimeWarp()%>"/><table border="0" cellpadding="0" cellspacing="0"><tr><td style="vertical-align:top;"><a id="timewarp.widgettrigger"style="float:left;" href="#" class="button" title="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>"><span unselectable="on" class="norm" onmouseover="className='over'" onmouseout="className='norm'" onmousedown="className='push'" onmouseup="className='over'"><img class="button" src="<%= CmsWorkplace.getSkinUri()%>buttons/calendar.png" alt="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>" title="<%=org.opencms.workplace.Messages.get().getBundle().key(org.opencms.workplace.Messages.GUI_CALENDAR_CHOOSE_DATE_0) %>"></span></a></td><%= wp.button("javascript:document.getElementById('" + wp.PARAM_WORKPLACE_TIMEWARP + "').value='-'", "", "deletecontent.png", "GUI_DIALOG_BUTTON_RESET_0", 0) %></tr></table></td><%--
 				--%><%= CmsCalendarWidget.calendarInit(wp.getMessages(), wp.PARAM_WORKPLACE_TIMEWARP, "timewarp.widgettrigger", "cR", false, false, true, "", true) %>				
 				<td style="padding:4px;">&nbsp;</td>
 				<td style="white-space: nowrap;padding: 4px;"><input type="checkbox" name="<%= wp.PARAM_WORKPLACE_LISTALLPROJECTS %>" value="true"<%= wp.isChecked(wp.getParamTabWpListAllProjects()) %>> <%= wp.key(Messages.GUI_PREF_LIST_ALL_PROJECTS_0) %></td>
@@ -152,20 +152,10 @@ case 2:
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_BUTTON_STYLE_EXPLORER_0) %></td>
 			<td><%= wp.buildSelectExplorerButtonStyle("name=\"" + CmsPreferences.PARAM_EXPLORER_BUTTONSTYLE + "\" style=\"width: 200px;\"") %></td>
-			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
-		    <td style="width: 40px;">&nbsp;</td>
-			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_LABEL_SELECTOR_0) %></td>
-			<td><%= wp.buildSelectExplorerTreeLabel("name=\"" + CmsPreferences.PARAM_EXPLORER_TREELABEL + "\" style=\"width: 200px;\"") %></td>
-		    <!-- end/shijh -->	
 		</tr>
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_FILES_PER_PAGE_0) %></td>
 			<td><%= wp.buildSelectExplorerFileEntries("name=\"" + CmsPreferences.PARAM_EXPLORER_FILEENTRIES + "\" style=\"width: 200px;\"") %></td>
-			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
-		    <td style="width: 40px;">&nbsp;</td>
-			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_SORT_SELECTOR_0) %></td>
-			<td><%= wp.buildSelectExplorerTreeSort("name=\"" + CmsPreferences.PARAM_EXPLORER_TREESORT + "\" style=\"width: 200px;\"") %></td>
-		    <!-- end/shijh --> 
 		</tr>
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_SEARCH_RESULT_0) %></td>

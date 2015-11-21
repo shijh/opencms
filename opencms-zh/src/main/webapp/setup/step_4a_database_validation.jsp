@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="UTF-8"%><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -33,12 +33,12 @@
 		}
 	}
 %><%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 验证数据库链接
+Alkacon OpenCms Setup Wizard - Validate database connection
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized())	{ %>
 <form action="<%= nextPage %>" method="post" class="nomargin">
@@ -48,21 +48,22 @@
 				<%
 					if (!enableContinue) {
 						%>
-						<%= Bean.getHtmlPart("C_BLOCK_START", "创建数据库连接") %>
+						<%= Bean.getHtmlPart("C_BLOCK_START", "Creating Database Connection") %>
 						<table border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td><img src="resources/error.png" border="0"></td>
 								<td>&nbsp;&nbsp;</td>
-								<td>无法用指定的参数创建数据库连接。<br>
-									请检查下面的意外错误。出现这个错误可能有两个原因:
+								<td>It was not possible to create a database connection with the given parameters.<br>
+									Please check the Exception below. There can be two reasons for this error:
 									<ul>
-									  <li><b>你的数据库停了</b>，或者</li>
-									  <li><b>你的数据库用指定的参数无权访问。</b></li>
+									  <li><b>Your database is down</b>, or</li>
+									  <li><b>Your database is not accessible with the given connection parameters.</b></li>
 									</ul>
-									另外请注意， 对<%=Bean.getDatabaseName(Bean.getDatabase())%>我们推荐使用下列JDBC驱动程序:<br>
+									Be also aware that Alkacon recommends to use the
+									following JDBC drivers for <%=Bean.getDatabaseName(Bean.getDatabase())%>:<br>
 									<code><%=Bean.getDatabaseLibs(Bean.getDatabase()).toString()%></code><p>
-									请检查这个JDBC驱动程序在你的Java类的路径上。
-                        </td>
+									Check that the Jdbc drivers are included in your class path.
+								</td>
 							</tr>
 							<tr>
 								<td colspan='2'>&nbsp;&nbsp;</td>
@@ -88,12 +89,13 @@
 								<tr>
 									<td><img src="resources/warning.png" border="0"></td>
 									<td>&nbsp;&nbsp;</td>
-									<td>请注意，对于<%=Bean.getDatabaseName(Bean.getDatabase())%>我们推荐使用下列JDBC驱动程序:<br>
+									<td>Be aware that Alkacon recommends to use the
+										following JDBC drivers for <%=Bean.getDatabaseName(Bean.getDatabase())%>:<br>
 										<code><%=Bean.getDatabaseLibs(Bean.getDatabase()).toString()%></code><p>
-										<b>但是这些驱动程序不在<code><%=Bean.getLibFolder()%></code>中</b><p>
-										<i>如果你使用其它驱动程序或者你用其它方法把驱动程序添加到Java类路径(classpath)，
-										   你可以继续。如果<b>不是这样</b>的，请找到并部署好这些驱动程序, 并重新启动 
-										   你的servlet服务器。</i>
+										<b>But these drivers are not located in folder <code><%=Bean.getLibFolder()%></code></b><p>
+										<i>If you are using a different driver or if you added the driver in another way 
+										   to the classpath, you may continue to try it out. If <b>not</b>, be sure to get the 
+										   drivers and restart your servlet container before you continue.</i>
 									</td>
 								</tr>
 							</table>
@@ -101,7 +103,7 @@
 							<%
 						}					
 						if (!db.noErrors() || chkVars != null)	{ %>
-							<%= Bean.getHtmlPart("C_BLOCK_START", "验证数据库服务器配置") %>
+							<%= Bean.getHtmlPart("C_BLOCK_START", "Validating Database Server Configuration") %>
 							<table border="0" cellpadding="0" cellspacing="0"><%
 						    boolean isError = !db.noErrors();
 							enableContinue = enableContinue && !isError;
@@ -118,7 +120,7 @@
 									<td>&nbsp;&nbsp;</td>
 									<td style="width: 100%;">
 										<div style="width: 100%; height:140px; overflow: auto;">
-										<p style="margin-bottom: 4px;">检查服务器配置时出错!</p>
+										<p style="margin-bottom: 4px;">Error while checking the server configuration!</p>
 										<%
 										out.println("-------------------------------------------" + "<br>");
 										List<String> errors = db.getErrors();
@@ -145,9 +147,9 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="btcontinue" type="submit" value="继续 &#062;&#062;" class="dialogbutton" disabled="disabled" id="btcontinue">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="btcontinue" type="submit" value="Continue &#062;&#062;" class="dialogbutton" disabled="disabled" id="btcontinue">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <% if (enableContinue)	{
 	out.println("<script type=\"text/javascript\">\ndocument.getElementById(\"btcontinue\").disabled = false;\n</script>");

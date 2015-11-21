@@ -1,4 +1,4 @@
-<%@ page session="true" pageEncoding="utf-8" %><%--
+<%@ page session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -17,7 +17,7 @@
 	}
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -33,7 +33,7 @@ openWin();
 <% } %>
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 已完成
+Alkacon OpenCms Setup Wizard - Finished
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized()) { %>
 
@@ -41,14 +41,14 @@ openWin();
 <tr>
 	<td style="vertical-align: bottom;">
 	
-		<%= Bean.getHtmlPart("C_BLOCK_START", "完成内容管理系统的安装") %>
+		<%= Bean.getHtmlPart("C_BLOCK_START", "Alkacon OpenCms setup finished") %>
 		<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 			<tr>
 				<td><img src="resources/ok.png" border="0"></td>
 				<td>&nbsp;&nbsp;</td>
 				<td style="width: 100%;">					
-				   内容管理系统的欢迎页面应该显示在一个新打开的浏览器窗口中。<br>
-				    如果没有显示出来，点击<a target="OpenCms" href="<%= openLink %>">这里</a>来打开它。<br><br>
+				    The OpenCms welcome page should display in a newly opened browser window now.<br>
+					If it does not display, press <a target="OpenCms" href="<%= openLink %>">here</a> to open it.
 				</td>
 			</tr>
 		</table>
@@ -58,15 +58,16 @@ openWin();
 </tr>
 <tr>
 	<td style="vertical-align: top;">
-		<%= Bean.getHtmlPart("C_BLOCK_START", "已锁住安装程序") %>
+		<%= Bean.getHtmlPart("C_BLOCK_START", "Wizard locked") %>
 		<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 			<tr>
 				<td><img src="resources/warning.png" border="0"></td>
 				<td>&nbsp;&nbsp;</td>
 				<td>
-					安装程序已经被锁住了。<br>
-					如果想再次使用本程序，重新设置"opencms.properties"中的相关标志。
-					出于安全考虑，当安装的内容管理系统安装并开始运行时，你应该删除"/setup"目录。
+					This setup wizard has now been locked.<br>
+					To use the wizard again reset the flag in the "opencms.properties".
+					For security reasons, you should remove the "/setup" folder later when
+					you have your Alkacon OpenCms installation running.
 				</td>
 			</tr>
 		</table>
@@ -80,9 +81,9 @@ openWin();
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
 <form action="" method="post" class="nomargin">
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" disabled="disabled">
-<input name="submit" type="button" value="继续 &#062;&#062;" class="dialogbutton" disabled="disabled">
-<input name="cancel" type="button" value="取消" class="dialogbutton" style="margin-left: 50px;" disabled="disabled">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" disabled="disabled">
+<input name="submit" type="button" value="Continue &#062;&#062;" class="dialogbutton" disabled="disabled">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" style="margin-left: 50px;" disabled="disabled">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 <% } else	{ %>

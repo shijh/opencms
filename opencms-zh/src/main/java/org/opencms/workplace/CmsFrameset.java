@@ -47,7 +47,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -71,12 +70,6 @@ import org.apache.commons.logging.Log;
  */
 public class CmsFrameset extends CmsWorkplace {
 
-    /** The names of the supported frames. */
-    private static final String[] FRAMES = {"top", "head", "body", "foot"};
-
-    /** The names of the supported frames in a list. */
-    public static final List<String> FRAMES_LIST = Collections.unmodifiableList(Arrays.asList(FRAMES));
-
     /** Path to the JSP workplace frame loader file. */
     public static final String JSP_WORKPLACE_URI = CmsWorkplace.VFS_PATH_VIEWS + "workplace.jsp";
 
@@ -88,6 +81,12 @@ public class CmsFrameset extends CmsWorkplace {
 
     /** The request parameter for the workplace view selection. */
     public static final String PARAM_WP_VIEW = "wpView";
+
+    /** The names of the supported frames. */
+    private static final String[] FRAMES = {"top", "head", "body", "foot"};
+
+    /** The names of the supported frames in a list. */
+    public static final List<String> FRAMES_LIST = Collections.unmodifiableList(Arrays.asList(FRAMES));
 
     /** The log object for this class. */
     private static final Log LOG = CmsLog.getLog(CmsFrameset.class);
@@ -116,7 +115,7 @@ public class CmsFrameset extends CmsWorkplace {
 
         List<CmsProject> result = new ArrayList<CmsProject>();
         for (CmsProject project : projects) {
-            if (!project.isWorkflowProject()) {
+            if (!project.isHiddenFromSelector()) {
                 result.add(project);
             }
         }
@@ -314,7 +313,7 @@ public class CmsFrameset extends CmsWorkplace {
         if (CmsDefaultUserSettings.PUBLISHBUTTON_SHOW_AUTO.equals(publishButton)) {
             if (getCms().isManagerOfProject()) {
                 return button(
-                    "../commons/publishproject.jsp",
+                    "../../modules/org.opencms.ade.publish/publish_project.jsp",
                     "body",
                     "publish.png",
                     Messages.GUI_BUTTON_PUBLISH_0,
@@ -326,7 +325,7 @@ public class CmsFrameset extends CmsWorkplace {
 
         if (getCms().isManagerOfProject()) {
             return (button(
-                "../commons/publishproject.jsp",
+                "../../modules/org.opencms.ade.publish/publish_project.jsp",
                 "body",
                 "publish.png",
                 Messages.GUI_BUTTON_PUBLISH_0,
@@ -405,11 +404,12 @@ public class CmsFrameset extends CmsWorkplace {
         }
         // add eventual request parameters to startup uri
         if (getJsp().getRequest().getParameterMap().size() > 0) {
-            Set<Entry<String, String[]>> params = ((Map<String, String[]>) getJsp().getRequest().getParameterMap()).entrySet();
-            Iterator<Entry<String, String[]>> i = params.iterator();
+            @SuppressWarnings("unchecked")
+            Set<Entry<?, ?>> params = getJsp().getRequest().getParameterMap().entrySet();
+            Iterator<Entry<?, ?>> i = params.iterator();
             while (i.hasNext()) {
-                Entry<String, String[]> entry = i.next();
-                result = CmsRequestUtil.appendParameter(result, entry.getKey(), entry.getValue()[0]);
+                Entry<?, ?> entry = i.next();
+                result = CmsRequestUtil.appendParameter(result, (String)entry.getKey(), ((String[])entry.getValue())[0]);
             }
         }
         // append the frame name to the startup uri

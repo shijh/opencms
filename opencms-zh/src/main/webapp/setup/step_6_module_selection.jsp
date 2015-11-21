@@ -1,4 +1,4 @@
-<%@ page session="true" pageEncoding="utf-8"%><%--
+<%@ page session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 	
@@ -15,7 +15,7 @@
 	
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -35,11 +35,11 @@ function checkModuleDependencies(modulePackageName) {
 	}
 	var updatesCount = checkForwardDependencies(modulePackageName, modulePackageNames, moduleDependencies, document.modules.availableModules, 0);
 	if (updatesCount > 0) {
-		alert("依赖关系已经更新！\r\n\r\n" + updatesCount + " 依赖于这个模块。");
+		alert("Dependencies have been updated!\r\n\r\n" + updatesCount + " module(s) depend on this module.");
 	}
 	var hasMissingDependencies = checkBackwardDependencies(modulePackageName, modulePackageNames, moduleDependencies, document.modules.availableModules, 0);
 	if (hasMissingDependencies) {
-    	alert("依赖关系已经更新!\r\n\r\n已经添加了必须的模块。");
+    	alert("Dependencies have been updated!\r\n\r\nRequired modules have been added.");
 	}
 }
 
@@ -51,11 +51,11 @@ function checkComponentDependencies(componentName) {
 	}
 	var updatesCount = checkForwardDependencies(componentName, componentNames, componentDependencies, document.modules.availableComponents, 0);
 	if (updatesCount > 0) {
-		alert("依赖关系已经更新！\r\n\r\n" + updatesCount + " 依赖于这个模块。");
+		alert("Dependencies have been updated!\r\n\r\n" + updatesCount + " group(s) depend on this component.");
 	}
 	var hasMissingDependencies = checkBackwardDependencies(componentName, componentNames, componentDependencies, document.modules.availableComponents, 0);
 	if (hasMissingDependencies) {
-    alert("依赖关系已经更新!\r\n\r\n已经添加了必须的模块。");
+    	alert("Dependencies have been updated!\r\n\r\nRequired groups have been added.");
 	}
 }
 
@@ -193,7 +193,7 @@ function switchView() {
 //-->
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 选择模块
+Alkacon OpenCms Setup Wizard - Module selection
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 
 <% if (Bean.isInitialized()) { %>
@@ -204,24 +204,24 @@ function switchView() {
 <tr>
 	<td valign="top">
 	
-<%= Bean.getHtmlPart("C_BLOCK_START", "可以安装的模块组") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "Module groups available for installation") %>
 
 	<div style="width:96%; height: 300px; overflow: auto;">
     <table border="0" cellpadding="1" cellspacing="0">
-<%= new String((Bean.htmlComponents()).getBytes("ISO-8859-1"),"UTF-8") %>
+<%= Bean.htmlComponents() %>
 	</table>
 	</div>
 
 <%= Bean.getHtmlPart("C_BLOCK_END") %>
 
 </td>
-</tr><tr><td align='right'><a href="javascript:switchView()">选择单个模块</a></td></tr>
+</tr><tr><td align='right'><a href="javascript:switchView()">Individual module selection</a></td></tr>
 </table>
 <table id="modulesView" style='width: 100%; height: 100%; display:none;' border="0" cellpadding="5" cellspacing="0" >
 <tr>
 	<td valign="top">
 	
-<%= Bean.getHtmlPart("C_BLOCK_START", "可以安装的模块") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "Modules available for installation") %>
 
 	<div style="width:96%; height: 300px; overflow: auto;">
     <table border="0" cellpadding="2" cellspacing="0">
@@ -232,7 +232,7 @@ function switchView() {
 <%= Bean.getHtmlPart("C_BLOCK_END") %>
 
 </td>
-</tr><tr><td align='right'><a href="javascript:switchView()">按组选择模块</a></td></tr>
+</tr><tr><td align='right'><a href="javascript:switchView()">Module group selection</a></td></tr>
 </table>
 
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
@@ -240,9 +240,9 @@ function switchView() {
 <%= Bean.htmlModuleHelpDescriptions() %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton" >
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton" >
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 </form>
 </span>

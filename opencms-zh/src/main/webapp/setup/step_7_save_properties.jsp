@@ -1,4 +1,4 @@
-<%@ page session="true" pageEncoding="utf-8"%><%--
+<%@ page session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -14,7 +14,7 @@
 	}
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -30,15 +30,15 @@
 		if (isUrlOK && (isMacOK || macValue == "")) {
 			return true;
 		} else if (!isMacOK) {
-			alert("请输入服务器的MAC地址\n或者空着让程序产生一个随机的地址。");
+			alert("Please enter the valid MAC address of your server\nor leave the field empty to generate a random address.");
 		} else if (!isUrlOK) {
-			alert("请输入内容管理系统作业区的有效地址。");
+			alert("Please enter a valid site for the OpenCms workplace.");
 		}
 		return false;
 	}
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 设置
+Alkacon OpenCms Setup Wizard - Settings
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized())	{ %>
 <form action="<%= nextPage %>" method="post" class="nomargin" onsubmit="return checkSubmit();">
@@ -47,10 +47,10 @@
 <tr>
 	<td style="vertical-align: top;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "内容管理系统设置") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "OpenCms settings") %>
 <table border="0" cellpadding="4" cellspacing="0">
 	<tr>
-		<td>输入你的服务器的MAC地址</td>
+		<td>Enter your server's ethernet (MAC) address</td>
 		<td>
 			<input type="text" name="ethernetAddress" value="<%= Bean.getEthernetAddress() %>" style="width: 150px;">
 			
@@ -58,14 +58,14 @@
 		<td><%= Bean.getHtmlHelpIcon("1", "") %></td>
 	</tr>
 		<tr>
-		<td>输入你的内容管理系统网站的网址</td>		
+		<td>Enter the URL of your Alkacon OpenCms site</td>		
 		<td>
 			<input type="text" name="workplaceSite" value="<%= serverUrl %>" style="width: 150px;">
 		</td>
 		<td><%= Bean.getHtmlHelpIcon("3", "") %></td>
 	</tr>
 	<tr>
-		<td>输入你的内容管理服务器的名字</td>		
+		<td>Enter a name for your Alkacon OpenCms server</td>		
 		<td>
 			<input type="text" name="serverName" value="<%= Bean.getServerName() %>" style="width: 150px;">
 		</td>
@@ -79,36 +79,39 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "1") %>
-<b>为什么需要网卡地址：</b><br>&nbsp;<br>
-OpenCms为全部资源基于128位UUID（Universally Unique IDentifier，Windows下称为GUID）算法生成唯一的键。
-要初始化这个算法，需要服务器的网卡地址。
-然而，由于安全沙箱模型，Java无法访问这个服务器硬件信息。<br>&nbsp;<br>
-如果不填这个数据项，会为你的服务器随机生成一个网卡地址。
-这意味着有<i>非常非常小</i>的机会，会生成重复的键。<br>&nbsp;<br>
-<b>请注意：</b>网卡MAC地址不是服务器的IP地址。
-有效的MAC地址看起来是这样的：<code>4f:a1:f1:c2:36:bf</code>。
+<b>Why the ethernet address is needed:</b><br>&nbsp;<br>
+Alkacon OpenCms generates unique keys for all resources based on a 
+128-bit UUID (Universally Unique IDentifier, aka GUID in the Windows world) algorithm.
+To initialize this algorithm, the ethernet address of the server is required.
+However, Java has no way of accessing this information from the server hardware 
+because of the sandbox security model.<br>&nbsp;<br>
+You can leave this field empty, and a random ethernet address will be generated for your OpenCms server.
+This means there is a <i>very, very, very slight</i> chance that someone else in the universe might create some duplicate keys.<br>&nbsp;<br>
+<b>Please note:</b> The ethernet (MAC) address is NOT the IP address of the server.
+A valid MAC ethernet address looks like this: <code>4f:a1:f1:c2:36:bf</code>.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "2") %>
-<b>服务器名称：</b><br>&nbsp;<br>
-服务器名称会用于内容管理系统的多种日志信息。<br>&nbsp;<br>
-如果你需要比较多个不同服务器的日志文件，这会带来很多便利。
+<b>The server name:</b><br>&nbsp;<br>
+This server name will be used for various log messages in OpenCms.<br>&nbsp;<br>
+This can be handy if you have to compare logfiles from a couple of different servers.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "3") %>
-<b>内容管理服务器网站网址：</b><br>&nbsp;<br>
-内容管理系统能够管理多个网站。
-然而，内容管理系统作业区只能通过一个指定的网址访问。<br>&nbsp;<br>
-你输入的网站网址既作为访问作业区的网址，还作为缺省站点的网址。
-为了让你能够添加其它站点，或者如果你要对缺省站点和作业区使用不同的网址，
-你必须在安装后自己编辑<code>opencms-system.xml</code>文件。
+<b>The OpenCms site URL:</b><br>&nbsp;<br>
+Alkacon OpenCms is capable of managing multiple sites.
+However, the OpenCms Workplace must always be accessed through one specific URL.<br>&nbsp;<br>
+The site URL you enter here will be used <i>both</i> as URL to access the Workplace,
+and as URL for the default site. In case you want to add other sites, or if you want to use different URLs
+for default site and Workplace, you must
+manually edit the <code>opencms-system.xml</code> file after the installation.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <% } else	{ %>

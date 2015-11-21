@@ -1834,6 +1834,42 @@ public class CmsSetupBean implements I_CmsShellCommands {
     }
 
     /**
+     *  Saves properties to specified file.<p>
+     * 
+     *  @param properties the properties to be saved
+     *  @param file the file to save the properties to
+     *  @param backup if true, create a backupfile
+     *  @param forceWrite the keys for the properties which should always be written, even if they don't exist in the configuration file 
+     */
+    public void saveProperties(CmsParameterConfiguration properties, String file, boolean backup, Set<String> forceWrite) {
+
+        if (new File(m_configRfsPath + file).isFile()) {
+            String backupFile = file + CmsConfigurationManager.POSTFIX_ORI;
+            String tempFile = file + ".tmp";
+
+            m_errors.clear();
+
+            if (backup) {
+                // make a backup copy
+                copyFile(file, FOLDER_BACKUP + backupFile);
+            }
+
+            //save to temporary file
+            copyFile(file, tempFile);
+
+            // save properties
+            save(properties, tempFile, file, forceWrite);
+
+            // delete temp file
+            File temp = new File(m_configRfsPath + tempFile);
+            temp.delete();
+        } else {
+            m_errors.add("No valid file: " + file + "\n");
+        }
+
+    }
+
+    /**
      * Sets the autoMode.<p>
      *
      * @param autoMode the autoMode to set
@@ -1959,7 +1995,6 @@ public class CmsSetupBean implements I_CmsShellCommands {
      * 
      * @return true if already submitted
      */
-    @SuppressWarnings("unchecked")
     public boolean setDbParamaters(HttpServletRequest request, String provider) {
 
         return setDbParamaters(request.getParameterMap(), provider, request.getContextPath(), request.getSession());
@@ -2319,7 +2354,11 @@ public class CmsSetupBean implements I_CmsShellCommands {
         for (int i = copy.length - 1; i >= 0; i--) {
             System.out.println(copy[i]);
         }
-        System.out.println("内容管理系统" + OpenCms.getSystemInfo().getVersionNumber());
+        System.out.println("内容管理系统"
+            + OpenCms.getSystemInfo().getVersionNumber()
+            + " ["
+            + OpenCms.getSystemInfo().getVersionId()
+            + "]");
         System.out.println();
         System.out.println();
     }

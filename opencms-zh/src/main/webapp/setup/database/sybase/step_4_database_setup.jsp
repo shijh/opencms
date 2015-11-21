@@ -1,4 +1,4 @@
-<%@ page import="org.opencms.setup.*,java.util.*" session="true" pageEncoding="utf-8" %><%--
+<%@ page import="org.opencms.setup.*,java.util.*" session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -11,7 +11,7 @@
 
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序
+Alkacon OpenCms Setup Wizard
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -20,16 +20,16 @@
 <!--
 	function checkSubmit()	{
 		if(document.forms[0].dbCreateConStr.value == "")	{
-			alert("请输入连接串");
+			alert("Please insert the Connection String");
 			document.forms[0].dbCreateConStr.focus();
 			return false;
 		}
 		else if (document.forms[0].db.value == "")	{
-			alert("请输入数据库名");
+			alert("Please insert a Database name");
 			document.forms[0].db.focus();
 			return false;
 		} else if (!isValidDbName(document.forms[0].db.value)) {
-		    alert("无效的数据库名");
+		    alert("Invalid database name");
 			document.forms[0].db.focus();
 		    return false; 
 		}
@@ -49,17 +49,17 @@
 <%= Bean.getHtmlPart("C_HEAD_END") %>
 
 <% if (Bean.isInitialized()) { %>
-内容管理系统安装程序 - Apache OpenJPA 兼容数据库安装
+Alkacon OpenCms Setup Wizard - Apache OpenJPA compatible database setup
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <form method="post" onSubmit="return checkSubmit()" class="nomargin" autocomplete="off">
 
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
 <tr><td style="vertical-align: top;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "数据库") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "Database") %>
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
-		<td>选择数据库</td>
+		<td>Select Database</td>
 		<td><%= Bean.getHtmlForDbSelection() %></td>
 		<td><%= Bean.getHtmlHelpIcon("6", "../../") %></td>
 	</tr>
@@ -76,39 +76,39 @@
 </td></tr>
 <tr><td style="vertical-align: bottom;">
 
-<%= Bean.getHtmlPart("C_BLOCK_START", "数据库设置") %>
+<%= Bean.getHtmlPart("C_BLOCK_START", "Database specific settings") %>
 
 <table border="0" cellpadding="2" cellspacing="0">
 	<tr>
 		<td>&nbsp;</td>
-		<td>用户名</td>
-		<td>密码</td>
+		<td>User</td>
+		<td>Password</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>内容管理系统使用时的连接</td>
+		<td>OpenCms Connection</td>
 		<td><input type="text" name="dbWorkUser" size="8" style="width:150px;" value='<%= Bean.getDbWorkUser() %>'></td>
 		<td style="text-align: right;"><input type="text" name="dbWorkPwd" size="8" style="width:150px;" value='<%= Bean.getDbWorkPwd() %>'></td>
 		<td><%= Bean.getHtmlHelpIcon("2", "../../") %></td>
 	</tr>
 	<tr>
-		<td>JDBC驱动程序类名</td>
+		<td>JDBC driver class name</td>
 		<td colspan="2"><input type="text" name="jdbcDriver" size="22" style="width:315px;" value='<%= Bean.getDbDriver() %>'></td>
 		<td><%= Bean.getHtmlHelpIcon("3", "../../") %></td>
 	</tr>
 	<tr>
-		<td>连接串</td>
+		<td>Connection String</td>
 		<td colspan="2"><input type="text" name="dbCreateConStr" size="22" style="width:315px;" value='<%= Bean.getDbCreateConStr() %>'></td>
 		<td><%= Bean.getHtmlHelpIcon("3", "../../") %></td>
 	</tr>
 	<tr>
-		<td>数据库</td>
+		<td>Database</td>
 		<td colspan="2"><input type="text" name="db" size="22" style="width:315px;" value='<%= Bean.getDb() %>'></td>
 		<td><%= Bean.getHtmlHelpIcon("4", "../../") %></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td colspan="2"><input type="checkbox" name="createTables" value="true" checked> 创建数据库表 
+		<td colspan="2"><input type="checkbox" name="createTables" value="true" checked> Create tables 
 		</td>
 		<td><%= Bean.getHtmlHelpIcon("5", "../../") %></td>
 	</tr>
@@ -119,41 +119,41 @@
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton">
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton">
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='../../index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "2") %>
-<b>内容管理系统使用时的连接</b>在运行内容管理系统时使用。<br>&nbsp;<br>
-在安装的过程中，用户需要有创建表和索引的权限（如果您想要安装工具创建它们）。
-出于安全上的考虑，指定的用户应该<i>没有</i>数据库管理员的权限。
-该用户的信息安装后存储在<code>opencms.properties</code>文件中。
+The <b>OpenCms Connection</b> is used when running Alkacon OpenCms.<br>&nbsp;<br>
+During setup, this user needs to be able to create tables and indexes (if you want the Setup Wizard to create them).
+For security reasons, the specified user should <i>not</i> have database administration permissions.
+This user information is stored in the <code>opencms.properties</code> file after the setup.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "3") %>
-输入连接到你数据库的JDBC<b>连接串</b>（不包括数据库名称)。
+Enter the JDBC <b>Connection String</b> to your database (without DB Name).
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "4") %>
-输入Sybase用于内容管理系统的<b>数据库</b>名。
+Enter the name of the DB2 <b>Database</b> which should be used by Alkacon OpenCms.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "5") %>
-安装工具仅为内容管理系统 <b>创建</b>表（而不创建数据库）<br>&nbsp;<br>
-<b>注意</b>：创建数据库使用类似这样的命令：<code>CREATE DATABASE ${database} USING CODESET UTF-8 TERRITORY DE PAGESIZE 32 K;</code><br>&nbsp;<br>
-如果想使用已经存在的表，那么不选择这个选项。
+The setup wizard <b>creates</b> only the tables (and not the database) for Alkacon OpenCms.<br>&nbsp;<br>
+<b>Attention</b>: create your database with a command like <code>CREATE DATABASE ${database} USING CODESET UTF-8 TERRITORY DE PAGESIZE 32 K;</code><br>&nbsp;<br>
+Uncheck this option if already existing tables should be used.
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <%= Bean.getHtmlPart("C_HELP_START", "6") %>
-本<b>JPA</b> (Java Persistence API) 驱动程序使用<b>Apache OpenJPA</b>实现。 
-<b>传统的SQL驱动程序</b>已经经过完整测试，与JPA驱动程序相比，性能要稍微好一点。 
-<br><br><b>注意：</b>你应该在Sybase配置文件"Lock Manager"下设置"lock scheme"为"datarows"。或者你可以修改setup/database/sybase/create_tables.sql脚本，用"datarows"覆盖缺省的锁。
+This <b>JPA</b> (Java Persistence API) driver uses the <b>Apache OpenJPA</b> implementation. 
+<b>Traditional SQL drivers</b> are well tested and offer a slight performance increase in comparison with JPA driver.
+<br><br><b>Note:</b> You should set "lock scheme" to "datarows" in the sybase configuration file below the "Lock Manager" section. Alternatively you could change setup/database/sybase/create_tables.sql script to override default locking to "datarows".
 <%= Bean.getHtmlPart("C_HELP_END") %>
 
 <% } else	{ %>
-内容管理系统安装程序 - 数据库安装
+Alkacon OpenCms Setup Wizard - Database setup
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <%= Bean.displayError("../../")%>
 <%= Bean.getHtmlPart("C_CONTENT_END") %>

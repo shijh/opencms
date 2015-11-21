@@ -1,6 +1,6 @@
 <%@ page import="
 	java.util.*
-" session="true" pageEncoding="utf-8"%><%--
+" session="true" %><%--
 --%><jsp:useBean id="Bean" class="org.opencms.setup.CmsSetupBean" scope="session" /><%--
 --%><jsp:setProperty name="Bean" property="*" /><%
 
@@ -31,7 +31,7 @@
 	}
 %>
 <%= Bean.getHtmlPart("C_HTML_START") %>
-内容管理系统安装程序 - 组件测试
+Alkacon OpenCms Setup Wizard - Component tests
 <%= Bean.getHtmlPart("C_HEAD_START") %>
 <%= Bean.getHtmlPart("C_STYLES") %>
 <%= Bean.getHtmlPart("C_STYLES_SETUP") %>
@@ -47,7 +47,7 @@ function toggleContinueButton() {
 //-->
 </script>
 <%= Bean.getHtmlPart("C_HEAD_END") %>
-内容管理系统安装程序 - 组件测试
+Alkacon OpenCms Setup Wizard - Component tests
 <%= Bean.getHtmlPart("C_CONTENT_SETUP_START") %>
 <% if (Bean.isInitialized()) { %>
 <form action="<%= nextPage %>" method="post" class="nomargin" name="components">
@@ -57,12 +57,12 @@ function toggleContinueButton() {
 <%  
 	if (isSubmitted) {
 		if (hasSystemInfo && !hasUserAccepted) {
-			out.print("<b>要继续内容管理系统的安装，你必须清楚内容管理系统可能无法在你的系统上工作!");
+			out.print("<b>To continue the Alkacon OpenCms setup you have to recognize that your system may not work with OpenCms!");
 		}
 	} else { 	
 %>	
 		
-		<%= Bean.getHtmlPart("C_BLOCK_START", "验证组件") %>	
+		<%= Bean.getHtmlPart("C_BLOCK_START", "Component tests") %>	
 		<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;"><tr><td>
 		<div style="width: 100%; height:130px; overflow: auto;">
 		<table border="0" cellpadding="2">
@@ -124,15 +124,15 @@ function toggleContinueButton() {
 			<td colspan="2" valign="middle">
 			<%
 				if (setupTests.isRed()) {
-					out.println("<p>你的系统没有内容管理系统所需的组件。可以假设内容管理系统不能在你的系统上运行。</p>");
+					out.println("<p>Your system does not have the necessary components to use Alkacon OpenCms. It is assumed that OpenCms will not run on your system.</p>");
 					out.println(violatedConditions);
 				} else if (setupTests.isYellow()) {
-					out.print("你的系统使用的组件没有与内容管理系统一起测试过。可能内容管理系统无法在你的系统上运行。");
+					out.print("Your system uses components which have not been tested to work with Alkacon OpenCms. It is possible that OpenCms will not run on your system.");
 					out.println(questionableConditions);
 				} else {
-					out.println("<b>你的系统使用的组件经测试能够运行内容管理系统。</b>");
+					out.println("<b>Your system uses components which have been tested to work properly with Alkacon OpenCms.</b>");
 					if (!"".equals(questionableConditions)) {
-					    out.print(" <b>但是，请务必检查下列各点：</b>");					    
+					    out.print(" <b>But, please, be sure to check following points:</b>");					    
 						out.println(questionableConditions);
 					}
 				}
@@ -150,7 +150,7 @@ function toggleContinueButton() {
 				<tr><td>
 				<table border="0"><tr>
 					<td style="vertical-align: top;"><input type="checkbox" name="accept" value="true" onClick="toggleContinueButton()"> </td>
-					<td style="padding-top: 5px;">我知道我的系统没有内容管理系统所需的组件。继续安装。</td>
+					<td style="padding-top: 5px;">I have noticed that my system may not have the necessary components to use Alkacon OpenCms. Continue anyway.</td>
 				</tr></table>
 				</td></tr>
 			<% } %>
@@ -164,15 +164,15 @@ function toggleContinueButton() {
 <%= Bean.getHtmlPart("C_CONTENT_END") %>
 
 <%= Bean.getHtmlPart("C_BUTTONS_START") %>
-<input name="back" type="button" value="&#060;&#060; 后退" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
+<input name="back" type="button" value="&#060;&#060; Back" class="dialogbutton" onclick="location.href='<%= prevPage %>';">
 <%
 String disabled = "";
 if (!setupTests.isGreen() && !hasUserAccepted) {
 	disabled = " disabled=\"disabled\"";
 }
 %>
-<input name="submit" type="submit" value="继续 &#062;&#062;" class="dialogbutton"<%= disabled %>>
-<input name="cancel" type="button" value="取消" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
+<input name="submit" type="submit" value="Continue &#062;&#062;" class="dialogbutton"<%= disabled %>>
+<input name="cancel" type="button" value="Cancel" class="dialogbutton" onclick="location.href='index.jsp';" style="margin-left: 50px;">
 </form>
 <%= Bean.getHtmlPart("C_BUTTONS_END") %>
 
