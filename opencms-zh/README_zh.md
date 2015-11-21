@@ -29,15 +29,15 @@ OpenCms 9.5.2
 
 4. 配置pom.xml:
 
-  4.1 Set "opencms-core-basedir" point to your local opencms-core directory:
+  4.1 把"opencms-core-basedir"指向你本地的opencms-core目录:
     ```
 	<opencms-core-basedir>${user.home}/git/opencms-core</opencms-core-basedir>
     ```
-  4.2 Set "opencms.war" point to Alkacon OpenCms release:
+  4.2 把"opencms.war"指向Alkacon OpenCms的发布版本地war文件:
     ```
 	<opencms.war>/opt/opencms-${project.version}/opencms.war</opencms.war>
     ```
-  4.3 Set "overwrite.sourcecode" to true when you want to override the source files:
+  4.3 当你要使用最新OpenCms源文件覆盖本项目的源文件时，把"overwrite.sourcecode"设置为**true**:
     ```
 	<overwrite.sourcecode>false</overwrite.sourcecode>
     ```
@@ -46,11 +46,11 @@ OpenCms 9.5.2
   ```
    MAVEN_OPTS = -Dfile.encoding=UTF-8
   ```
-6. 运行maven clean：
+6. 运行**maven clean**：
 
    所需的源代码会从opencms-core复制到本项目中。你可以通过Eclipse等工具中的版本比较功能，来决定这些文件是否需要修改。
 
-7. 运行maven package：
+7. 运行**maven package**：
 
    这个命令会在target文件夹下构建一个opencms-zh-${project.version}.war文件，比如opencms-zh-9.5.2.war。
 
