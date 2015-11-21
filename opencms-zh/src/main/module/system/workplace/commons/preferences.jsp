@@ -152,10 +152,20 @@ case 2:
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_BUTTON_STYLE_EXPLORER_0) %></td>
 			<td><%= wp.buildSelectExplorerButtonStyle("name=\"" + CmsPreferences.PARAM_EXPLORER_BUTTONSTYLE + "\" style=\"width: 200px;\"") %></td>
+			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
+		    <td style="width: 40px;">&nbsp;</td>
+			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_LABEL_SELECTOR_0) %></td>
+			<td><%= wp.buildSelectExplorerTreeLabel("name=\"" + CmsPreferences.PARAM_EXPLORER_TREELABEL + "\" style=\"width: 200px;\"") %></td>
+		    <!-- end/shijh -->	
 		</tr>
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_FILES_PER_PAGE_0) %></td>
 			<td><%= wp.buildSelectExplorerFileEntries("name=\"" + CmsPreferences.PARAM_EXPLORER_FILEENTRIES + "\" style=\"width: 200px;\"") %></td>
+			<!-- added by Shi Jinghai, huaruhai@hotmail.com 2014-4-16 -->
+		    <td style="width: 40px;">&nbsp;</td>
+			<td style="white-space: nowrap;"><%= wp.key(org.opencms.workplace.commons.Messages.GUI_PREF_TREE_SORT_SELECTOR_0) %></td>
+			<td><%= wp.buildSelectExplorerTreeSort("name=\"" + CmsPreferences.PARAM_EXPLORER_TREESORT + "\" style=\"width: 200px;\"") %></td>
+		    <!-- end/shijh --> 
 		</tr>
 		<tr>
 			<td style="white-space: nowrap;"><%= wp.key(Messages.GUI_PREF_SEARCH_RESULT_0) %></td>

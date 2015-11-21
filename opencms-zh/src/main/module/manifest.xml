@@ -34,7 +34,6 @@
 			<resource uri="/system/workplace/locales/zh/"/>
 			<resource uri="/system/workplace/resources/commons/explorer.js"/>
 			<resource uri="/system/workplace/resources/commons/tree.js"/>
-			<resource uri="/index.html"/>
 		</resources>
 		<parameters/>
 	</module>
@@ -6644,34 +6643,6 @@
 					</permissionset>
 				</accessentry>
 			</accesscontrol>
-		</file>
-		<file>
-			<source>index.html</source>
-			<destination>index.html</destination>
-			<type>containerpage</type>
-			<uuidstructure>f59625c4-4543-11e3-93f3-000c29d28104</uuidstructure>
-			<uuidresource>f59625c5-4543-11e3-93f3-000c29d28104</uuidresource>
-			<datelastmodified>Mon, 21 Apr 2014 09:29:01 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Mon, 04 Nov 2013 11:26:33 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties>
-				<property>
-					<name>Description</name>
-					<value><![CDATA[This is root folder of the OpenCms demo website. OpenCms is the user friendly website CMS brought to you by Alkacon Software.]]></value>
-				</property>
-				<property>
-					<name>Title</name>
-					<value><![CDATA[欢迎]]></value>
-				</property>
-				<property>
-					<name>template</name>
-					<value><![CDATA[provider=org.opencms.loader.CmsDefaultTemplateContextProvider,template=/system/modules/com.alkacon.bootstrap.formatters/templates/bootstrap-page.jsp]]></value>
-				</property>
-			</properties>
-			<relations/>
-			<accesscontrol/>
 		</file>
 		<file>
 			<destination>system/workplace/commons</destination>
