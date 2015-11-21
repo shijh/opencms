@@ -65,7 +65,8 @@ OpenCms 9.5.2
 
 ##Trouble Shooting
 1. How could I know what you changed in the source code?
-   You can search Shi Jinghai in the source code to see what changes. I commented every changes in java with a format like this:
+
+   A: You can search Shi Jinghai in the source code to see what changes. I commented every changes in java with a format like this:
 ```
        // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
        result.append(" style=\"width: " + (curTab.length() * 12 + addDelta) + "px;\"");
