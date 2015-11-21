@@ -3,8 +3,8 @@
 <export>
 	<info>
 		<creator>Admin</creator>
-		<opencms_version>9.0.1</opencms_version>
-		<createdate>Mon, 21 Apr 2014 18:46:34 GMT</createdate>
+		<opencms_version>9.5.2</opencms_version>
+		<createdate>Mon, 21 Nov 2015 11:23:34 GMT</createdate>
 		<infoproject>Offline</infoproject>
 		<export_version>7</export_version>
 	</info>
@@ -13,15 +13,15 @@
 		<nicename><![CDATA[Chinese Language Module]]></nicename>
 		<group>Langhua Opensource</group>
 		<class/>
-		<description><![CDATA[Chinese Language Module for OpenCms 9.0.1. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
-		<version>9.0.1</version>
+		<description><![CDATA[Chinese Language Module for OpenCms 9.5.2. You can download this module free from https://github.com/shijh/opencms/tree/master/opencms-zh/.]]></description>
+		<version>9.5.2</version>
 		<authorname><![CDATA[Shi Jinghai]]></authorname>
 		<authoremail><![CDATA[huaruhai@hotmail.com]]></authoremail>
 		<datecreated/>
 		<userinstalled/>
 		<dateinstalled/>
 		<dependencies>
-			<dependency name="com.alkacon.bootstrap.contents" version="9.0.1"/>
+			<dependency name="com.alkacon.bootstrap.contents" version="9.5.2"/>
 		</dependencies>
 		<exportpoints>
 			<exportpoint uri="/system/modules/org.langhua.opencms.workplace/lib/" destination="WEB-INF/lib/"/>
