@@ -37,7 +37,7 @@ import org.opencms.setup.CmsSetupBean;
 public class CmsSetupTestServletContainer implements I_CmsSetupTest {
 
     /** The test name. */
-    public static final String TEST_NAME = "Servlet Container";
+    public static final String TEST_NAME = "Servlet容器";
 
     /**
      * @see org.opencms.setup.comptest.I_CmsSetupTest#execute(org.opencms.setup.CmsSetupBean)
@@ -55,23 +55,23 @@ public class CmsSetupTestServletContainer implements I_CmsSetupTest {
             {"WebLogic Server 9", null},
             {
                 "Resin/3",
-                "Please be sure that during the Setup Wizard, the web application auto-redeployment feature is deactivated. One way to achieve this, is to set the '<code>dependency-check-interval</code>' option in your <code>resin.conf</code> configuration file to <code>-1</code> or something big like <code>2000s</code>."},
+                "请确定安装期间，web应用程序自动重部署（auto-redeployment）功能被禁用了。做到这一点的一个方法，是在你的配置文件<code>resin.conf</code>中，把'<code>dependency-check-interval</code>'选项设置为<code>-1</code>，或很大的数字比如<code>2000s</code>。"},
             {
                 "IBM WebSphere Application Server/6",
-                "The only limitation found so far, is that when using the <code>sendRedirect</code> method you have always to use an absolute path."},
+                "迄今为止发现的限制，是当使用<code>sendRedirect</code>方法时，你必须总是使用绝对路径。"},
             {"Sun GlassFish Enterprise Server v2.1", null},
             {
                 "GlassFish/v3",
-                "GlassFish/v3 is not a stable release and subject to major changes. Please prefer a stable release."},
+                "GlassFish/v3不是一个稳定版本，并且不再做重大修改了。请选择一个稳定版本。"},
             {"JBoss Web/2.1.3.GA", null}};
 
         String[][] unsupportedContainers = {
-            {"Tomcat Web Server/3", "Tomcat 3.x is no longer supported. Please use at least Tomcat 4.1 instead."},
-            {"Apache Tomcat/4.0", "Tomcat 4.0.x is no longer supported. Please use at least Tomcat 4.1 instead."},
-            {"Resin/2", "The OpenCms JSP integration does not work with Resin 2.x. Please use Resin 3 instead."},
+            {"Tomcat Web Server/3", "不再支持Tomcat 3.x。请至少使用Tomcat 4.1。"},
+            {"Apache Tomcat/4.0", "不再支持Tomcat 4.0.x。请至少使用Tomcat 4.1。"},
+            {"Resin/2", "OpenCms的JSP不能与Resin 2.x一起工作。请使用Resin 3。"},
             {
                 "IBM WebSphere Application Server/5",
-                "OpenCms has problems with the way Websphere handles the <code>sendRedirect</code> method. Please use at least WebSphere 6 instead."}};
+                "OpenCms与Websphere处理<code>sendRedirect</code>方法会发生冲突。请至少使用WebSphere 6。"}};
 
         String servletContainer = setupBean.getServletConfig().getServletContext().getServerInfo();
         testResult.setResult(servletContainer);
@@ -82,12 +82,12 @@ public class CmsSetupTestServletContainer implements I_CmsSetupTest {
         if (unsupportedServletContainer > -1) {
             testResult.setRed();
             testResult.setInfo(unsupportedContainers[unsupportedServletContainer][1]);
-            testResult.setHelp("This servlet container does not work with OpenCms. Even though OpenCms is fully standards compliant, "
-                + "the standard leaves some 'grey' (i.e. undefined) areas. "
-                + "Please consider using another, supported servlet container.");
+            testResult.setHelp("这个servlet容器无法与OpenCms一起工作。即使OpenCms是完全符合标准的，"
+                + "然而标准本身留下了一些“灰色”(比如未明确)的区域。"
+                + "请考虑使用其它的、支持的servlet容器。");
         } else if (supportedServletContainer < 0) {
             testResult.setYellow();
-            testResult.setHelp("This servlet container has not been tested with OpenCms. Please consider using another, supported servlet container.");
+            testResult.setHelp("这个servlet容器没有与OpenCms一起测试过。请考虑使用其它的、支持的servlet容器。");
         } else if (supportedContainers[supportedServletContainer][1] != null) {
             // set additional info for supported servlet containers
             testResult.setInfo(supportedContainers[supportedServletContainer][1]);
