@@ -49,11 +49,15 @@ OpenCms 9.5.2
    MAVEN_OPTS = -Dfile.encoding=UTF-8
   ```
 
-6. Run maven clean.
+6. Run **maven clean**.
+
    The necessary source code will be copied from opencms-core to this project. You can compare files with old version to decide whether they should be modified.
 
-7. Run maven package.
+
+7. Run **maven install**.
+
    This will build a opencms-zh-${project.version}.war under target folder.
+
 
 8. Set tomcat's file encoding to UTF-8:
   ```
