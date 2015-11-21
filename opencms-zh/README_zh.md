@@ -63,7 +63,8 @@ OpenCms 9.5.2
 
 ##常见问题
 1. 我怎么知道你修改了哪些代码？
-   你可以搜索代码中的Shi Jinghai，查看修改了哪些内容。我对每处代码修改都做了注释，样式如下：
+
+   答：你可以搜索代码中的Shi Jinghai，查看修改了哪些内容。我对每处代码修改都做了注释，样式如下：
   ```
        // modyfied by Shi Jinghai, huaruhai@hotmail.com  2011-12-14
        result.append(" style=\"width: " + (curTab.length() * 12 + addDelta) + "px;\"");
