@@ -66,5 +66,22 @@
       <Key><![CDATA[bootstrap.tabs.default.Text]]></Key>
       <Value><![CDATA[请编辑标签条目的文本。]]></Value>
     </Message>
+
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.tabs.emptycontainer.text]]></Key>
+      <Value><![CDATA[请在这里拖拽一个布局行。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.tabs.emptycontainer.headline]]></Key>
+      <Value><![CDATA[空标签]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.GalleryTitle.help]]></Key>
+      <Value><![CDATA[标签内容的库标题。不在页面上显示。]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

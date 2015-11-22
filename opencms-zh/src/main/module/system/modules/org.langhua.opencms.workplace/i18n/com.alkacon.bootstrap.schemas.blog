@@ -78,5 +78,17 @@
       <Key><![CDATA[bootstrap.blog.message.readmore]]></Key>
       <Value><![CDATA[浏览详细信息]]></Value>
     </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapBlog.GalleryTitle.help]]></Key>
+      <Value><![CDATA[博客的库标题。不在页面上显示。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.blog.message.edit]]></Key>
+      <Value><![CDATA[<strong>新博客</strong>，请编辑内容。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapBlog.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

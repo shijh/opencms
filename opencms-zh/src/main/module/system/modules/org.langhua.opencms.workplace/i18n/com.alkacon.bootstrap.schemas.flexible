@@ -50,5 +50,13 @@
       <Key><![CDATA[bootstrap.flexible.message.edit]]></Key>
       <Value><![CDATA[请编辑这个灵活元素内容。]]></Value>
     </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapFlexibleElement.GalleryTitle.help]]></Key>
+      <Value><![CDATA[灵活内容的库标题。不在页面上显示。]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

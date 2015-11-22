@@ -38,5 +38,13 @@
       <Key><![CDATA[bootstrap.imagegalleryshow.message.new]]></Key>
       <Value><![CDATA[<strong>新建图片库展示</strong>，请编辑内容。]]></Value>
     </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImageGalleryShow.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImageGalleryShow.GalleryTitle.help]]></Key>
+      <Value><![CDATA[图片库的库标题。不在页面上显示。]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

@@ -90,5 +90,30 @@
       <Key><![CDATA[bootstrap.list.message.readmore]]></Key>
       <Value><![CDATA[浏览详情 >>]]></Value>
     </Message>
+
+    <Message>
+      <Key><![CDATA[bootstrap.list.default.Headline]]></Key>
+      <Value><![CDATA[新列表]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapList.GalleryTitle.help]]></Key>
+      <Value><![CDATA[列表的库标题。不显示在页面上。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.list.message.empty]]></Key>
+      <Value><![CDATA[现在没有可用的记录。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapList.ItemsPerPage.help]]></Key>
+      <Value><![CDATA[设置每页显示的条目数量。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapList.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapList.ItemsPerPage]]></Key>
+      <Value><![CDATA[每页的条目]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

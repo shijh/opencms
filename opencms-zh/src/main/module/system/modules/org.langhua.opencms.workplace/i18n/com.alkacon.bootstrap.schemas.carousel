@@ -54,5 +54,25 @@
       <Key><![CDATA[bootstrap.carousel.message.new]]></Key>
       <Value><![CDATA[<strong>新建旋转木马</strong>，请编辑内容。]]></Value>
     </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapCarousel.GalleryTitle.help]]></Key>
+      <Value><![CDATA[旋转木马的库标题。不显示在页面上。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapCarousel.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapCarousel.Headline.help]]></Key>
+      <Value><![CDATA[旋转木马的头条可以用元素设置来隐藏。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.carousel.default.Headline]]></Key>
+      <Value><![CDATA[新旋转木马]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapCarousel.Headline]]></Key>
+      <Value><![CDATA[头条]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

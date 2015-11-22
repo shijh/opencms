@@ -190,5 +190,14 @@
       <Key><![CDATA[bootstrap.slider.message.edit]]></Key>
       <Value><![CDATA[<strong>幻灯已被修改了</strong>，请刷新页面以显示这个幻灯。]]></Value>
     </Message>
+
+    <Message>
+      <Key><![CDATA[label.BootstrapSlider.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapSlider.GalleryTitle.help]]></Key>
+      <Value><![CDATA[幻灯片的库标题。不显示在页面上。]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>

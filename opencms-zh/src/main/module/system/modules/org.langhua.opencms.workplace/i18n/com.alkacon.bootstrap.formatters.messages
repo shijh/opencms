@@ -214,5 +214,13 @@
       <Key><![CDATA[en]]></Key>
       <Value><![CDATA[英文]]></Value>
     </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.page.text.emptycontainer]]></Key>
+      <Value><![CDATA[请在这个容器里放下模板行。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.page.headline.emptycontainer]]></Key>
+      <Value><![CDATA[空页面容器]]></Value>
+    </Message>
   </Bundle>
 </XmlVfsBundles>
