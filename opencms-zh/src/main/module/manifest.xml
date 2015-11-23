@@ -4,7 +4,7 @@
 	<info>
 		<creator>Admin</creator>
 		<opencms_version>9.5.2</opencms_version>
-		<createdate>Mon, 21 Nov 2015 11:23:34 GMT</createdate>
+		<createdate>Mon, 23 Nov 2015 01:41:23 GMT</createdate>
 		<infoproject>Offline</infoproject>
 		<export_version>7</export_version>
 	</info>
@@ -41,10 +41,10 @@
 		<file>
 			<destination>system</destination>
 			<type>folder</type>
-			<uuidstructure>00f91eef-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<datelastmodified>Wed, 16 Apr 2014 07:59:15 GMT</datelastmodified>
+			<uuidstructure>3c8a31b2-9024-11e5-885d-64006a580e1b</uuidstructure>
+			<datelastmodified>Sat, 21 Nov 2015 07:48:21 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 16 Apr 2014 07:59:15 GMT</datecreated>
+			<datecreated>Sat, 21 Nov 2015 07:48:21 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -63,10 +63,10 @@
 		<file>
 			<destination>system/modules</destination>
 			<type>folder</type>
-			<uuidstructure>02ce063b-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
+			<uuidstructure>3df580be-9024-11e5-885d-64006a580e1b</uuidstructure>
+			<datelastmodified>Sat, 21 Nov 2015 07:48:23 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
+			<datecreated>Sat, 21 Nov 2015 07:48:23 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties/>
@@ -967,7 +967,7 @@
 			<type>jsp</type>
 			<uuidstructure>ac5167ea-b5bb-11dc-a62a-73f74a2d1f86</uuidstructure>
 			<uuidresource>ac5167eb-b5bb-11dc-a62a-73f74a2d1f86</uuidresource>
-			<datelastmodified>Sun, 20 Apr 2014 23:48:44 GMT</datelastmodified>
+			<datelastmodified>Mon, 23 Nov 2015 01:40:09 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Sat, 29 Dec 2007 03:10:56 GMT</datecreated>
 			<usercreated>Admin</usercreated>
@@ -1109,6 +1109,46 @@
 				<property>
 					<name>search.exclude</name>
 					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.iconbox</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.iconbox</destination>
+			<type>plain</type>
+			<uuidstructure>559b70bb-90ec-11e5-a316-64006a580e1b</uuidstructure>
+			<uuidresource>559b70bc-90ec-11e5-a316-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 07:40:42 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 07:40:42 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.image</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.image</destination>
+			<type>plain</type>
+			<uuidstructure>5ea71d3e-90ec-11e5-a316-64006a580e1b</uuidstructure>
+			<uuidresource>5ea71d3f-90ec-11e5-a316-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 07:40:57 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 07:40:57 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
 				</property>
 			</properties>
 			<relations/>
@@ -1259,6 +1299,26 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.row</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.row</destination>
+			<type>plain</type>
+			<uuidstructure>7ab29c11-90ee-11e5-a316-64006a580e1b</uuidstructure>
+			<uuidresource>7ab29c12-90ee-11e5-a316-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 07:56:04 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 07:56:03 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.slider</source>
 			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.slider</destination>
 			<type>xmlvfsbundle</type>
@@ -1325,6 +1385,26 @@
 				<property>
 					<name>search.exclude</name>
 					<value><![CDATA[all]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.text</source>
+			<destination>system/modules/org.langhua.opencms.workplace/i18n/com.alkacon.bootstrap.schemas.text</destination>
+			<type>plain</type>
+			<uuidstructure>8895d664-90f0-11e5-a316-64006a580e1b</uuidstructure>
+			<uuidresource>8895d665-90f0-11e5-a316-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 08:10:46 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 08:10:46 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
 				</property>
 			</properties>
 			<relations/>
@@ -3089,6 +3169,34 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/configuration</destination>
+			<type>folder</type>
+			<uuidstructure>64ff6bce-90fb-11e5-a316-64006a580e1b</uuidstructure>
+			<datelastmodified>Sun, 22 Nov 2015 09:28:31 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 09:28:31 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/configuration/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/configuration/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>756a2641-90fb-11e5-a316-64006a580e1b</uuidstructure>
+			<uuidresource>756a2642-90fb-11e5-a316-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 09:29:05 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sun, 22 Nov 2015 09:28:58 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/ade/containerpage</destination>
 			<type>folder</type>
 			<uuidstructure>91579d68-3015-11e1-8539-e4ce8f2df730</uuidstructure>
@@ -3302,6 +3410,26 @@
 			<datelastmodified>Mon, 21 Apr 2014 09:20:34 GMT</datelastmodified>
 			<userlastmodified>Admin</userlastmodified>
 			<datecreated>Fri, 18 Apr 2014 07:24:32 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ade/postupload/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ade/postupload/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>1942811e-9045-11e5-8c36-64006a580e1b</uuidstructure>
+			<uuidresource>1942811f-9045-11e5-8c36-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 09:45:13 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sat, 21 Nov 2015 11:43:35 GMT</datecreated>
 			<usercreated>Admin</usercreated>
 			<flags>0</flags>
 			<properties>
@@ -5225,6 +5353,39 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ugc</destination>
+			<type>folder</type>
+			<uuidstructure>61e63cf1-9045-11e5-8c36-64006a580e1b</uuidstructure>
+			<datelastmodified>Sat, 21 Nov 2015 11:45:37 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sat, 21 Nov 2015 11:45:37 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/ugc/messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/ugc/messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>61e8d503-9045-11e5-8c36-64006a580e1b</uuidstructure>
+			<uuidresource>61e8d504-9045-11e5-8c36-64006a580e1b</uuidresource>
+			<datelastmodified>Sun, 22 Nov 2015 09:45:59 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Sat, 21 Nov 2015 11:45:37 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>content-encoding</name>
+					<value><![CDATA[UTF-8]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/util</destination>
 			<type>folder</type>
 			<uuidstructure>38bf9030-2e03-11dc-b049-e18fd21fe262</uuidstructure>
@@ -6493,6 +6654,34 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/workplace/locales/zh/messages/org/opencms/xml/adeconfig</destination>
+			<type>folder</type>
+			<uuidstructure>c2331624-917f-11e5-97e4-64006a580e1b</uuidstructure>
+			<datelastmodified>Mon, 23 Nov 2015 01:16:01 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 23 Nov 2015 01:16:01 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/workplace/locales/zh/messages/org/opencms/xml/adeconfig/xmlvfsbundle_messages_zh.properties</source>
+			<destination>system/workplace/locales/zh/messages/org/opencms/xml/adeconfig/xmlvfsbundle_messages_zh.properties</destination>
+			<type>plain</type>
+			<uuidstructure>082c07d7-9181-11e5-97e4-64006a580e1b</uuidstructure>
+			<uuidresource>082c07d8-9181-11e5-97e4-64006a580e1b</uuidresource>
+			<datelastmodified>Mon, 23 Nov 2015 01:25:15 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 23 Nov 2015 01:25:07 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/locales/zh/messages/org/opencms/xml/containerpage</destination>
 			<type>folder</type>
 			<uuidstructure>b98a31ea-3266-11e1-a44d-e4ce8f2df730</uuidstructure>
@@ -6608,41 +6797,6 @@
 			<properties/>
 			<relations/>
 			<accesscontrol/>
-		</file>
-		<file>
-			<destination>sites</destination>
-			<type>folder</type>
-			<uuidstructure>02c553a5-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol/>
-		</file>
-		<file>
-			<destination>sites/default</destination>
-			<type>folder</type>
-			<uuidstructure>02c8d617-c53d-11e3-a1bd-65233d6e4a16</uuidstructure>
-			<datelastmodified>Wed, 16 Apr 2014 07:59:18 GMT</datelastmodified>
-			<userlastmodified>Admin</userlastmodified>
-			<datecreated>Wed, 16 Apr 2014 07:59:18 GMT</datecreated>
-			<usercreated>Admin</usercreated>
-			<flags>0</flags>
-			<properties/>
-			<relations/>
-			<accesscontrol>
-				<accessentry>
-					<uuidprincipal>GROUP.Users</uuidprincipal>
-					<flags>34</flags>
-					<permissionset>
-						<allowed>7</allowed>
-						<denied>0</denied>
-					</permissionset>
-				</accessentry>
-			</accesscontrol>
 		</file>
 		<file>
 			<destination>system/workplace/commons</destination>

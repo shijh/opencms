@@ -166,7 +166,8 @@
                 "org.opencms.ade.sitemap.clientmessages",
                 "org.opencms.ade.upload.clientmessages",
                 "org.opencms.gwt.clientmessages",
-                "org.opencms.gwt.seo.clientmessages"
+                "org.opencms.gwt.seo.clientmessages",
+				"org.opencms.xml.adeconfig.xmlvfsbundle_messages"
         };
 		Locale locale = new Locale("en");
 		// create a new list and add the base bundle
@@ -223,7 +224,8 @@
                 "org.opencms.workplace.tools.searchindex.sourcesearch",
                 "org.opencms.workplace.tools.workplace",
                 "org.opencms.workplace.tools.workplace.broadcast",
-                "org.opencms.workplace.tools.workplace.rfsfile"
+                "org.opencms.workplace.tools.workplace.rfsfile",
+				"org.opencms.editors.codemirror"
         };
 		Locale locale = new Locale("en");
 		// create a new list and add the base bundle
