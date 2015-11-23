@@ -1,0 +1,246 @@
+{
+	"desktop": {
+		"niceName": { 
+			"en": "Desktop",
+			"de": "Desktop",
+			"ru": "Компьютер",
+			"zh": "桌面"
+		},
+		"path": "%(template)",
+		"variants": {
+			"small": {
+				"niceName": {
+					"en": "Small desktop (1024)" ,
+					"zh": "小桌面(1024)"
+				},
+				"width": 1024,
+				"height": 768
+			},		
+			"big": {
+				"niceName": {
+					"en": "Large desktop (1280)" ,
+					"zh": "大桌面(1280)"
+				},
+				"width": 1280,
+				"height": 800
+			}				
+		}				
+	},	
+
+	"tablet": {
+		"niceName": { 
+			"en": "Tablet",
+			"de": "Tablet",
+			"ru": "Планшет",
+			"zh": "平板"
+		},
+		"path": "%(template)",
+		"variants": {
+			"ipad": {
+				"niceName": {
+					"en":  "iPad (portrait)" ,
+					"zh": "iPad(立式)"
+				},
+				"width": 768,
+				"height": 1024
+			},
+			"ipad-ls": {
+				"niceName": {
+					"en": "iPad (landscape)" ,
+					"zh": "iPad(水平)"
+				},
+				"width": 1024,
+				"height": 768
+			},
+			"nexus7": {
+				"niceName": {
+					"en": "Nexus 7 (portrait)" ,
+					"zh": "Nexus 7(立式)"
+				},
+				"width": 604,
+				"height": 966
+			},
+			"nexus7-ls": {
+				"niceName": {
+					"en": "Nexus 7 (landscape)" ,
+					"zh": "Nexus 7(水平)"
+				},
+				"width": 966,
+				"height": 604
+			},			
+			"kindlefire": {
+				"niceName": {
+					"en": "Kindle Fire (portrait)" ,
+					"zh": "Kindle Fire(立式)"
+				},
+				"width": 600,
+				"height": 800
+			},
+			"kindlefire-ls": {
+				"niceName": {
+					"en": "Kindle Fire (landscape)" ,
+					"zh": "Kindle Fire(水平)"
+				},
+				"width": 800,
+				"height": 600
+			},
+			"galaxytab": {
+				"niceName": {
+					"en": "Galaxy Tab (portrait)" ,
+					"zh": "Galaxy Tab(立式)"
+				},
+				"width": 600,
+				"height": 1024
+			},		
+			"galaxytab-ls": {
+				"niceName": {
+					"en": "Galaxy Tab (landscape)" ,
+					"zh": "Galaxy Tab(水平)"
+				},
+				"width": 1024,
+				"height": 600
+			} 
+		}
+	},
+	
+	"mobile": {
+		"niceName": { 
+			"en": "Mobile",
+			"de": "Mobil",
+			"ru": "Смартфон",
+			"zh": "手机"
+		},
+		"path": "%(template)",
+		"variants": {
+			"iphone6plus": {
+				"niceName": {
+					"en": "iPhone 6 Plus (portrait)",
+					"zh": "iPhone 6 Plus(立式)"
+				},
+				"width": 414,
+				"height": 736
+			},	
+			"iphone6plus-ls": {
+				"niceName": {
+					"en": "iPhone 6 Plus (landscape)",
+					"zh": "iPhone 6 Plus(水平)"
+				},
+				"width": 736,
+				"height": 414
+			},				
+			"iphone6": {
+				"niceName": {
+					"en": "iPhone 6 (portrait)",
+					"zh": "iPhone 6(立式)"
+				},
+				"width": 375,
+				"height": 667
+			},
+			"iphone6-ls": {
+				"niceName": {
+					"en": "iPhone 6 (landscape)",
+					"zh": "iPhone 6(水平)"
+				},
+				"width": 667,
+				"height": 375
+			},			
+			"iphone5": {
+				"niceName": {
+					"en": "iPhone 5 (portrait)",
+					"zh": "iPhone 5(立式)"
+				},
+				"width": 320,
+				"height": 568
+			},
+			"iphone5-ls": {
+				"niceName": {
+					"en": "iPhone 5 (landscape)",
+					"zh": "iPhone 5(水平)"
+				},
+				"width": 568,
+				"height": 320
+			},		
+			"iphone4": {
+				"niceName": {
+					"en": "iPhone 3-4 (portrait)",
+					"zh": "iPhone 3-4(立式)"
+				},
+				"width": 320,
+				"height": 480
+			},
+			"iphone4-ls": {
+				"niceName": {
+					"en": "iPhone 3-4 (landscape)",
+					"zh": "iPhone 3-4(水平)"
+				},
+				"width": 480,
+				"height": 320
+			},	
+			"nexus5": {
+				"niceName": {
+					"en": "Nexus 5 (portrait)",
+					"zh": "Nexus 5(立式)"
+				},
+				"width": 360,
+				"height": 640
+			},	
+			"nexus5-ls": {
+				"niceName": {
+					"en": "Nexus 5 (landscape)",
+					"zh": "Nexus 5(水平)"
+				},
+				"width": 640,
+				"height": 360
+			},				
+			"galaxys5": {
+				"niceName": {
+					"en": "Galaxy S5 (portrait)",
+					"zh": "Galaxy S5(立式)"
+				},
+				"width": 360,
+				"height": 640
+			},			
+			"galaxys5-ls": {
+				"niceName": {
+					"en": "Galaxy S5 (landscape)",
+					"zh": "Galaxy S5(水平)"
+				},
+				"width": 640,
+				"height": 360
+			},				
+			"galaxys4": {
+				"niceName": {
+					"en": "Galaxy S3/4 (portrait)",
+					"zh": "Galaxy S3/4(立式)"
+				},
+				"width": 380,
+				"height": 685
+			},			
+			"galaxys4-ls": {
+				"niceName": {
+					"en": "Galaxy S3/4 (landscape)",
+					"zh": "Galaxy S3/4(水平)"
+				},
+				"width": 685,
+				"height": 380
+			},				
+			"andsml": {
+				"niceName": {
+					"en": "Small Android (portrait)",
+					"zh": "小安卓(立式)"
+				},
+				"width": 240,
+				"height": 320
+			},
+			"andsml-ls": {
+				"niceName": {
+					"en": "Small Android (landscape)",
+					"zh": "小安卓(水平)"
+				},
+				"width": 320,
+				"height": 240
+			} 					
+		}
+		
+	}	
+}
