@@ -19,6 +19,7 @@
 				<include>**/*.html</include>
 				<include>**/*.jpg</include>
 				<include>**/*.dtd</include>
+				<include>**/*.json</include>
 				<include>**/i18n/*</include>
 			</includes>
 		</fileSet>
