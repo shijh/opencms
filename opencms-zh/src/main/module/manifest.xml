@@ -6799,6 +6799,44 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<destination>system/shared</destination>
+			<type>folder</type>
+			<uuidstructure>8253d0e9-11b7-11db-91cd-fdbae480bac9</uuidstructure>
+			<datelastmodified>Mon, 27 Mar 2006 12:00:00 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 27 Jun 2005 08:00:00 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>export</name>
+					<value><![CDATA[false]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
+			<source>system/shared/templatecontexts.json</source>
+			<destination>system/shared/templatecontexts.json</destination>
+			<type>plain</type>
+			<uuidstructure>c9c10d58-25b4-11e3-9fd8-000c29d28104</uuidstructure>
+			<uuidresource>c9c10d59-25b4-11e3-9fd8-000c29d28104</uuidresource>
+			<datelastmodified>Mon, 23 Nov 2015 08:04:10 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Wed, 25 Sep 2013 07:33:36 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties>
+				<property>
+					<name>Title</name>
+					<value><![CDATA[Template device contexts]]></value>
+				</property>
+			</properties>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/workplace/commons</destination>
 			<type>folder</type>
 			<uuidstructure>8272cacb-11b7-11db-91cd-fdbae480bac9</uuidstructure>
