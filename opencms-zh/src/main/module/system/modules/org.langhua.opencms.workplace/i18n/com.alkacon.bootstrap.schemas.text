@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<XmlVfsBundles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.config/schemas/xmlvfsbundle.xsd">
+  <Bundle language="zh">
+    <Message>
+      <Key><![CDATA[label.BootstrapText.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.GalleryTitle.help]]></Key>
+      <Value><![CDATA[文本块的库标题。在页面上不显示。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Headline]]></Key>
+      <Value><![CDATA[头条]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Headline.help]]></Key>
+      <Value><![CDATA[文本的可选头条。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Text]]></Key>
+      <Value><![CDATA[文本]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Text.help]]></Key>
+      <Value><![CDATA[段落文本。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Link]]></Key>
+      <Value><![CDATA[链接]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapText.Link.help]]></Key>
+      <Value><![CDATA[指向进一步信息的链接，可以是外部链接(以<b>http://</b>开头)。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.text.default.Headline]]></Key>
+      <Value><![CDATA[新文本]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.text.default.Text]]></Key>
+      <Value><![CDATA[请编辑这个文本。]]></Value>
+    </Message>
+  </Bundle>
+</XmlVfsBundles>

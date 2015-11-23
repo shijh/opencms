@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<XmlVfsBundles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="opencms://system/modules/org.opencms.ade.config/schemas/xmlvfsbundle.xsd">
+  <Bundle language="zh">
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Headline]]></Key>
+      <Value><![CDATA[头条]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Headline.help]]></Key>
+      <Value><![CDATA[图片的头条。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Text]]></Key>
+      <Value><![CDATA[文本]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Text.help]]></Key>
+      <Value><![CDATA[图片的文本。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Image]]></Key>
+      <Value><![CDATA[图片]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Image.help]]></Key>
+      <Value><![CDATA[要显示的图片。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Link]]></Key>
+      <Value><![CDATA[链接]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.Link.help]]></Key>
+      <Value><![CDATA[指向进一步信息的链接，可以是外部链接(以<b>http://</b>开头)。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.GalleryTitle]]></Key>
+      <Value><![CDATA[库标题]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[label.BootstrapImage.GalleryTitle.help]]></Key>
+      <Value><![CDATA[图片的库标题。不在页面上显示。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.image.default.Headline]]></Key>
+      <Value><![CDATA[新图片]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.image.message.new]]></Key>
+      <Value><![CDATA[新图片，请编辑内容。]]></Value>
+    </Message>
+    <Message>
+      <Key><![CDATA[bootstrap.image.frontend.readmore]]></Key>
+      <Value><![CDATA[详细内容+]]></Value>
+    </Message>
+  </Bundle>
+</XmlVfsBundles>
