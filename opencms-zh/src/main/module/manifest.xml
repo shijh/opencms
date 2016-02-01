@@ -379,6 +379,21 @@
 			<accesscontrol/>
 		</file>
 		<file>
+			<source>system/modules/org.langhua.opencms.workplace/classes/org/opencms/gwt/CmsGwtActionElement.class</source>
+			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/gwt/CmsGwtActionElement.class</destination>
+			<type>binary</type>
+			<uuidstructure>90e6414f-c886-11e5-9ae6-64006a580e1b</uuidstructure>
+			<uuidresource>90e64150-c886-11e5-9ae6-64006a580e1b</uuidresource>
+			<datelastmodified>Mon, 01 Feb 2016 01:53:25 GMT</datelastmodified>
+			<userlastmodified>Admin</userlastmodified>
+			<datecreated>Mon, 01 Feb 2016 01:53:18 GMT</datecreated>
+			<usercreated>Admin</usercreated>
+			<flags>0</flags>
+			<properties/>
+			<relations/>
+			<accesscontrol/>
+		</file>
+		<file>
 			<destination>system/modules/org.langhua.opencms.workplace/classes/org/opencms/i18n</destination>
 			<type>folder</type>
 			<uuidstructure>041c8c60-2eaa-11dc-815d-e18fd21fe262</uuidstructure>
